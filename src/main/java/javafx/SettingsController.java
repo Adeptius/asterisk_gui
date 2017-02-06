@@ -5,6 +5,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import model.Dao;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -39,9 +40,9 @@ public class SettingsController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         btnCancel.setOnAction(event -> close());
         btnSave.setOnAction(event -> save());
-//        textServerAdress.setText(Settings.getSetting("SERVER_ADDRESS_FOR_SCRIPT"));
-//        textUpdateRate.setText(Settings.getSetting("SECONDS_TO_UPDATE_PHONE_ON_WEB_PAGE"));
-//        textCleanRate.setText(Settings.getSetting("SECONDS_TO_REMOVE_OLD_PHONES"));
+        textServerAdress.setText(Dao.getSetting("SERVER_ADDRESS_FOR_SCRIPT"));
+        textUpdateRate.setText(Dao.getSetting("SECONDS_TO_UPDATE_PHONE_ON_WEB_PAGE"));
+        textCleanRate.setText(Dao.getSetting("SECONDS_TO_REMOVE_OLD_PHONES"));
 
     }
 
@@ -51,9 +52,9 @@ public class SettingsController implements Initializable {
         String cleanRate = textCleanRate.getText();
         stage.hide();
 
-//        Settings.setSetting("SERVER_ADDRESS_FOR_SCRIPT", serverAdress);
-//        Settings.setSetting("SECONDS_TO_UPDATE_PHONE_ON_WEB_PAGE", updateRate);
-//        Settings.setSetting("SECONDS_TO_REMOVE_OLD_PHONES", cleanRate);
+        Dao.setSetting("SERVER_ADDRESS_FOR_SCRIPT", serverAdress);
+        Dao.setSetting("SECONDS_TO_UPDATE_PHONE_ON_WEB_PAGE", updateRate);
+        Dao.setSetting("SECONDS_TO_REMOVE_OLD_PHONES", cleanRate);
 
 
     }

@@ -6,6 +6,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.stage.Stage;
+import model.Dao;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -51,18 +52,18 @@ public class FilterEditDialogController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-//        MAIL_ANTISPAM.setSelected(Settings.getSettingBoolean("MAIL_ANTISPAM"));
-//        BLOCKED_BY_IP.setSelected(Settings.getSettingBoolean("BLOCKED_BY_IP"));
-//        INCOMING_CALL.setSelected(Settings.getSettingBoolean("INCOMING_CALL"));
-//        ANSWER_CALL.setSelected(Settings.getSettingBoolean("ANSWER_CALL"));
-//        REQUEST_NUMBER.setSelected(Settings.getSettingBoolean("REQUEST_NUMBER"));
-//        ENDED_CALL.setSelected(Settings.getSettingBoolean("ENDED_CALL"));
-//        NUMBER_FREE.setSelected(Settings.getSettingBoolean("NUMBER_FREE"));
-//        INCOMING_CALL_NOT_REGISTER.setSelected(Settings.getSettingBoolean("INCOMING_CALL_NOT_REGISTER"));
-//        SENDING_NUMBER.setSelected(Settings.getSettingBoolean("SENDING_NUMBER"));
-//        NO_NUMBERS_LEFT.setSelected(Settings.getSettingBoolean("NO_NUMBERS_LEFT"));
-//        REPEATED_REQUEST.setSelected(Settings.getSettingBoolean("REPEATED_REQUEST"));
-//        ONLY_ACTIVE_SITE.setSelected(Settings.getSettingBoolean("ONLY_ACTIVE_SITE"));
+                     MAIL_ANTISPAM.setSelected(Dao.getSettingBoolean("MAIL_ANTISPAM"));
+                     BLOCKED_BY_IP.setSelected(Dao.getSettingBoolean("BLOCKED_BY_IP"));
+                     INCOMING_CALL.setSelected(Dao.getSettingBoolean("INCOMING_CALL"));
+                       ANSWER_CALL.setSelected(Dao.getSettingBoolean("ANSWER_CALL"));
+                    REQUEST_NUMBER.setSelected(Dao.getSettingBoolean("REQUEST_NUMBER"));
+                        ENDED_CALL.setSelected(Dao.getSettingBoolean("ENDED_CALL"));
+                       NUMBER_FREE.setSelected(Dao.getSettingBoolean("NUMBER_FREE"));
+        INCOMING_CALL_NOT_REGISTER.setSelected(Dao.getSettingBoolean("INCOMING_CALL_NOT_REGISTER"));
+                    SENDING_NUMBER.setSelected(Dao.getSettingBoolean("SENDING_NUMBER"));
+                   NO_NUMBERS_LEFT.setSelected(Dao.getSettingBoolean("NO_NUMBERS_LEFT"));
+                  REPEATED_REQUEST.setSelected(Dao.getSettingBoolean("REPEATED_REQUEST"));
+                  ONLY_ACTIVE_SITE.setSelected(Dao.getSettingBoolean("ONLY_ACTIVE_SITE"));
     }
 
     public void actionClose(ActionEvent actionEvent) {
@@ -83,6 +84,6 @@ public class FilterEditDialogController implements Initializable {
         String id = clickedCheckBox.getId();
         boolean state = clickedCheckBox.isSelected();
 
-//        Settings.setSettingBoolean(id, state);
+        Dao.setSetting(id, ""+state);
     }
 }

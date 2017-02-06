@@ -13,6 +13,39 @@ public class Dao {
 
 private static final String IP = "http://localhost:8080";
 
+
+
+
+    public static String setSetting(String name, String value) {
+        try {
+            HashMap<String, String> map = new HashMap<>();
+            map.put("name", name);
+            map.put("value", value);
+            String response = sendPost(IP+"/admin/setsetting", map);
+            return response;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Ошибка";
+        }
+    }
+
+
+    public static boolean getSettingBoolean(String name){
+        return getSetting(name).equals("true");
+    }
+
+    public static String getSetting(String name) {
+        try {
+            String response = getJsonFromUrl(IP+"/admin/getsetting/"+name);
+            return response;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Ошибка";
+        }
+    }
+
+
+
     public static String getScriptForSite(String site) {
         site = site.replaceAll(" ", "%20");
         try {

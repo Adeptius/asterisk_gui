@@ -62,6 +62,10 @@ public class GuiController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         siteList.setOnMouseClicked(event -> {
             updatePhones();
+            String sitename = siteList.getSelectionModel().getSelectedItem();
+            if (sitename != null) {
+                Dao.setSetting("ACTIVE_SITE", sitename);
+            }
         });
         updateSites();
         updateLogs();
@@ -72,14 +76,19 @@ public class GuiController implements Initializable {
         phoneTime.setCellValueFactory(new PropertyValueFactory<>("busyTimeText"));
         phoneIp.setCellValueFactory(new PropertyValueFactory<>("ip"));
 
-//        new Thread(() -> {
-//            while (true){
-//             try{
-//                 Thread.sleep(5000);
-//                 updateLogs();
-//             }catch (InterruptedException ignored){}
-//            }
-//        }).start();
+        new Thread(() -> {
+            while (true){
+             try{
+                 Thread.sleep(4000);
+                 try{
+                     updateLogs();
+                     updatePhones();
+                 }catch (Exception e){
+                     System.out.println("Нет связи скорее всего");
+                 }
+             }catch (InterruptedException ignored){}
+            }
+        }).start();
     }
 
 
@@ -126,7 +135,7 @@ public class GuiController implements Initializable {
 
     private void showSettings() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("../settings.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("settings.fxml"));
             Stage stage = new Stage();
             loader.setController(new SettingsController(stage));
             Parent root = loader.load();
@@ -200,7 +209,7 @@ public class GuiController implements Initializable {
 
     private void showFilters() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("../filteredit.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("filteredit.fxml"));
             Parent root = loader.load();
             Scene scene = new Scene(root);
             Stage stage = new Stage();

@@ -3,6 +3,7 @@ package javafx;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -133,29 +134,17 @@ public class NewSiteController implements Initializable{
         System.out.println(result);
         //TODO выводим сообщение о результате
 
-
-        if (selectedSiteString != null){// если мы меняем сайт
-//                if (Main.mySqlDao.editSite(site)){
-//                    stage.hide();
-//                    MainController.sites.remove(MainController.getSiteByName(site.getName()));
-//                    MainController.sites.add(site);
-//                    guiController.setPhones(site.getName());
-//                }else {
-//                    System.out.println("Ошибка");
-//                }
-
-
-        }else {// если мы добавляем сайт
-//                if (Main.mySqlDao.saveSite(site)){
-//                    List<String> l = new ArrayList<>();
-//                    l.add(site.getName());
-//                    Main.mySqlDao.createStatisticTables(l);
-//                    stage.hide();
-//                    MainController.sites.add(site);
-//                    guiController.addAndUpdateList(site.getName());
-//                }else {
-//                    System.out.println("Ошибка");
-//                }
+        Alert alert = null;
+        if (result.equals("Updated") || result.equals("Added")){
+            result = "Выполнено!";
+            alert = new Alert(Alert.AlertType.INFORMATION);
+        }else {
+            alert = new Alert(Alert.AlertType.ERROR);
         }
+        alert.setTitle("Information");
+        alert.setHeaderText(null);
+        alert.setContentText(result);
+        alert.showAndWait();
+
     }
 }
