@@ -7,6 +7,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import model.Dao;
 import model.MainController;
 import model.Phone;
 import model.Site;
@@ -60,7 +61,7 @@ public class NewSiteController implements Initializable{
             btnSave.setText("Изменить");
             textName.setEditable(false);
 
-            Site site = MainController.getSiteByName(selectedSiteString);
+            Site site = Dao.getSiteByName(selectedSiteString);
             textName.setText(site.getName());
             textEmail.setText(site.getMail());
             textNumber.setText(site.getStandartNumber());
@@ -116,10 +117,24 @@ public class NewSiteController implements Initializable{
             blackIps.add(s);
         }
 
-        Site site = new Site(name, phoneList,standartNumber,googleId,email, blackIps);
-
+        Site site = new Site(name, phoneList, standartNumber, googleId, email, blackIps);
+        String result = "";
         try {
-            if (selectedSiteString != null){// если мы меняем сайт
+           result = Dao.addOrUpdate(site);
+            stage.hide();
+            guiController.updateSites();
+            guiController.updateLogs();
+            guiController.updatePhones();
+
+        }catch (Exception e){
+            e.printStackTrace();
+            result = "Ошибка: " + e.getMessage();
+        }
+        System.out.println(result);
+        //TODO выводим сообщение о результате
+
+
+        if (selectedSiteString != null){// если мы меняем сайт
 //                if (Main.mySqlDao.editSite(site)){
 //                    stage.hide();
 //                    MainController.sites.remove(MainController.getSiteByName(site.getName()));
@@ -130,7 +145,7 @@ public class NewSiteController implements Initializable{
 //                }
 
 
-            }else {// если мы добавляем сайт
+        }else {// если мы добавляем сайт
 //                if (Main.mySqlDao.saveSite(site)){
 //                    List<String> l = new ArrayList<>();
 //                    l.add(site.getName());
@@ -141,9 +156,6 @@ public class NewSiteController implements Initializable{
 //                }else {
 //                    System.out.println("Ошибка");
 //                }
-            }
-        }catch (Exception e){
-            e.printStackTrace();
         }
     }
 }

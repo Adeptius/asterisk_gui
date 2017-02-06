@@ -1,6 +1,7 @@
 package javafx;
 
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -15,19 +16,21 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import model.Dao;
 import model.Phone;
+import model.Site;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
 
 public class GuiController implements Initializable {
-
-    ObservableList<Phone> phones;
-    ObservableList<String> sites;
-    ObservableList<String> logs = FXCollections.observableArrayList();
+//
+//    ObservableList<Phone> phones;
+//    ObservableList<String> sites;
+//    ObservableList<String> logs = FXCollections.observableArrayList();
 
     @FXML
     private ListView<String> siteList;
@@ -57,75 +60,46 @@ public class GuiController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        logList.setItems(logs);
-//        List<String> sitesNames = MainController.sites.stream().map(Site::getName).collect(Collectors.toList());
-//        sites = FXCollections.observableArrayList(sitesNames);
-        siteList.setItems(sites);
         siteList.setOnMouseClicked(event -> {
-            String siteSelected = siteList.getSelectionModel().getSelectedItem();
-            setPhones(siteSelected);
+            updatePhones();
         });
-        setPhones("e404");
-        siteList.getSelectionModel().select(1);
+        updateSites();
+        updateLogs();
+        updatePhones();
 
         phoneNumber.setCellValueFactory(new PropertyValueFactory<>("number"));
         phoneGoogleId.setCellValueFactory(new PropertyValueFactory<>("googleId"));
-        phoneTime.setCellValueFactory(new PropertyValueFactory<>("busyTime"));
+        phoneTime.setCellValueFactory(new PropertyValueFactory<>("busyTimeText"));
         phoneIp.setCellValueFactory(new PropertyValueFactory<>("ip"));
+
+//        new Thread(() -> {
+//            while (true){
+//             try{
+//                 Thread.sleep(5000);
+//                 updateLogs();
+//             }catch (InterruptedException ignored){}
+//            }
+//        }).start();
     }
 
-    public void setPhones(String sitename) {
-//        Site site = MainController.getSiteByName(sitename);
-//        phones = FXCollections.observableArrayList(site.getPhones());
-//        phoneTable.setItems(phones);
-//        selectedSiteString = sitename;
+
+    public void updateSites() {
+        List<String> sitesNames = Dao.getListOfSites();
+        siteList.setItems(FXCollections.observableArrayList(sitesNames));
     }
 
-
-    public void removeAndUpdateList(String siteToRemove) {
-        sites.remove(siteToRemove);
-        siteList.setItems(sites);
-        siteList.getSelectionModel().select(0);
-        setPhones(siteList.getSelectionModel().getSelectedItem());
+    public void updateLogs() {
+        ArrayList<String> list = Dao.getLogs();
+        Platform.runLater(() -> logList.setItems(FXCollections.observableList(list)));
     }
 
-    public void addAndUpdateList(String siteToRemove) {
-        sites.add(siteToRemove);
-        siteList.setItems(sites);
-        siteList.getSelectionModel().select(0);
-        setPhones(siteList.getSelectionModel().getSelectedItem());
-    }
-
-    private static int logCounter = 0;
-
-    private static volatile boolean allowToCut = true;
-
-    public void appendLog(String message) {
-        javafx.application.Platform.runLater(() -> logs.add(0,message));
-
-        if (logs.size() > 100 && allowToCut){
-            allowToCut= false;
-            javafx.application.Platform.runLater(() -> {
-                logs.remove(90,logs.size()-1);
-                allowToCut = true;
-            });
+    public void updatePhones() {
+        String sitename = siteList.getSelectionModel().getSelectedItem();
+        if (sitename != null){
+            Site site = Dao.getSiteByName(sitename);
+            phoneTable.setItems(FXCollections.observableArrayList(site.getPhones()));
+            selectedSiteString = sitename;
         }
-
-//        try{
-//        logCounter++;
-//        if (logCounter > 100) {
-////            logArea.setText("");
-//            javafx.application.Platform.runLater(() -> logArea.setText(""));
-//            logCounter = 0;
-//        }
-//        javafx.application.Platform.runLater(() -> logArea.appendText(message + "\n"));
-////        logArea.appendText(message + "\n");
-//        logArea.setScrollTop(Double.MAX_VALUE);
-//
-//
-//        }catch (IndexOutOfBoundsException e){
-//            MyLogger.log(ELSE, "СЛОВЛЕН IndexOutOfBoundsException В ЛОГЕ!!!!!!!!!!!!!!!");
-//        }
     }
 
     public void actionButtonPressed(ActionEvent actionEvent) {
@@ -170,7 +144,7 @@ public class GuiController implements Initializable {
 
     private void showDelete() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("../dbdelete.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("dbdelete.fxml"));
             Stage stage = new Stage();
             loader.setController(new DeleteController(this, stage, selectedSiteString));
             Parent root = loader.load();
@@ -188,7 +162,7 @@ public class GuiController implements Initializable {
 
     private void showAdd() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("../newsite.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("newsite.fxml"));
             Stage stage = new Stage();
             loader.setController(new NewSiteController(this, stage, null));
             Parent root = loader.load();
@@ -207,7 +181,7 @@ public class GuiController implements Initializable {
 
     private void showEdit() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("../newsite.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("newsite.fxml"));
             Stage stage = new Stage();
             loader.setController(new NewSiteController(this, stage, selectedSiteString));
             Parent root = loader.load();
@@ -243,9 +217,9 @@ public class GuiController implements Initializable {
 
     private void showScript() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("../script.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("script.fxml"));
             Stage stage = new Stage();
-//            loader.setController(new ScriptController(MainController.getSiteByName(selectedSiteString), stage));
+            loader.setController(new ScriptController(selectedSiteString, stage));
             Parent root = loader.load();
             Scene scene = new Scene(root);
             stage.setTitle("Генератор скрипта");

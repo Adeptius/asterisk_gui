@@ -5,6 +5,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
+import model.Dao;
 import model.Site;
 
 import java.net.URL;
@@ -13,10 +14,10 @@ import java.util.ResourceBundle;
 
 public class ScriptController implements Initializable {
 
-    private Site site;
+    private String site;
     private Stage stage;
 
-    public ScriptController(Site site, Stage stage) {
+    public ScriptController(String site, Stage stage) {
         this.site = site;
         this.stage = stage;
     }
@@ -32,7 +33,7 @@ public class ScriptController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         btnClose.setOnAction(event -> close());
         textForScript.setWrapText(true);
-//        textForScript.setText(Utils.getScriptForSite(site));
+        textForScript.setText(Dao.getScriptForSite(site));
     }
 
     private void close(){

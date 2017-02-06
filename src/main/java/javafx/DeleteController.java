@@ -6,6 +6,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
+import model.Dao;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -36,19 +37,19 @@ public class DeleteController implements Initializable{
 
 
     private void delete() {
+        String result = "";
         try{
-//            if (Main.mySqlDao.deleteSite(sitename)){
-//                List<String> l = new ArrayList<>();
-//                l.add("statistic_"+sitename);
-//                Main.mySqlDao.deleteTables(l);
-//                stage.hide();
-//                Site site = MainController.getSiteByName(sitename);
-//                MainController.sites.remove(site);
-//                guiController.removeAndUpdateList(sitename);
-//            }
+            result = Dao.removeSite(sitename);
+            stage.hide();
+            guiController.updateSites();
+            guiController.updatePhones();
+            guiController.updateLogs();
         }catch (Exception e){
             e.printStackTrace();
+            result = "Ошибка: " + e.getMessage();
         }
+        System.out.println(result);
+        //TODO сообщение
 
     }
 

@@ -4,39 +4,66 @@ package model;
 import java.util.List;
 
 public class Site {
-    private Phone[] phones;
-    private String googleAnalyticsTrackingId;
-    private String standartNumber;
-    private String mail;
+
+    public Site(String name, List<Phone> phones, String standartNumber, String googleAnalyticsTrackingId, String eMail, List<String> blackIps) {
+        this.name = name;
+        this.phones = phones;
+        this.standartNumber = standartNumber;
+        this.googleAnalyticsTrackingId = googleAnalyticsTrackingId;
+        this.mail = eMail;
+        this.blackIps = blackIps;
+    }
+
+    private List<String> blackIps;
     private String name;
-    private String[] blackIps;
+    private List<Phone> phones;
+    private String standartNumber;
+    private String googleAnalyticsTrackingId;
+    private String mail;
+    private long lastEmailTime;
 
-    public Site(String name, List<Phone> phoneList, String standartNumber, String googleId, String email, List<String> blackIps) {
-
-
+    public String getName() {
+        return name;
     }
 
-    public Phone[] getPhones() {
+    public List<Phone> getPhones() {
         return phones;
-    }
-
-    public String getGoogleAnalyticsTrackingId() {
-        return googleAnalyticsTrackingId;
     }
 
     public String getStandartNumber() {
         return standartNumber;
     }
 
+    public String getGoogleAnalyticsTrackingId() {
+        return googleAnalyticsTrackingId;
+    }
+
     public String getMail() {
         return mail;
     }
 
-    public String getName() {
-        return name;
+    public long getLastEmailTime() {
+        return lastEmailTime;
     }
 
-    public String[] getBlackIps() {
+    public void setLastEmailTime(long lastEmailTime) {
+        this.lastEmailTime = lastEmailTime;
+    }
+
+    public List<String> getBlackIps() {
         return blackIps;
+    }
+
+    @Override
+    public String toString() {
+        return "Site{" +
+                "blackIps=" + blackIps +
+                ", name='" + name + '\'' +
+                ", phones=" + phones +
+                ", standartNumber='" + standartNumber + '\'' +
+                ", googleAnalyticsTrackingId='" + googleAnalyticsTrackingId + '\'' +
+                ", eMail='" + mail + '\'' +
+                ", lastEmailTime=" + lastEmailTime +
+                '}';
     }
 }
