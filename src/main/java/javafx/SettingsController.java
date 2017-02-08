@@ -34,7 +34,8 @@ public class SettingsController implements Initializable {
     @FXML
     private TextField textServerAdress;
 
-
+    @FXML
+    private TextField textAntiSpam;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -43,20 +44,20 @@ public class SettingsController implements Initializable {
         textServerAdress.setText(Dao.getSetting("SERVER_ADDRESS_FOR_SCRIPT"));
         textUpdateRate.setText(Dao.getSetting("SECONDS_TO_UPDATE_PHONE_ON_WEB_PAGE"));
         textCleanRate.setText(Dao.getSetting("SECONDS_TO_REMOVE_OLD_PHONES"));
-
+        textAntiSpam.setText(Dao.getSetting("MAIL_ANTISPAM"));
     }
 
     private void save(){
         String serverAdress = textServerAdress.getText();
         String updateRate = textUpdateRate.getText();
         String cleanRate = textCleanRate.getText();
+        String antispam = textAntiSpam.getText();
         stage.hide();
 
         Dao.setSetting("SERVER_ADDRESS_FOR_SCRIPT", serverAdress);
         Dao.setSetting("SECONDS_TO_UPDATE_PHONE_ON_WEB_PAGE", updateRate);
         Dao.setSetting("SECONDS_TO_REMOVE_OLD_PHONES", cleanRate);
-
-
+        Dao.setSetting("MAIL_ANTISPAM", antispam);
     }
 
     private void close(){
