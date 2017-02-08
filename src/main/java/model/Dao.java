@@ -11,9 +11,23 @@ import java.util.*;
 
 public class Dao {
 
-private static final String IP = "http://localhost:8080";
+private static final String IP = "http://194.44.37.30:8080/tracking";
 
 
+public static ArrayList<History> getHistory(String site, String from, String to){
+    try {
+        HashMap<String, String> map = new HashMap<>();
+        map.put("name", site);
+        map.put("dateFrom", from);
+        map.put("dateTo", to);
+        String response = sendPost(IP+"/status/history", map);
+        History[] histories = new Gson().fromJson(response, History[].class);
+        return new ArrayList<History>(Arrays.asList(histories));
+    } catch (Exception e) {
+        e.printStackTrace();
+        return new ArrayList<>();
+    }
+}
 
 
     public static String setSetting(String name, String value) {

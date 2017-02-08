@@ -56,6 +56,9 @@ public class GuiController implements Initializable {
     @FXML
     private Button btnSettings;
 
+    @FXML
+    private Button btnHistory;
+
     public static String selectedSiteString;
 
     @Override
@@ -130,6 +133,25 @@ public class GuiController implements Initializable {
             showScript();
         }else if (clickedButton.getId().equals("btnSettings")) {
             showSettings();
+        }else if (clickedButton.getId().equals("btnHistory")) {
+            showHistory();
+        }
+    }
+
+    private void showHistory() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("history.fxml"));
+            Stage stage = new Stage();
+            loader.setController(new HistoryController(selectedSiteString, stage));
+            Parent root = loader.load();
+            Scene scene = new Scene(root);
+            stage.setTitle("История звонков");
+//            stage.initModality(Modality.WINDOW_MODAL); // Перекрывающее окно
+            stage.initOwner(siteList.getScene().getWindow()); // Указание кого оно перекрывает
+            stage.setScene(scene);
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

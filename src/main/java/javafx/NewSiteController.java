@@ -132,7 +132,6 @@ public class NewSiteController implements Initializable{
             result = "Ошибка: " + e.getMessage();
         }
         System.out.println(result);
-        //TODO выводим сообщение о результате
 
         Alert alert = null;
         if (result.equals("Updated") || result.equals("Added")){
