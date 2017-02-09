@@ -79,7 +79,7 @@ public class GuiController implements Initializable {
         phoneTime.setCellValueFactory(new PropertyValueFactory<>("busyTimeText"));
         phoneIp.setCellValueFactory(new PropertyValueFactory<>("ip"));
 
-        new Thread(() -> {
+        Thread monitor = new Thread(() -> {
             while (true){
              try{
                  Thread.sleep(4000);
@@ -91,7 +91,9 @@ public class GuiController implements Initializable {
                  }
              }catch (InterruptedException ignored){}
             }
-        }).start();
+        });
+        monitor.setDaemon(true);
+        monitor.start();
     }
 
 

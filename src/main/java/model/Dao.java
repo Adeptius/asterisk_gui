@@ -121,6 +121,7 @@ public static ArrayList<History> getHistory(String site, String from, String to)
             String url = "/status/logs";
             String response = getJsonFromUrl(IP+url);
             String[] logs = new Gson().fromJson(response, String[].class);
+
             return new ArrayList<>(Arrays.asList(logs));
         }catch (Exception e){
             e.printStackTrace();
@@ -162,6 +163,8 @@ public static ArrayList<History> getHistory(String site, String from, String to)
             result += in.readLine();
         }
 //        result = org.apache.commons.lang3.StringEscapeUtils.unescapeJava(result);
+        byte[] bytes = result.getBytes();
+        result = new String(bytes, "UTF-8");
         System.out.println("Получен Json: " + result);
         in.close();
         return result;
@@ -188,6 +191,8 @@ public static ArrayList<History> getHistory(String site, String from, String to)
         BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
         String result = in.readLine();
 //        result = org.apache.commons.lang3.StringEscapeUtils.unescapeJava(result);
+        byte[] bytes = result.getBytes();
+        result = new String(bytes, "UTF-8");
         System.out.println("Ответ: " + result);
         in.close();
         return result;
