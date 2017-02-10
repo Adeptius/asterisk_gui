@@ -4,18 +4,18 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="973.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="1319.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <Button fx:id="buttonShow" layoutX="376.0" layoutY="14.0" mnemonicParsing="false" text="Показать" />
       <TableView fx:id="table" layoutX="14.0" layoutY="51.0" prefHeight="334.0" prefWidth="951.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="56.0">
         <columns>
-            <TableColumn fx:id="dateColumn" prefWidth="123.0" text="Дата" />
-          <TableColumn fx:id="fromColumn" prefWidth="101.0" text="От" />
-          <TableColumn fx:id="toColumn" prefWidth="90.0" text="Кому" />
-            <TableColumn fx:id="timeToAnswerColumn" prefWidth="75.0" text="До ответа" />
-            <TableColumn fx:id="talkingTimeColumn" prefWidth="89.0" text="Длительность" />
-            <TableColumn fx:id="googleIDColumn" prefWidth="162.0" text="GoogleId" />
-            <TableColumn fx:id="callIDColumn" prefWidth="124.0" text="ID звонка" />
+            <TableColumn fx:id="dateColumn" maxWidth="200.0" minWidth="120.0" prefWidth="120.0" text="Дата" />
+          <TableColumn fx:id="fromColumn" maxWidth="200.0" minWidth="100.0" prefWidth="100.0" text="От" />
+          <TableColumn fx:id="toColumn" maxWidth="200.0" minWidth="100.0" prefWidth="100.0" text="Кому" />
+            <TableColumn fx:id="timeToAnswerColumn" maxWidth="70.0" minWidth="70.0" prefWidth="70.0" text="До ответа" />
+            <TableColumn fx:id="talkingTimeColumn" maxWidth="90.0" minWidth="90.0" prefWidth="90.0" text="Длительность" />
+            <TableColumn fx:id="googleIDColumn" maxWidth="200.0" minWidth="150.0" prefWidth="200.0" text="GoogleId" />
+            <TableColumn fx:id="callIDColumn" maxWidth="200.0" minWidth="100.0" prefWidth="200.0" text="ID звонка" />
             <TableColumn fx:id="utmColumn" prefWidth="182.0" text="UTM" />
         </columns>
          <columnResizePolicy>
@@ -24,6 +24,6 @@
       </TableView>
       <TextField fx:id="textFrom" layoutX="23.0" layoutY="14.0" />
       <TextField fx:id="textTo" layoutX="198.0" layoutY="14.0" />
-      <Button fx:id="btnDownload" layoutX="859.0" layoutY="14.0" mnemonicParsing="false" text="Скачать запись" />
+      <Button fx:id="btnDownload" layoutX="455.0" layoutY="14.0" mnemonicParsing="false" text="Скачать запись" />
    </children>
 </AnchorPane>

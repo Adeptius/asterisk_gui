@@ -5,6 +5,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 
@@ -23,6 +24,7 @@ public class Gui  extends Application {
         primaryStage.setMinHeight(600);
         primaryStage.setMinWidth(800);
         primaryStage.setOnCloseRequest(e -> Platform.exit());
+        primaryStage.getIcons().add(new Image(Gui.class.getResourceAsStream( "adeptius64.png" )));
         primaryStage.show();
 //        guiController = fxmlLoader.getController();
     }

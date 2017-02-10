@@ -115,18 +115,12 @@ public class HistoryController implements Initializable {
     private void openInBrowser() {
         History history = table.getSelectionModel().getSelectedItem();
         String date = history.getDate();
-        String year = date.substring(0,4);
-        String month = date.substring(5,7);
-        String day = date.substring(8,10);
+        date = date.substring(0, date.indexOf(" "));
 
         String url = "http://194.44.37.30:8080/tracking/status/record/"
                 + history.getCallUniqueId()
                 + "/"
-                + year
-                + "/"
-                + month
-                + "/"
-                + day;
+                + date;
         try {
             Desktop.getDesktop().browse(new URI(url));
         } catch (IOException e1) {

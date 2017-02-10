@@ -5,13 +5,14 @@ import java.util.List;
 
 public class Site {
 
-    public Site(String name, List<Phone> phones, String standartNumber, String googleAnalyticsTrackingId, String eMail, List<String> blackIps) {
+    public Site(String name, List<Phone> phones, String standartNumber, String googleAnalyticsTrackingId, String eMail, List<String> blackIps, String password) {
         this.name = name;
         this.phones = phones;
         this.standartNumber = standartNumber;
         this.googleAnalyticsTrackingId = googleAnalyticsTrackingId;
         this.mail = eMail;
         this.blackIps = blackIps;
+        this.password = password;
     }
 
     private List<String> blackIps;
@@ -21,6 +22,15 @@ public class Site {
     private String googleAnalyticsTrackingId;
     private String mail;
     private long lastEmailTime;
+    private String password;
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     public String getName() {
         return name;

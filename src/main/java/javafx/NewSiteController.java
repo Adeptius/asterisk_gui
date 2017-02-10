@@ -24,6 +24,7 @@ public class NewSiteController implements Initializable{
     private Stage stage;
     private String selectedSiteString;
 
+
     public NewSiteController(GuiController guiController, Stage stage, String selectedSiteString) {
         this.guiController = guiController;
         this.stage = stage;
@@ -54,6 +55,9 @@ public class NewSiteController implements Initializable{
     @FXML
     private TextArea textPhones;
 
+    @FXML
+    private TextField textPassword;
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -67,6 +71,7 @@ public class NewSiteController implements Initializable{
             textEmail.setText(site.getMail());
             textNumber.setText(site.getStandartNumber());
             textGoogleId.setText(site.getGoogleAnalyticsTrackingId());
+            textPassword.setText(site.getPassword());
 
             String phones = "";
             for (Phone phone : site.getPhones()) {
@@ -102,6 +107,7 @@ public class NewSiteController implements Initializable{
         String googleId = textGoogleId.getText().trim();
         String phones = textPhones.getText().trim();
         String blackList = textBlackList.getText().trim();
+        String password = textPassword.getText().trim();
 
         phones = phones.replaceAll(" ", "").replaceAll("\t","");
         blackList = blackList.replaceAll(" ", "").replaceAll("\t","");
@@ -118,7 +124,7 @@ public class NewSiteController implements Initializable{
             blackIps.add(s);
         }
 
-        Site site = new Site(name, phoneList, standartNumber, googleId, email, blackIps);
+        Site site = new Site(name, phoneList, standartNumber, googleId, email, blackIps, password);
         String result = "";
         try {
            result = Dao.addOrUpdate(site);

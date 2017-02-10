@@ -12,6 +12,7 @@ import java.util.*;
 public class Dao {
 
 private static final String IP = "http://194.44.37.30:8080/tracking";
+public static final String ADMIN_PASS = "pthy0eds";
 
 
 public static ArrayList<History> getHistory(String site, String from, String to){
@@ -20,6 +21,7 @@ public static ArrayList<History> getHistory(String site, String from, String to)
         map.put("name", site);
         map.put("dateFrom", from);
         map.put("dateTo", to);
+        map.put("password", ADMIN_PASS);
         String response = sendPost(IP+"/status/history", map);
         History[] histories = new Gson().fromJson(response, History[].class);
         return new ArrayList<History>(Arrays.asList(histories));
@@ -35,6 +37,7 @@ public static ArrayList<History> getHistory(String site, String from, String to)
             HashMap<String, String> map = new HashMap<>();
             map.put("name", name);
             map.put("value", value);
+            map.put("adminPassword", ADMIN_PASS);
             String response = sendPost(IP+"/admin/setsetting", map);
             return response;
         } catch (Exception e) {
@@ -50,7 +53,10 @@ public static ArrayList<History> getHistory(String site, String from, String to)
 
     public static String getSetting(String name) {
         try {
-            String response = getJsonFromUrl(IP+"/admin/getsetting/"+name);
+            HashMap<String, String> map = new HashMap<>();
+            map.put("name",name);
+            map.put("adminPassword", ADMIN_PASS);
+            String response = sendPost(IP+"/admin/getsetting",map);
             return response;
         } catch (Exception e) {
             e.printStackTrace();
@@ -74,6 +80,7 @@ public static ArrayList<History> getHistory(String site, String from, String to)
     public static String removeSite(String name) throws Exception{
         HashMap<String, String> map = new HashMap<>();
         map.put("name",name);
+        map.put("adminPassword", ADMIN_PASS);
         String response = sendPost(IP+"/admin/site/remove",map);
         return response;
     }
@@ -85,6 +92,7 @@ public static ArrayList<History> getHistory(String site, String from, String to)
         String email = site.getMail();
         String phones = "";
         String blackIps = "";
+        String password = site.getPassword();
 
         List<Phone> phoneList = site.getPhones();
         for (int i = 0; i < phoneList.size(); i++) {
@@ -109,6 +117,8 @@ public static ArrayList<History> getHistory(String site, String from, String to)
         map.put("email",email);
         map.put("phones",phones);
         map.put("blackIps",blackIps);
+        map.put("password",password);
+        map.put("adminPassword",ADMIN_PASS);
 
         String response = sendPost(IP+"/admin/site/add",map);
 
@@ -118,10 +128,10 @@ public static ArrayList<History> getHistory(String site, String from, String to)
 
     public static ArrayList<String> getLogs() {
         try{
-            String url = "/status/logs";
-            String response = getJsonFromUrl(IP+url);
+            HashMap<String, String> map = new HashMap<>();
+            map.put("adminPassword",ADMIN_PASS);
+            String response = sendPost(IP+"/admin/logs",map);
             String[] logs = new Gson().fromJson(response, String[].class);
-
             return new ArrayList<>(Arrays.asList(logs));
         }catch (Exception e){
             e.printStackTrace();
@@ -131,8 +141,10 @@ public static ArrayList<History> getHistory(String site, String from, String to)
 
     public static ArrayList<String> getListOfSites() {
         try{
-            String url = "/status/site/getall";
-            String response = getJsonFromUrl(IP+url);
+            String url = "/admin/getallsites";
+            HashMap<String, String> map = new HashMap<>();
+            map.put("password", ADMIN_PASS);
+            String response = sendPost(IP+url, map);
             String[] sites = new Gson().fromJson(response, String[].class);
             return new ArrayList<>(Arrays.asList(sites));
         }catch (Exception e){
@@ -145,8 +157,13 @@ public static ArrayList<History> getHistory(String site, String from, String to)
     public static Site getSiteByName(String siteName) {
         siteName = siteName.replaceAll(" ", "%20");
         try{
-            String url = "/status/site/"+siteName;
-            String response = getJsonFromUrl(IP+url);
+            String url = "/status/siteinfo";
+
+            HashMap<String, String> map = new HashMap<>();
+            map.put("name",siteName);
+            map.put("password", ADMIN_PASS);
+            String response = sendPost(IP+url, map);
+
             return new Gson().fromJson(response, Site.class);
         }catch (Exception e){
             e.printStackTrace();

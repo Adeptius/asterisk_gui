@@ -3,7 +3,6 @@ package javafx;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -27,10 +26,6 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 public class GuiController implements Initializable {
-//
-//    ObservableList<Phone> phones;
-//    ObservableList<String> sites;
-//    ObservableList<String> logs = FXCollections.observableArrayList();
 
     @FXML
     private ListView<String> siteList;
@@ -60,6 +55,7 @@ public class GuiController implements Initializable {
     private Button btnHistory;
 
     public static String selectedSiteString;
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
