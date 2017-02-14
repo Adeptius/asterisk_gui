@@ -12,6 +12,7 @@ import java.util.*;
 public class Dao {
 
 private static final String IP = "http://194.44.37.30:8080/tracking";
+//private static final String IP = "http://localhost:8080/tracking";
 public static final String ADMIN_PASS = "pthy0eds";
 
 
@@ -24,7 +25,7 @@ public static ArrayList<History> getHistory(String site, String from, String to)
         map.put("password", ADMIN_PASS);
         String response = sendPost(IP+"/status/history", map);
         History[] histories = new Gson().fromJson(response, History[].class);
-        return new ArrayList<History>(Arrays.asList(histories));
+        return new ArrayList<>(Arrays.asList(histories));
     } catch (Exception e) {
         e.printStackTrace();
         return new ArrayList<>();
@@ -93,6 +94,7 @@ public static ArrayList<History> getHistory(String site, String from, String to)
         String phones = "";
         String blackIps = "";
         String password = site.getPassword();
+        int timeToBlock = site.getTimeToBlock();
 
         List<Phone> phoneList = site.getPhones();
         for (int i = 0; i < phoneList.size(); i++) {
@@ -119,6 +121,7 @@ public static ArrayList<History> getHistory(String site, String from, String to)
         map.put("blackIps",blackIps);
         map.put("password",password);
         map.put("adminPassword",ADMIN_PASS);
+        map.put("timeToBlock", ""+timeToBlock);
 
         String response = sendPost(IP+"/admin/site/add",map);
 
@@ -131,6 +134,7 @@ public static ArrayList<History> getHistory(String site, String from, String to)
             HashMap<String, String> map = new HashMap<>();
             map.put("adminPassword",ADMIN_PASS);
             String response = sendPost(IP+"/admin/logs",map);
+//            response = response.replaceAll("И","321");
             String[] logs = new Gson().fromJson(response, String[].class);
             return new ArrayList<>(Arrays.asList(logs));
         }catch (Exception e){

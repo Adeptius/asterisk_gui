@@ -58,6 +58,9 @@ public class NewSiteController implements Initializable{
     @FXML
     private TextField textPassword;
 
+    @FXML
+    private TextField textBlock;
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -72,6 +75,7 @@ public class NewSiteController implements Initializable{
             textNumber.setText(site.getStandartNumber());
             textGoogleId.setText(site.getGoogleAnalyticsTrackingId());
             textPassword.setText(site.getPassword());
+            textBlock.setText(String.valueOf(site.getTimeToBlock()));
 
             String phones = "";
             for (Phone phone : site.getPhones()) {
@@ -108,6 +112,7 @@ public class NewSiteController implements Initializable{
         String phones = textPhones.getText().trim();
         String blackList = textBlackList.getText().trim();
         String password = textPassword.getText().trim();
+        int timeToBlock = Integer.parseInt(textBlock.getText().trim());
 
         phones = phones.replaceAll(" ", "").replaceAll("\t","");
         blackList = blackList.replaceAll(" ", "").replaceAll("\t","");
@@ -124,7 +129,7 @@ public class NewSiteController implements Initializable{
             blackIps.add(s);
         }
 
-        Site site = new Site(name, phoneList, standartNumber, googleId, email, blackIps, password);
+        Site site = new Site(name, phoneList, standartNumber, googleId, email, blackIps, password, timeToBlock);
         String result = "";
         try {
            result = Dao.addOrUpdate(site);

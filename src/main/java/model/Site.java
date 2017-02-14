@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Site {
 
-    public Site(String name, List<Phone> phones, String standartNumber, String googleAnalyticsTrackingId, String eMail, List<String> blackIps, String password) {
+    public Site(String name, List<Phone> phones, String standartNumber, String googleAnalyticsTrackingId, String eMail, List<String> blackIps, String password,  int timeToBlock) {
         this.name = name;
         this.phones = phones;
         this.standartNumber = standartNumber;
@@ -13,8 +13,10 @@ public class Site {
         this.mail = eMail;
         this.blackIps = blackIps;
         this.password = password;
+        this.timeToBlock = timeToBlock;
     }
 
+    private int timeToBlock;
     private List<String> blackIps;
     private String name;
     private List<Phone> phones;
@@ -23,6 +25,14 @@ public class Site {
     private String mail;
     private long lastEmailTime;
     private String password;
+
+    public int getTimeToBlock() {
+        return timeToBlock;
+    }
+
+    public void setTimeToBlock(int timeToBlock) {
+        this.timeToBlock = timeToBlock;
+    }
 
     public String getPassword() {
         return password;

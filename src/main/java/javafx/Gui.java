@@ -11,9 +11,6 @@ import javafx.stage.Stage;
 
 public class Gui  extends Application {
 
-    //TODO это хрень
-//    public static GuiController guiController;
-
     @Override
     public void start(Stage primaryStage) throws Exception{
         FXMLLoader fxmlLoader = new FXMLLoader();
