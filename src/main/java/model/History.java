@@ -12,16 +12,15 @@ public class History {
     private String googleId;
     private String request;
     private String callUniqueId;
-    private String timeToAnswerForCustomer;
+    private String timeToAnswerForWebInSeconds;
     private int timeToAnswerForWeb;
 
-
-    public String getTimeToAnswerForCustomer() {
-        return timeToAnswerForCustomer;
+    public String getTimeToAnswerForWebInSeconds() {
+        return timeToAnswerForWebInSeconds;
     }
 
-    public void setTimeToAnswerForCustomer(String timeToAnswerForCustomer) {
-        this.timeToAnswerForCustomer = timeToAnswerForCustomer;
+    public void setTimeToAnswerForWebInSeconds(String timeToAnswerForWebInSeconds) {
+        this.timeToAnswerForWebInSeconds = timeToAnswerForWebInSeconds;
     }
 
     public int getTimeToAnswerForWeb() {

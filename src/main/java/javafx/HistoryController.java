@@ -84,7 +84,7 @@ public class HistoryController implements Initializable {
         fromColumn.setCellValueFactory(new PropertyValueFactory<>("from"));
         dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
         talkingTimeColumn.setCellValueFactory(new PropertyValueFactory<>("talkingTime"));
-        timeToAnswerColumn.setCellValueFactory(new PropertyValueFactory<>("timeToAnswerForCustomer"));
+        timeToAnswerColumn.setCellValueFactory(new PropertyValueFactory<>("timeToAnswerForWebInSeconds"));
         googleIDColumn.setCellValueFactory(new PropertyValueFactory<>("googleId"));
         callIDColumn.setCellValueFactory(new PropertyValueFactory<>("callUniqueId"));
         utmColumn.setCellValueFactory(new PropertyValueFactory<>("request"));
