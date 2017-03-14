@@ -54,7 +54,7 @@ public class GuiController implements Initializable {
     @FXML
     private Button btnHistory;
 
-    public static String selectedSiteString;
+
 
 
     @Override
@@ -63,7 +63,7 @@ public class GuiController implements Initializable {
             updatePhones();
             String sitename = siteList.getSelectionModel().getSelectedItem();
             if (sitename != null) {
-                Dao.setSetting("ACTIVE_SITE", sitename);
+                Gui.selectedSiteString = sitename;
             }
         });
         updateSites();
@@ -108,7 +108,7 @@ public class GuiController implements Initializable {
         if (sitename != null){
             Site site = Dao.getSiteByName(sitename);
             phoneTable.setItems(FXCollections.observableArrayList(site.getPhones()));
-            selectedSiteString = sitename;
+            Gui.selectedSiteString = sitename;
         }
     }
 
@@ -140,7 +140,7 @@ public class GuiController implements Initializable {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("history.fxml"));
             Stage stage = new Stage();
-            loader.setController(new HistoryController(selectedSiteString, stage));
+            loader.setController(new HistoryController(Gui.selectedSiteString, stage));
             Parent root = loader.load();
             Scene scene = new Scene(root);
             stage.setTitle("История звонков");
@@ -175,7 +175,7 @@ public class GuiController implements Initializable {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("dbdelete.fxml"));
             Stage stage = new Stage();
-            loader.setController(new DeleteController(this, stage, selectedSiteString));
+            loader.setController(new DeleteController(this, stage, Gui.selectedSiteString));
             Parent root = loader.load();
             Scene scene = new Scene(root);
             stage.setTitle("Удаление сайта");
@@ -212,7 +212,7 @@ public class GuiController implements Initializable {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("newsite.fxml"));
             Stage stage = new Stage();
-            loader.setController(new NewSiteController(this, stage, selectedSiteString));
+            loader.setController(new NewSiteController(this, stage, Gui.selectedSiteString));
             Parent root = loader.load();
             Scene scene = new Scene(root);
             stage.setTitle("Изменение сайта");
@@ -248,7 +248,7 @@ public class GuiController implements Initializable {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("script.fxml"));
             Stage stage = new Stage();
-            loader.setController(new ScriptController(selectedSiteString, stage));
+            loader.setController(new ScriptController(Gui.selectedSiteString, stage));
             Parent root = loader.load();
             Scene scene = new Scene(root);
             stage.setTitle("Генератор скрипта");

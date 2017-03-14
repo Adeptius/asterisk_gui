@@ -1,6 +1,7 @@
 package model;
 
 import com.google.gson.Gson;
+import javafx.Gui;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -11,35 +12,39 @@ import java.util.*;
 
 public class Dao {
 
-private static final String IP = "http://194.44.37.30:8080/tracking";
-//private static final String IP = "http://localhost:8080/tracking";
-public static final String ADMIN_PASS = "pthy0eds";
+    public static final String IP = "http://194.44.37.30/tracking";
+    //private static final String IP = "http://localhost:8080/tracking";
+    public static final String ADMIN_PASS = "pthy0eds";
 
 
-public static ArrayList<History> getHistory(String site, String from, String to){
-    try {
-        HashMap<String, String> map = new HashMap<>();
-        map.put("name", site);
-        map.put("dateFrom", from);
-        map.put("dateTo", to);
-        map.put("password", ADMIN_PASS);
-        String response = sendPost(IP+"/status/history", map);
-        History[] histories = new Gson().fromJson(response, History[].class);
-        return new ArrayList<>(Arrays.asList(histories));
-    } catch (Exception e) {
-        e.printStackTrace();
-        return new ArrayList<>();
+    public static ArrayList<History> getHistory(String site, String from, String to, String direction) {
+        try {
+            HashMap<String, String> map = new HashMap<>();
+            map.put("name", site);
+            map.put("dateFrom", from);
+            map.put("dateTo", to);
+            map.put("direction", direction);
+            map.put("password", ADMIN_PASS);
+            String response = sendPost(IP + "/status/history", map);
+            History[] histories = new Gson().fromJson(response, History[].class);
+            return new ArrayList<>(Arrays.asList(histories));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
-}
-
 
     public static String setSetting(String name, String value) {
+        if (name.equals("ONLY_ACTIVE_SITE")){
+            Gui.onlyActiveSite = Boolean.parseBoolean(value);
+            return "";
+        }
         try {
             HashMap<String, String> map = new HashMap<>();
             map.put("name", name);
             map.put("value", value);
             map.put("adminPassword", ADMIN_PASS);
-            String response = sendPost(IP+"/admin/setsetting", map);
+            String response = sendPost(IP + "/admin/setsetting", map);
             return response;
         } catch (Exception e) {
             e.printStackTrace();
@@ -47,17 +52,16 @@ public static ArrayList<History> getHistory(String site, String from, String to)
         }
     }
 
-
-    public static boolean getSettingBoolean(String name){
+    public static boolean getSettingBoolean(String name) {
         return getSetting(name).equals("true");
     }
 
     public static String getSetting(String name) {
         try {
             HashMap<String, String> map = new HashMap<>();
-            map.put("name",name);
+            map.put("name", name);
             map.put("adminPassword", ADMIN_PASS);
-            String response = sendPost(IP+"/admin/getsetting",map);
+            String response = sendPost(IP + "/admin/getsetting", map);
             return response;
         } catch (Exception e) {
             e.printStackTrace();
@@ -66,11 +70,10 @@ public static ArrayList<History> getHistory(String site, String from, String to)
     }
 
 
-
     public static String getScriptForSite(String site) {
         site = site.replaceAll(" ", "%20");
         try {
-            String response = getJsonFromUrl(IP+"/admin/script/"+site);
+            String response = getJsonFromUrl(IP + "/admin/script/" + site);
             return response;
         } catch (Exception e) {
             e.printStackTrace();
@@ -78,15 +81,15 @@ public static ArrayList<History> getHistory(String site, String from, String to)
         }
     }
 
-    public static String removeSite(String name) throws Exception{
+    public static String removeSite(String name) throws Exception {
         HashMap<String, String> map = new HashMap<>();
-        map.put("name",name);
+        map.put("name", name);
         map.put("adminPassword", ADMIN_PASS);
-        String response = sendPost(IP+"/admin/site/remove",map);
+        String response = sendPost(IP + "/admin/site/remove", map);
         return response;
     }
 
-    public static String addOrUpdate(Site site) throws Exception{
+    public static String addOrUpdate(Site site) throws Exception {
         String name = site.getName();
         String standartNumber = site.getStandartNumber();
         String googleAnalyticsTrackingId = site.getGoogleAnalyticsTrackingId();
@@ -98,7 +101,7 @@ public static ArrayList<History> getHistory(String site, String from, String to)
 
         List<Phone> phoneList = site.getPhones();
         for (int i = 0; i < phoneList.size(); i++) {
-            if (i!=0){
+            if (i != 0) {
                 phones += ",";
             }
             phones += phoneList.get(i).getNumber();
@@ -106,52 +109,61 @@ public static ArrayList<History> getHistory(String site, String from, String to)
 
         List<String> blackList = site.getBlackIps();
         for (int i = 0; i < blackList.size(); i++) {
-            if (i!=0){
+            if (i != 0) {
                 blackIps += ",";
             }
             blackIps += blackList.get(i);
         }
 
         HashMap<String, String> map = new HashMap<>();
-        map.put("name",name);
-        map.put("standartNumber",standartNumber);
-        map.put("googleAnalyticsTrackingId",googleAnalyticsTrackingId);
-        map.put("email",email);
-        map.put("phones",phones);
-        map.put("blackIps",blackIps);
-        map.put("password",password);
-        map.put("adminPassword",ADMIN_PASS);
-        map.put("timeToBlock", ""+timeToBlock);
+        map.put("name", name);
+        map.put("standartNumber", standartNumber);
+        map.put("googleAnalyticsTrackingId", googleAnalyticsTrackingId);
+        map.put("email", email);
+        map.put("phones", phones);
+        map.put("blackIps", blackIps);
+        map.put("password", password);
+        map.put("adminPassword", ADMIN_PASS);
+        map.put("timeToBlock", "" + timeToBlock);
 
-        String response = sendPost(IP+"/admin/site/add",map);
+        String response = sendPost(IP + "/admin/site/add", map);
 
         return response;
     }
 
 
     public static ArrayList<String> getLogs() {
-        try{
+        try {
             HashMap<String, String> map = new HashMap<>();
-            map.put("adminPassword",ADMIN_PASS);
-            String response = sendPost(IP+"/admin/logs",map);
-//            response = response.replaceAll("И","321");
+            map.put("adminPassword", ADMIN_PASS);
+            String response = sendPost(IP + "/admin/logs", map);
             String[] logs = new Gson().fromJson(response, String[].class);
-            return new ArrayList<>(Arrays.asList(logs));
-        }catch (Exception e){
+            if (Gui.onlyActiveSite){
+                ArrayList<String> filteredLogs = new ArrayList<>();
+                for (int i = 0; i < logs.length; i++) {
+                    if (logs[i].startsWith(Gui.selectedSiteString)){
+                        filteredLogs.add(logs[i]);
+                    }
+                }
+                return filteredLogs;
+            }else {
+                return new ArrayList<>(Arrays.asList(logs));
+            }
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
 
     public static ArrayList<String> getListOfSites() {
-        try{
+        try {
             String url = "/admin/getallsites";
             HashMap<String, String> map = new HashMap<>();
             map.put("password", ADMIN_PASS);
-            String response = sendPost(IP+url, map);
+            String response = sendPost(IP + url, map);
             String[] sites = new Gson().fromJson(response, String[].class);
             return new ArrayList<>(Arrays.asList(sites));
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
@@ -160,16 +172,16 @@ public static ArrayList<History> getHistory(String site, String from, String to)
 
     public static Site getSiteByName(String siteName) {
         siteName = siteName.replaceAll(" ", "%20");
-        try{
+        try {
             String url = "/status/siteinfo";
 
             HashMap<String, String> map = new HashMap<>();
-            map.put("name",siteName);
+            map.put("name", siteName);
             map.put("password", ADMIN_PASS);
-            String response = sendPost(IP+url, map);
+            String response = sendPost(IP + url, map);
 
             return new Gson().fromJson(response, Site.class);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
@@ -180,7 +192,7 @@ public static ArrayList<History> getHistory(String site, String from, String to)
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
         BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
         String result = "";
-        while (in.ready()){
+        while (in.ready()) {
             result += in.readLine();
         }
 //        result = org.apache.commons.lang3.StringEscapeUtils.unescapeJava(result);

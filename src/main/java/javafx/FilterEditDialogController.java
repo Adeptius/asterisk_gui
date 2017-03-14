@@ -63,7 +63,7 @@ public class FilterEditDialogController implements Initializable {
                     SENDING_NUMBER.setSelected(Dao.getSettingBoolean("SENDING_NUMBER"));
                    NO_NUMBERS_LEFT.setSelected(Dao.getSettingBoolean("NO_NUMBERS_LEFT"));
                   REPEATED_REQUEST.setSelected(Dao.getSettingBoolean("REPEATED_REQUEST"));
-                  ONLY_ACTIVE_SITE.setSelected(Dao.getSettingBoolean("ONLY_ACTIVE_SITE"));
+                  ONLY_ACTIVE_SITE.setSelected(Gui.onlyActiveSite);
     }
 
     public void actionClose(ActionEvent actionEvent) {

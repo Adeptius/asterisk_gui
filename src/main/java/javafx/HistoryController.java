@@ -58,7 +58,10 @@ public class HistoryController implements Initializable {
     private TableView<History> table;
 
     @FXML
-    private Button buttonShow;
+    private Button buttonShowOut;
+
+    @FXML
+    private Button buttonShowIn;
 
     @FXML
     private TextField dateFrom;
@@ -81,11 +84,12 @@ public class HistoryController implements Initializable {
         fromColumn.setCellValueFactory(new PropertyValueFactory<>("from"));
         dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
         talkingTimeColumn.setCellValueFactory(new PropertyValueFactory<>("talkingTime"));
-        timeToAnswerColumn.setCellValueFactory(new PropertyValueFactory<>("timeToAnswerInSeconds"));
+        timeToAnswerColumn.setCellValueFactory(new PropertyValueFactory<>("timeToAnswerForCustomer"));
         googleIDColumn.setCellValueFactory(new PropertyValueFactory<>("googleId"));
         callIDColumn.setCellValueFactory(new PropertyValueFactory<>("callUniqueId"));
         utmColumn.setCellValueFactory(new PropertyValueFactory<>("request"));
-        buttonShow.setOnAction(event -> showHistory(textFrom.getText(), textTo.getText()));
+        buttonShowIn.setOnAction(event -> showHistory(textFrom.getText(), textTo.getText(), "IN"));
+        buttonShowOut.setOnAction(event -> showHistory(textFrom.getText(), textTo.getText(), "OUT"));
         btnDownload.setOnAction(event -> openInBrowser());
 
         Calendar calendar = new GregorianCalendar();
@@ -100,8 +104,9 @@ public class HistoryController implements Initializable {
     }
 
 
-    private void showHistory(String from, String to) {
-        List<History> histories = Dao.getHistory(site, from, to);
+    private void showHistory(String from, String to, String direction) {
+        List<History> histories = Dao.getHistory(site, from, to, direction);
+        Collections.reverse(histories);
         table.setItems(FXCollections.observableArrayList(histories));
     }
 
@@ -117,7 +122,7 @@ public class HistoryController implements Initializable {
         String date = history.getDate();
         date = date.substring(0, date.indexOf(" "));
 
-        String url = "http://194.44.37.30:8080/tracking/status/record/"
+        String url = Dao.IP+"/status/record/"
                 + history.getCallUniqueId()
                 + "/"
                 + date;
