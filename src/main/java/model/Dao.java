@@ -1,21 +1,65 @@
 package model;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import javafx.Gui;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.*;
 
 public class Dao {
 
-    public static final String IP = "http://194.44.37.30/tracking";
-    //private static final String IP = "http://localhost:8080/tracking";
+//    public static final String IP = "http://194.44.37.30/tracking";
+    public static final String IP = "http://localhost:8080/tracking";
     public static final String ADMIN_PASS = "pthy0eds";
+    //TODO вернуть адрес
 
+    public static TelephonyCustomer getTelephonyCustomerByName(String name) {
+        try {
+            HashMap<String, String> map = new HashMap<>();
+            map.put("name", name);
+            map.put("password", ADMIN_PASS);
+            String response = sendPost(IP + "/status/telephonyinfo", map);
+            return new Gson().fromJson(response, TelephonyCustomer.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new TelephonyCustomer("","","","",new ArrayList<>(), new ArrayList<>());
+        }
+    }
+
+    public static String saveRules(String name, List<Rule> rules) {
+        try {
+            HashMap<String, String> map = new HashMap<>();
+            map.put("name", name);
+            map.put("password", ADMIN_PASS);
+            map.put("rules", new Gson().toJson(rules));
+            String response = sendPost(IP + "/rules/update", map);
+            return response;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Ошибка отправки на сервер " + e;
+        }
+    }
+
+    public static ArrayList<Rule> getRules(String name) {
+        try {
+            HashMap<String, String> map = new HashMap<>();
+            map.put("name", name);
+            map.put("password", ADMIN_PASS);
+            String response = sendPost(IP + "/rules/get", map);
+            Type listType = new TypeToken<ArrayList<Rule>>(){}.getType();
+            ArrayList<Rule> rules = new Gson().fromJson(response, listType);
+            return rules;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
 
     public static ArrayList<History> getHistory(String site, String from, String to, String direction) {
         try {
@@ -155,14 +199,30 @@ public class Dao {
         }
     }
 
-    public static ArrayList<String> getListOfSites() {
+//    public static ArrayList<String> getListOfSites() {
+//        try {
+//            String url = "/admin/getallsites";
+//            HashMap<String, String> map = new HashMap<>();
+//            map.put("password", ADMIN_PASS);
+//            String response = sendPost(IP + url, map);
+//            String[] sites = new Gson().fromJson(response, String[].class);
+//            return new ArrayList<>(Arrays.asList(sites));
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return null;
+//        }
+//    }
+
+
+    public static ArrayList<CustomerGroup> getListOfCustomers() {
         try {
-            String url = "/admin/getallsites";
+            String url = "/admin/getallcustomers";
             HashMap<String, String> map = new HashMap<>();
             map.put("password", ADMIN_PASS);
             String response = sendPost(IP + url, map);
-            String[] sites = new Gson().fromJson(response, String[].class);
-            return new ArrayList<>(Arrays.asList(sites));
+
+            Type listType = new TypeToken<ArrayList<CustomerGroup>>(){}.getType();
+            return new Gson().fromJson(response, listType);
         } catch (Exception e) {
             e.printStackTrace();
             return null;

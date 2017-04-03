@@ -3,14 +3,13 @@ package javafx;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import model.Dao;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.ResourceBundle;
 
 public class DeleteController implements Initializable{
@@ -38,19 +37,24 @@ public class DeleteController implements Initializable{
 
     private void delete() {
         String result = "";
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+
         try{
             result = Dao.removeSite(sitename);
             stage.hide();
-            guiController.updateSites();
+            guiController.updateCustomers();
             guiController.updatePhones();
             guiController.updateLogs();
+            guiController.hideTableAndButtons();
         }catch (Exception e){
             e.printStackTrace();
             result = "Ошибка: " + e.getMessage();
+            alert.setAlertType(Alert.AlertType.ERROR);
         }
-        System.out.println(result);
-        //TODO сообщение
-
+        alert.setTitle("Результат");
+        alert.setHeaderText(null);
+        alert.setContentText(result);
+        alert.showAndWait();
     }
 
     @Override
@@ -60,8 +64,6 @@ public class DeleteController implements Initializable{
         btnCancel.setOnAction(event ->  cancel());
         btnCancel.setFocusTraversable(true);
     }
-
-
 
     private void cancel(){
         stage.hide();

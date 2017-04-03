@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="514.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <HBox fx:id="ruleHbox" prefHeight="195.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <HBox fx:id="innerRuleHbox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="118.0">
+               <children>
+                  <VBox prefHeight="200.0" prefWidth="150.0">
+                     <children>
+                        <Label alignment="CENTER" maxWidth="1.7976931348623157E308" prefHeight="17.0" prefWidth="37.0" text="С номеров" textAlignment="CENTER">
+                           <font>
+                              <Font size="14.0" />
+                           </font></Label>
+                        <ListView fx:id="fromListView" prefHeight="200.0" prefWidth="145.0">
+                           <VBox.margin>
+                              <Insets bottom="5.0" right="5.0" />
+                           </VBox.margin>
+                        </ListView>
+                        <HBox prefHeight="100.0" prefWidth="200.0">
+                           <children>
+                              <Button fx:id="fromAddButton" mnemonicParsing="false" prefWidth="70.0" text="Добавить">
+                                 <HBox.margin>
+                                    <Insets right="5.0" />
+                                 </HBox.margin>
+                              </Button>
+                              <Button fx:id="fromDeleteButton" mnemonicParsing="false" prefWidth="70.0" text="Удалить">
+                                 <HBox.margin>
+                                    <Insets right="5.0" />
+                                 </HBox.margin>
+                              </Button>
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
+                  <VBox prefHeight="200.0" prefWidth="150.0">
+                     <children>
+                        <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="На номера" textAlignment="CENTER">
+                           <font>
+                              <Font size="14.0" />
+                           </font></Label>
+                        <ListView fx:id="toListView" prefHeight="200.0" prefWidth="145.0">
+                           <VBox.margin>
+                              <Insets bottom="5.0" right="5.0" />
+                           </VBox.margin>
+                        </ListView>
+                        <HBox prefHeight="100.0" prefWidth="200.0">
+                           <children>
+                              <Button fx:id="toAddButton" mnemonicParsing="false" prefWidth="70.0" text="Добавить">
+                                 <HBox.margin>
+                                    <Insets right="5.0" />
+                                 </HBox.margin>
+                              </Button>
+                              <Button fx:id="toDeleteButton" mnemonicParsing="false" prefWidth="70.0" text="Удалить">
+                                 <HBox.margin>
+                                    <Insets right="5.0" />
+                                 </HBox.margin>
+                              </Button>
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
+                  <VBox prefHeight="102.0" prefWidth="200.0">
+                     <children>
+                        <HBox>
+                           <children>
+                              <Label prefHeight="33.0" prefWidth="110.0" text="Переадресация">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font></Label>
+                              <ChoiceBox fx:id="forwardTypeChoice" prefWidth="100.0">
+                                 <HBox.margin>
+                                    <Insets top="5.0" />
+                                 </HBox.margin>
+                              </ChoiceBox>
+                           </children>
+                        </HBox>
+                        <HBox>
+                           <children>
+                              <Label prefHeight="33.0" prefWidth="110.0" text="Тип связи">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font></Label>
+                              <ChoiceBox fx:id="destinationTypeChoice" prefWidth="100.0">
+                                 <HBox.margin>
+                                    <Insets top="5.0" />
+                                 </HBox.margin>
+                              </ChoiceBox>
+                           </children>
+                        </HBox>
+                        <HBox>
+                           <children>
+                              <Label prefHeight="33.0" prefWidth="110.0" text="Мелодия">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font></Label>
+                              <ChoiceBox fx:id="melodyChoice" prefWidth="100.0">
+                                 <HBox.margin>
+                                    <Insets top="5.0" />
+                                 </HBox.margin>
+                              </ChoiceBox>
+                           </children>
+                        </HBox>
+                        <HBox>
+                           <children>
+                              <Label prefHeight="33.0" prefWidth="110.0" text="Ожидание (сек)">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Label>
+                              <TextField fx:id="timeChoice" prefWidth="100.0">
+                                 <HBox.margin>
+                                    <Insets top="5.0" />
+                                 </HBox.margin>
+                              </TextField>
+                           </children>
+                        </HBox>
+                        <AnchorPane prefHeight="200.0" prefWidth="200.0">
+                           <children>
+                              <Button fx:id="removeRuleButton" layoutX="148.0" layoutY="40.0" mnemonicParsing="false" text="Удалить правило" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="0.0" />
+                           </children>
+                        </AnchorPane>
+                     </children>
+                  </VBox>
+               </children>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+            </HBox>
+         </children>
+         <padding>
+            <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+         </padding>
+      </HBox>
+   </children>
+</AnchorPane>

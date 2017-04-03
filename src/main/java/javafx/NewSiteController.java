@@ -9,7 +9,6 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import model.Dao;
-import model.MainController;
 import model.Phone;
 import model.Site;
 
@@ -17,6 +16,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class NewSiteController implements Initializable{
 
@@ -106,6 +107,16 @@ public class NewSiteController implements Initializable{
 
     private void save(){
         String name = textName.getText().trim();
+        Matcher regexMatcher = Pattern.compile("[a-z|A-Z]+").matcher(name);
+        if (!regexMatcher.find()){
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Ошибка");
+            alert.setHeaderText(null);
+            alert.setContentText("Имя должно состоять только из английских букв");
+            alert.showAndWait();
+            return;
+        }
+
         String email = textEmail.getText().trim();
         String standartNumber = textNumber.getText().trim();
         String googleId = textGoogleId.getText().trim();
@@ -134,7 +145,7 @@ public class NewSiteController implements Initializable{
         try {
            result = Dao.addOrUpdate(site);
             stage.hide();
-            guiController.updateSites();
+            guiController.updateCustomers();
             guiController.updateLogs();
             guiController.updatePhones();
 

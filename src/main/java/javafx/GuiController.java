@@ -3,27 +3,24 @@ package javafx;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.Window;
-import model.Dao;
-import model.Phone;
-import model.Site;
+import model.*;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 public class GuiController implements Initializable {
 
@@ -49,26 +46,40 @@ public class GuiController implements Initializable {
     private TableColumn<Phone, String> phoneIp;
 
     @FXML
-    private Button btnSettings;
+    private VBox buttonBox;
 
     @FXML
-    private Button btnHistory;
+    private ListView<String> telephonyList;
 
+    @FXML
+    private ListView<String> innerNumbers;
 
+    @FXML
+    private ListView<String> outerNumbers;
 
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+
+        telephonyList.setOnMouseClicked(event -> {
+            String telephon = telephonyList.getSelectionModel().getSelectedItem();
+            TelephonyCustomer customer = Dao.getTelephonyCustomerByName(telephon);
+            innerNumbers.setItems(FXCollections.observableArrayList(customer.getInnerPhones()));
+            outerNumbers.setItems(FXCollections.observableArrayList(customer.getOuterPhones()));
+        });
+
         siteList.setOnMouseClicked(event -> {
             updatePhones();
             String sitename = siteList.getSelectionModel().getSelectedItem();
             if (sitename != null) {
                 Gui.selectedSiteString = sitename;
+                showTableAndButtons();
             }
         });
-        updateSites();
+        updateCustomers();
         updateLogs();
         updatePhones();
+        hideTableAndButtons();
 
         phoneNumber.setCellValueFactory(new PropertyValueFactory<>("number"));
         phoneGoogleId.setCellValueFactory(new PropertyValueFactory<>("googleId"));
@@ -92,10 +103,29 @@ public class GuiController implements Initializable {
         monitor.start();
     }
 
+    public void hideTableAndButtons(){
+        buttonBox.setVisible(false);
+        phoneTable.setVisible(false);
+    }
 
-    public void updateSites() {
-        List<String> sitesNames = Dao.getListOfSites();
+    public void showTableAndButtons(){
+        buttonBox.setVisible(true);
+        phoneTable.setVisible(true);
+    }
+
+    public void updateCustomers() {
+
+        ArrayList<CustomerGroup> groups = Dao.getListOfCustomers();
+        List<String> sitesNames = groups.stream()
+                .filter(cg -> cg.type == CustomerType.TRACKING)
+                .map(cg -> cg.name).collect(Collectors.toList());
         siteList.setItems(FXCollections.observableArrayList(sitesNames));
+
+        List<String> trackingNames = groups.stream()
+                .filter(cg -> cg.type == CustomerType.TELEPHONY)
+                .map(cg -> cg.name).collect(Collectors.toList());
+        telephonyList.setItems(FXCollections.observableArrayList(trackingNames));
+
     }
 
     public void updateLogs() {
@@ -108,39 +138,15 @@ public class GuiController implements Initializable {
         if (sitename != null){
             Site site = Dao.getSiteByName(sitename);
             phoneTable.setItems(FXCollections.observableArrayList(site.getPhones()));
-            Gui.selectedSiteString = sitename;
+//            Gui.selectedSiteString = sitename;
         }
     }
 
-    public void actionButtonPressed(ActionEvent actionEvent) {
-        Object source = actionEvent.getSource();
-        if (!(source instanceof Button)) {
-            return;
-        }
-        Button clickedButton = (Button) source;
-        Window parentWindow = ((Node) actionEvent.getSource()).getScene().getWindow();
-        if (clickedButton.getId().equals("btnFilter")) {
-            showFilters();
-        } else if (clickedButton.getId().equals("btnDelete")) {
-            showDelete();
-        } else if (clickedButton.getId().equals("btnAdd")) {
-            showAdd();
-        } else if (clickedButton.getId().equals("btnEdit")) {
-            showEdit();
-        }else if (clickedButton.getId().equals("btnScript")) {
-            showScript();
-        }else if (clickedButton.getId().equals("btnSettings")) {
-            showSettings();
-        }else if (clickedButton.getId().equals("btnHistory")) {
-            showHistory();
-        }
-    }
-
-    private void showHistory() {
+    public void showHistory() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("history.fxml"));
             Stage stage = new Stage();
-            loader.setController(new HistoryController(Gui.selectedSiteString, stage));
+            loader.setController(new HistoryController(siteList.getSelectionModel().getSelectedItem(), stage));
             Parent root = loader.load();
             Scene scene = new Scene(root);
             stage.setTitle("История звонков");
@@ -153,7 +159,24 @@ public class GuiController implements Initializable {
         }
     }
 
-    private void showSettings() {
+    public void showRules() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("rules2.fxml"));
+            Stage stage = new Stage();
+            loader.setController(new RulesController(this, stage, siteList.getSelectionModel().getSelectedItem()));
+            Parent root = loader.load();
+            Scene scene = new Scene(root);
+            stage.setTitle("Редактор правил");
+//            stage.initModality(Modality.WINDOW_MODAL); // Перекрывающее окно
+            stage.initOwner(siteList.getScene().getWindow()); // Указание кого оно перекрывает
+            stage.setScene(scene);
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void showSettings() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("settings.fxml"));
             Stage stage = new Stage();
@@ -171,11 +194,11 @@ public class GuiController implements Initializable {
         }
     }
 
-    private void showDelete() {
+    public void showDelete() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("dbdelete.fxml"));
             Stage stage = new Stage();
-            loader.setController(new DeleteController(this, stage, Gui.selectedSiteString));
+            loader.setController(new DeleteController(this, stage, siteList.getSelectionModel().getSelectedItem()));
             Parent root = loader.load();
             Scene scene = new Scene(root);
             stage.setTitle("Удаление сайта");
@@ -189,7 +212,7 @@ public class GuiController implements Initializable {
         }
     }
 
-    private void showAdd() {
+    public void showAdd() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("newsite.fxml"));
             Stage stage = new Stage();
@@ -208,11 +231,11 @@ public class GuiController implements Initializable {
     }
 
 
-    private void showEdit() {
+    public void showEdit() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("newsite.fxml"));
             Stage stage = new Stage();
-            loader.setController(new NewSiteController(this, stage, Gui.selectedSiteString));
+            loader.setController(new NewSiteController(this, stage, siteList.getSelectionModel().getSelectedItem()));
             Parent root = loader.load();
             Scene scene = new Scene(root);
             stage.setTitle("Изменение сайта");
@@ -227,7 +250,7 @@ public class GuiController implements Initializable {
     }
 
 
-    private void showFilters() {
+    public void showFilters() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("filteredit.fxml"));
             Parent root = loader.load();
@@ -244,11 +267,11 @@ public class GuiController implements Initializable {
         }
     }
 
-    private void showScript() {
+    public void showScript() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("script.fxml"));
             Stage stage = new Stage();
-            loader.setController(new ScriptController(Gui.selectedSiteString, stage));
+            loader.setController(new ScriptController(siteList.getSelectionModel().getSelectedItem(), stage));
             Parent root = loader.load();
             Scene scene = new Scene(root);
             stage.setTitle("Генератор скрипта");
@@ -262,6 +285,7 @@ public class GuiController implements Initializable {
         }
     }
 
-
-
+    public  void exit(){
+        Platform.exit();
+    }
 }

@@ -1,49 +1,35 @@
 package model;
 
 
+
 import java.util.List;
 
-public class Site {
+public class Site extends Customer {
 
-    public Site(String name, List<Phone> phones, String standartNumber, String googleAnalyticsTrackingId, String eMail, List<String> blackIps, String password,  int timeToBlock) {
-        this.name = name;
+    public final CustomerType type = CustomerType.TRACKING;
+    public Site(String name, List<Phone> phones, String standartNumber, String googleAnalyticsTrackingId, String eMail,
+                List<String> blackIps, String password, int timeToBlock) {
+        super(name, eMail, googleAnalyticsTrackingId, password);
         this.phones = phones;
         this.standartNumber = standartNumber;
-        this.googleAnalyticsTrackingId = googleAnalyticsTrackingId;
-        this.mail = eMail;
         this.blackIps = blackIps;
-        this.password = password;
         this.timeToBlock = timeToBlock;
     }
 
-    private int timeToBlock;
     private List<String> blackIps;
-    private String name;
     private List<Phone> phones;
     private String standartNumber;
-    private String googleAnalyticsTrackingId;
-    private String mail;
-    private long lastEmailTime;
-    private String password;
+    private int timeToBlock;
 
-    public int getTimeToBlock() {
-        return timeToBlock;
-    }
+
+    private long lastEmailTime;
 
     public void setTimeToBlock(int timeToBlock) {
         this.timeToBlock = timeToBlock;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getName() {
-        return name;
+    public int getTimeToBlock() {
+        return timeToBlock;
     }
 
     public List<Phone> getPhones() {
@@ -52,14 +38,6 @@ public class Site {
 
     public String getStandartNumber() {
         return standartNumber;
-    }
-
-    public String getGoogleAnalyticsTrackingId() {
-        return googleAnalyticsTrackingId;
-    }
-
-    public String getMail() {
-        return mail;
     }
 
     public long getLastEmailTime() {
@@ -82,7 +60,10 @@ public class Site {
                 ", phones=" + phones +
                 ", standartNumber='" + standartNumber + '\'' +
                 ", googleAnalyticsTrackingId='" + googleAnalyticsTrackingId + '\'' +
-                ", eMail='" + mail + '\'' +
+                ", eMail='" + eMail + '\'' +
+                ", password='" + password + '\'' +
+                ", timeToBlock=" + timeToBlock +
+                ", rules=" + rules +
                 ", lastEmailTime=" + lastEmailTime +
                 '}';
     }
