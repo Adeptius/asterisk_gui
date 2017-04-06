@@ -11,6 +11,7 @@ import javafx.stage.Stage;
 import model.Dao;
 import model.Phone;
 import model.Site;
+import utils.Validator;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -107,8 +108,7 @@ public class NewSiteController implements Initializable{
 
     private void save(){
         String name = textName.getText().trim();
-        Matcher regexMatcher = Pattern.compile("[a-z|A-Z]+").matcher(name);
-        if (!regexMatcher.find()){
+        if (!Validator.isValidLogin(name)){
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Ошибка");
             alert.setHeaderText(null);

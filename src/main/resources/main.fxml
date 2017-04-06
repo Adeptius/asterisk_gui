@@ -22,10 +22,15 @@
         <menus>
           <Menu mnemonicParsing="false" text="Сайт">
             <items>
-              <MenuItem mnemonicParsing="false" onAction="#showAdd" text="Добавить" />
-                  <MenuItem mnemonicParsing="false" onAction="#exit" text="Close" />
+              <MenuItem mnemonicParsing="false" onAction="#showAddSite" text="Добавить" />
+                  <MenuItem mnemonicParsing="false" onAction="#exit" text="Выход" />
             </items>
           </Menu>
+            <Menu mnemonicParsing="false" text="Телефония">
+               <items>
+                  <MenuItem mnemonicParsing="false" onAction="#showAddTelephony" text="Добавить" />
+               </items>
+            </Menu>
           <Menu mnemonicParsing="false" text="Настройки">
             <items>
               <MenuItem mnemonicParsing="false" onAction="#showFilters" text="Фильтр" />
@@ -108,17 +113,12 @@
                                           <ListView fx:id="telephonyList" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.topAnchor="0.0" />
                                           <VBox fx:id="buttonBox1" layoutX="204.0" layoutY="-2.0" prefHeight="253.0" prefWidth="70.0">
                                              <children>
-                                                <Button fx:id="btnEdit1" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showEdit" text="Изменить">
+                                                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showEditTelephony" text="Изменить">
                                                    <VBox.margin>
                                                       <Insets bottom="5.0" />
                                                    </VBox.margin>
                                                 </Button>
-                                                <Button fx:id="btnDelete1" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showDelete" text="Удалить">
-                                                   <VBox.margin>
-                                                      <Insets bottom="5.0" />
-                                                   </VBox.margin>
-                                                </Button>
-                                                <Button fx:id="btnScript1" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showScript" text="Скрипт">
+                                                <Button fx:id="btnDelete1" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showDeleteTelephony" text="Удалить">
                                                    <VBox.margin>
                                                       <Insets bottom="5.0" />
                                                    </VBox.margin>

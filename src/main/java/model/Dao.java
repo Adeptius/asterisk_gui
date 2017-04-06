@@ -14,7 +14,7 @@ import java.util.*;
 
 public class Dao {
 
-//    public static final String IP = "http://194.44.37.30/tracking";
+    //    public static final String IP = "http://194.44.37.30/tracking";
     public static final String IP = "http://localhost:8080/tracking";
     public static final String ADMIN_PASS = "pthy0eds";
     //TODO вернуть адрес
@@ -28,7 +28,7 @@ public class Dao {
             return new Gson().fromJson(response, TelephonyCustomer.class);
         } catch (Exception e) {
             e.printStackTrace();
-            return new TelephonyCustomer("","","","",new ArrayList<>(), new ArrayList<>());
+            return new TelephonyCustomer("", "", "", "", new ArrayList<>(), new ArrayList<>());
         }
     }
 
@@ -52,7 +52,8 @@ public class Dao {
             map.put("name", name);
             map.put("password", ADMIN_PASS);
             String response = sendPost(IP + "/rules/get", map);
-            Type listType = new TypeToken<ArrayList<Rule>>(){}.getType();
+            Type listType = new TypeToken<ArrayList<Rule>>() {
+            }.getType();
             ArrayList<Rule> rules = new Gson().fromJson(response, listType);
             return rules;
         } catch (Exception e) {
@@ -79,7 +80,7 @@ public class Dao {
     }
 
     public static String setSetting(String name, String value) {
-        if (name.equals("ONLY_ACTIVE_SITE")){
+        if (name.equals("ONLY_ACTIVE_SITE")) {
             Gui.onlyActiveSite = Boolean.parseBoolean(value);
             return "";
         }
@@ -133,6 +134,21 @@ public class Dao {
         return response;
     }
 
+    public static String removeTelephony(String name) throws Exception {
+        HashMap<String, String> map = new HashMap<>();
+        map.put("name", name);
+        map.put("adminPassword", ADMIN_PASS);
+        return sendPost(IP + "/admin/telephony/remove", map);
+    }
+
+    public static String addOrUpdate(TelephonyCustomer customer) throws Exception {
+        String name = new Gson().toJson(customer);
+        HashMap<String, String> map = new HashMap<>();
+        map.put("adminPassword", ADMIN_PASS);
+        map.put("customer", name);
+        return sendPost(IP + "/admin/telephony/add", map);
+    }
+
     public static String addOrUpdate(Site site) throws Exception {
         String name = site.getName();
         String standartNumber = site.getStandartNumber();
@@ -182,15 +198,15 @@ public class Dao {
             map.put("adminPassword", ADMIN_PASS);
             String response = sendPost(IP + "/admin/logs", map);
             String[] logs = new Gson().fromJson(response, String[].class);
-            if (Gui.onlyActiveSite){
+            if (Gui.onlyActiveSite) {
                 ArrayList<String> filteredLogs = new ArrayList<>();
                 for (int i = 0; i < logs.length; i++) {
-                    if (logs[i].startsWith(Gui.selectedSiteString)){
+                    if (logs[i].startsWith(Gui.selectedSiteString)) {
                         filteredLogs.add(logs[i]);
                     }
                 }
                 return filteredLogs;
-            }else {
+            } else {
                 return new ArrayList<>(Arrays.asList(logs));
             }
         } catch (Exception e) {
@@ -221,7 +237,8 @@ public class Dao {
             map.put("password", ADMIN_PASS);
             String response = sendPost(IP + url, map);
 
-            Type listType = new TypeToken<ArrayList<CustomerGroup>>(){}.getType();
+            Type listType = new TypeToken<ArrayList<CustomerGroup>>() {
+            }.getType();
             return new Gson().fromJson(response, listType);
         } catch (Exception e) {
             e.printStackTrace();

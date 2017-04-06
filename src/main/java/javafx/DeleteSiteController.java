@@ -12,14 +12,15 @@ import model.Dao;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class DeleteController implements Initializable{
+@SuppressWarnings("Duplicates")
+public class DeleteSiteController implements Initializable{
 
     private String sitename;
     private Stage stage;
     private GuiController guiController;
 
 
-    public DeleteController(GuiController guiController, Stage stage, String sitename) {
+    public DeleteSiteController(GuiController guiController, Stage stage, String sitename) {
         this.sitename = sitename;
         this.stage = stage;
         this.guiController = guiController;

@@ -1,9 +1,32 @@
 package utils;
 
-
+import java.util.ArrayList;
 
 public class StringUtils {
 
+
+
+    public static String convertToStringWithN(ArrayList<String> list){
+       String s = "";
+        for (String s1 : list) {
+            s+=s1 + "\n";
+        }
+        if (s.endsWith("\n")){
+            s.substring(0,s.length()-1);
+        }
+        return s;
+    }
+
+    public static ArrayList<String> convertToList(String s){
+        ArrayList<String> list = new ArrayList<>();
+        s.replaceAll(" ", "").replaceAll("\t","");
+        String[] phonesArr = s.split("\n");
+        for (String s1 : phonesArr) {
+            if (!s1.equals("\n"))
+            list.add(s1);
+        }
+        return list;
+    }
 
 
     public static String getStringedTime(long time){

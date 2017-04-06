@@ -103,6 +103,61 @@ public class GuiController implements Initializable {
         monitor.start();
     }
 
+
+    public void showAddTelephony() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("newtelephony.fxml"));
+            Stage stage = new Stage();
+            loader.setController(new NewTelephonyController(this, stage, null));
+            Parent root = loader.load();
+            Scene scene = new Scene(root);
+            stage.setTitle("Добавление телефонии");
+            stage.setResizable(false);
+            stage.initModality(Modality.WINDOW_MODAL); // Перекрывающее окно
+            stage.initOwner(siteList.getScene().getWindow()); // Указание кого оно перекрывает
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void showEditTelephony(){
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("newtelephony.fxml"));
+            Stage stage = new Stage();
+            loader.setController(new NewTelephonyController(this, stage, telephonyList.getSelectionModel().getSelectedItem()));
+            Parent root = loader.load();
+            Scene scene = new Scene(root);
+            stage.setTitle("Изменение телефонии");
+            stage.setResizable(false);
+            stage.initModality(Modality.WINDOW_MODAL); // Перекрывающее окно
+            stage.initOwner(siteList.getScene().getWindow()); // Указание кого оно перекрывает
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void showDeleteTelephony(){
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("dbdelete.fxml"));
+            Stage stage = new Stage();
+            loader.setController(new DeleteTelephonyController(this, stage, telephonyList.getSelectionModel().getSelectedItem()));
+            Parent root = loader.load();
+            Scene scene = new Scene(root);
+            stage.setTitle("Удаление пользователя");
+            stage.setResizable(false);
+            stage.initModality(Modality.WINDOW_MODAL); // Перекрывающее окно
+            stage.initOwner(siteList.getScene().getWindow()); // Указание кого оно перекрывает
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void hideTableAndButtons(){
         buttonBox.setVisible(false);
         phoneTable.setVisible(false);
@@ -114,7 +169,6 @@ public class GuiController implements Initializable {
     }
 
     public void updateCustomers() {
-
         ArrayList<CustomerGroup> groups = Dao.getListOfCustomers();
         List<String> sitesNames = groups.stream()
                 .filter(cg -> cg.type == CustomerType.TRACKING)
@@ -198,7 +252,7 @@ public class GuiController implements Initializable {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("dbdelete.fxml"));
             Stage stage = new Stage();
-            loader.setController(new DeleteController(this, stage, siteList.getSelectionModel().getSelectedItem()));
+            loader.setController(new DeleteSiteController(this, stage, siteList.getSelectionModel().getSelectedItem()));
             Parent root = loader.load();
             Scene scene = new Scene(root);
             stage.setTitle("Удаление сайта");
@@ -212,7 +266,7 @@ public class GuiController implements Initializable {
         }
     }
 
-    public void showAdd() {
+    public void showAddSite() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("newsite.fxml"));
             Stage stage = new Stage();
@@ -285,7 +339,7 @@ public class GuiController implements Initializable {
         }
     }
 
-    public  void exit(){
+    public void exit(){
         Platform.exit();
     }
 }
