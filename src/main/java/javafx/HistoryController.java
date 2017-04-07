@@ -8,7 +8,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
-import model.Dao;
+import dao.Dao;
 import model.History;
 
 import java.awt.*;
@@ -88,9 +88,9 @@ public class HistoryController implements Initializable {
         googleIDColumn.setCellValueFactory(new PropertyValueFactory<>("googleId"));
         callIDColumn.setCellValueFactory(new PropertyValueFactory<>("callUniqueId"));
         utmColumn.setCellValueFactory(new PropertyValueFactory<>("request"));
-        buttonShowIn.setOnAction(event -> showHistory(textFrom.getText(), textTo.getText(), "IN"));
-        buttonShowOut.setOnAction(event -> showHistory(textFrom.getText(), textTo.getText(), "OUT"));
-        btnDownload.setOnAction(event -> openInBrowser());
+        buttonShowIn.setOnAction(e -> showHistory(textFrom.getText(), textTo.getText(), "IN"));
+        buttonShowOut.setOnAction(e -> showHistory(textFrom.getText(), textTo.getText(), "OUT"));
+        btnDownload.setOnAction(e -> openInBrowser());
 
         Calendar calendar = new GregorianCalendar();
         int year = calendar.get(Calendar.YEAR);
@@ -101,6 +101,12 @@ public class HistoryController implements Initializable {
 
         textFrom.setText(currentDate + " 00:00:00");
         textTo.setText(tomorrowDate + " 00:00:00");
+        btnDownload.setVisible(false);
+        table.setOnMouseClicked(e -> {
+            if (table.getSelectionModel().getSelectedItem() != null){
+                btnDownload.setVisible(true);
+            }
+        });
     }
 
 
@@ -108,6 +114,7 @@ public class HistoryController implements Initializable {
         List<History> histories = Dao.getHistory(site, from, to, direction);
         Collections.reverse(histories);
         table.setItems(FXCollections.observableArrayList(histories));
+        btnDownload.setVisible(false);
     }
 
     public static String doTwoSymb(int i) {
@@ -128,9 +135,7 @@ public class HistoryController implements Initializable {
                 + date;
         try {
             Desktop.getDesktop().browse(new URI(url));
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        } catch (URISyntaxException e1) {
+        } catch (IOException | URISyntaxException e1) {
             e1.printStackTrace();
         }
     }

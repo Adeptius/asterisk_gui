@@ -1,8 +1,6 @@
 package model;
 
 
-
-import java.nio.file.NoSuchFileException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +27,9 @@ public abstract class Customer {
     public String getMail() {
         return eMail;
     }
+
+    public List<String> availableNumbers;
+//    public abstract List<String> getAvailableNumbers();
 
     public String getGoogleAnalyticsTrackingId() {
         return googleAnalyticsTrackingId;

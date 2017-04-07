@@ -6,7 +6,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.stage.Stage;
-import model.Dao;
+import dao.Dao;
 
 import java.net.URL;
 import java.util.ResourceBundle;

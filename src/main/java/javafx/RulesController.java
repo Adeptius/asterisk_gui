@@ -11,25 +11,25 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import model.Dao;
+import dao.Dao;
+import model.Customer;
 import model.Rule;
 import model.RuleHbox;
 
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class RulesController implements Initializable {
 
-    private String sitename;
+    private Customer customer;
     private Stage stage;
     private GuiController guiController;
     private List<RuleHbox> hBoxes = new ArrayList<>();
 
-    public RulesController(GuiController guiController, Stage stage, String sitename) {
-        this.sitename = sitename;
+    public RulesController(GuiController guiController, Stage stage, Customer customer) {
+        this.customer = customer;
         this.stage = stage;
         this.guiController = guiController;
     }
@@ -44,10 +44,14 @@ public class RulesController implements Initializable {
     @FXML
     private VBox vBoxForRules;
 
+    //Костыль что бы список доступных номеров менялся на всех правилах
+    private List<ChoiceBox<String>> choiseBoxes = new ArrayList<>();
+    private List<String> availableNumbers;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         vBoxForRules.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
-        ArrayList<Rule> rules = Dao.getRules(sitename);
+        List<Rule> rules = customer.getRules();
 
         for (Rule rule : rules) {
             System.out.println(rule);
@@ -62,7 +66,7 @@ public class RulesController implements Initializable {
 
         newRuleButton.setOnAction(event -> {
            try{
-               addRuleEditorToScreen(new Rule(sitename));
+               addRuleEditorToScreen(new Rule(customer.getName()));
            }catch (Exception e){
                e.printStackTrace();
            }
@@ -74,7 +78,7 @@ public class RulesController implements Initializable {
     private void saveRules(){
         List<Rule> newRules = new ArrayList<>();
         for (RuleHbox hBox : hBoxes) {
-            Rule rule = new Rule(sitename);
+            Rule rule = new Rule(customer.getName());
             rule.setTo(hBox.getListTo());
             rule.setFrom(hBox.getListFrom());
             rule.setTime(hBox.getTimeChoice());
@@ -84,7 +88,7 @@ public class RulesController implements Initializable {
             newRules.add(rule);
             System.out.println(rule);
         }
-        String result = Dao.saveRules(sitename, newRules);
+        String result = Dao.saveRules(customer.getName(), newRules);
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Результат");
         alert.setHeaderText(null);
@@ -105,6 +109,32 @@ public class RulesController implements Initializable {
         ListView listFrom = (ListView) hBox.lookup("#fromListView");
         ObservableList<String> observableFrom = FXCollections.observableList(rule.getFrom());
         listFrom.setItems(observableFrom);
+
+        // Кнопка добавления номера с
+        Button fromAddButton = (Button) hBox.lookup("#fromAddButton");
+        fromAddButton.setVisible(false);
+
+        // Выбор номеров с
+        ChoiceBox<String> listFromChoiseBox = (ChoiceBox<String>) hBox.lookup("#listFromChoiseBox");
+        choiseBoxes.add(listFromChoiseBox);
+        availableNumbers = customer.availableNumbers;
+        listFromChoiseBox.setItems(FXCollections.observableList(availableNumbers));
+        listFromChoiseBox.setOnAction(e -> {
+            if (listFromChoiseBox.getSelectionModel().getSelectedItem() != null){
+                fromAddButton.setVisible(true);
+            }
+        });
+        fromAddButton.setOnMouseClicked(e -> {
+            String choised = listFromChoiseBox.getSelectionModel().getSelectedItem();
+            if (choised != null){
+                observableFrom.add(choised);
+                availableNumbers.remove(choised);
+                for (ChoiceBox<String> choiseBox : choiseBoxes) {
+                    choiseBox.setItems(FXCollections.observableList(new ArrayList<>()));
+                    choiseBox.setItems(FXCollections.observableList(availableNumbers));
+                }
+            }
+        });
 
         // Список номеров на
         ListView listTo = (ListView) hBox.lookup("#toListView");
@@ -143,9 +173,6 @@ public class RulesController implements Initializable {
         ChoiceBox melodyChoice = (ChoiceBox) hBox.lookup("#melodyChoice");
         melodyChoice.setItems(FXCollections.observableArrayList("m(simple)"));
         melodyChoice.setValue(rule.getMelody());
-
-
-        Button fromAddButton = (Button) hBox.lookup("#fromAddButton");
 
         // Удаление номера с
         Button fromDeleteButton = (Button) hBox.lookup("#fromDeleteButton");
@@ -198,6 +225,7 @@ public class RulesController implements Initializable {
             vBoxForRules.getChildren().remove(hBox);
             hBoxes.remove(hBox);
         });
+
 
         hBoxes.add(new RuleHbox(listFrom, listTo, forwardTypeChoice, destinationTypeChoice, melodyChoice, timeChoice));
         vBoxForRules.getChildren().add(hBox);

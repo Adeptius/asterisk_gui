@@ -1,8 +1,9 @@
-package model;
+package dao;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import javafx.Gui;
+import model.*;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -38,8 +39,7 @@ public class Dao {
             map.put("name", name);
             map.put("password", ADMIN_PASS);
             map.put("rules", new Gson().toJson(rules));
-            String response = sendPost(IP + "/rules/update", map);
-            return response;
+            return sendPost(IP + "/rules/update", map);
         } catch (Exception e) {
             e.printStackTrace();
             return "Ошибка отправки на сервер " + e;
@@ -54,8 +54,7 @@ public class Dao {
             String response = sendPost(IP + "/rules/get", map);
             Type listType = new TypeToken<ArrayList<Rule>>() {
             }.getType();
-            ArrayList<Rule> rules = new Gson().fromJson(response, listType);
-            return rules;
+            return new Gson().fromJson(response, listType);
         } catch (Exception e) {
             e.printStackTrace();
             return new ArrayList<>();
@@ -89,8 +88,7 @@ public class Dao {
             map.put("name", name);
             map.put("value", value);
             map.put("adminPassword", ADMIN_PASS);
-            String response = sendPost(IP + "/admin/setsetting", map);
-            return response;
+            return sendPost(IP + "/admin/setsetting", map);
         } catch (Exception e) {
             e.printStackTrace();
             return "Ошибка";
@@ -106,14 +104,12 @@ public class Dao {
             HashMap<String, String> map = new HashMap<>();
             map.put("name", name);
             map.put("adminPassword", ADMIN_PASS);
-            String response = sendPost(IP + "/admin/getsetting", map);
-            return response;
+            return sendPost(IP + "/admin/getsetting", map);
         } catch (Exception e) {
             e.printStackTrace();
             return "Ошибка";
         }
     }
-
 
     public static String getScriptForSite(String site) {
         site = site.replaceAll(" ", "%20");
@@ -126,69 +122,27 @@ public class Dao {
         }
     }
 
-    public static String removeSite(String name) throws Exception {
+    public static String removeCustomer(String name) throws Exception {
         HashMap<String, String> map = new HashMap<>();
         map.put("name", name);
         map.put("adminPassword", ADMIN_PASS);
-        String response = sendPost(IP + "/admin/site/remove", map);
-        return response;
-    }
-
-    public static String removeTelephony(String name) throws Exception {
-        HashMap<String, String> map = new HashMap<>();
-        map.put("name", name);
-        map.put("adminPassword", ADMIN_PASS);
-        return sendPost(IP + "/admin/telephony/remove", map);
+        return sendPost(IP + "/admin/userremove", map);
     }
 
     public static String addOrUpdate(TelephonyCustomer customer) throws Exception {
         String name = new Gson().toJson(customer);
         HashMap<String, String> map = new HashMap<>();
         map.put("adminPassword", ADMIN_PASS);
-        map.put("customer", name);
+        map.put("telephonyCustomer", name);
         return sendPost(IP + "/admin/telephony/add", map);
     }
 
     public static String addOrUpdate(Site site) throws Exception {
-        String name = site.getName();
-        String standartNumber = site.getStandartNumber();
-        String googleAnalyticsTrackingId = site.getGoogleAnalyticsTrackingId();
-        String email = site.getMail();
-        String phones = "";
-        String blackIps = "";
-        String password = site.getPassword();
-        int timeToBlock = site.getTimeToBlock();
-
-        List<Phone> phoneList = site.getPhones();
-        for (int i = 0; i < phoneList.size(); i++) {
-            if (i != 0) {
-                phones += ",";
-            }
-            phones += phoneList.get(i).getNumber();
-        }
-
-        List<String> blackList = site.getBlackIps();
-        for (int i = 0; i < blackList.size(); i++) {
-            if (i != 0) {
-                blackIps += ",";
-            }
-            blackIps += blackList.get(i);
-        }
-
+        String name = new Gson().toJson(site);
         HashMap<String, String> map = new HashMap<>();
-        map.put("name", name);
-        map.put("standartNumber", standartNumber);
-        map.put("googleAnalyticsTrackingId", googleAnalyticsTrackingId);
-        map.put("email", email);
-        map.put("phones", phones);
-        map.put("blackIps", blackIps);
-        map.put("password", password);
         map.put("adminPassword", ADMIN_PASS);
-        map.put("timeToBlock", "" + timeToBlock);
-
-        String response = sendPost(IP + "/admin/site/add", map);
-
-        return response;
+        map.put("siteCustomer", name);
+        return sendPost(IP + "/admin/site/add", map);
     }
 
 
@@ -215,26 +169,12 @@ public class Dao {
         }
     }
 
-//    public static ArrayList<String> getListOfSites() {
-//        try {
-//            String url = "/admin/getallsites";
-//            HashMap<String, String> map = new HashMap<>();
-//            map.put("password", ADMIN_PASS);
-//            String response = sendPost(IP + url, map);
-//            String[] sites = new Gson().fromJson(response, String[].class);
-//            return new ArrayList<>(Arrays.asList(sites));
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return null;
-//        }
-//    }
-
 
     public static ArrayList<CustomerGroup> getListOfCustomers() {
         try {
             String url = "/admin/getallcustomers";
             HashMap<String, String> map = new HashMap<>();
-            map.put("password", ADMIN_PASS);
+            map.put("adminPassword", ADMIN_PASS);
             String response = sendPost(IP + url, map);
 
             Type listType = new TypeToken<ArrayList<CustomerGroup>>() {

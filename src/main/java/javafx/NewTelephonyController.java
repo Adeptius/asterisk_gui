@@ -8,7 +8,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import model.Dao;
+import dao.Dao;
 import model.TelephonyCustomer;
 import utils.StringUtils;
 import utils.Validator;

@@ -6,7 +6,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
-import model.Dao;
+import dao.Dao;
 import java.net.URL;
 import java.util.ResourceBundle;
 

@@ -23,6 +23,11 @@
                               <Insets bottom="5.0" right="5.0" />
                            </VBox.margin>
                         </ListView>
+                        <ChoiceBox fx:id="listFromChoiseBox" prefWidth="150.0">
+                           <VBox.margin>
+                              <Insets bottom="5.0" right="5.0" />
+                           </VBox.margin>
+                        </ChoiceBox>
                         <HBox prefHeight="100.0" prefWidth="200.0">
                            <children>
                               <Button fx:id="fromAddButton" mnemonicParsing="false" prefWidth="70.0" text="Добавить">
@@ -50,6 +55,23 @@
                               <Insets bottom="5.0" right="5.0" />
                            </VBox.margin>
                         </ListView>
+                        <HBox prefHeight="100.0" prefWidth="200.0">
+                           <children>
+                              <Label alignment="CENTER" prefHeight="25.0" prefWidth="29.0" text="380" textAlignment="CENTER">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Label>
+                              <TextField fx:id="fieldTo" prefHeight="25.0" prefWidth="124.0">
+                                 <HBox.margin>
+                                    <Insets right="5.0" />
+                                 </HBox.margin>
+                              </TextField>
+                           </children>
+                           <VBox.margin>
+                              <Insets bottom="5.0" />
+                           </VBox.margin>
+                        </HBox>
                         <HBox prefHeight="100.0" prefWidth="200.0">
                            <children>
                               <Button fx:id="toAddButton" mnemonicParsing="false" prefWidth="70.0" text="Добавить">

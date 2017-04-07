@@ -59,7 +59,7 @@
                                                       <Insets bottom="5.0" />
                                                    </VBox.margin>
                                                 </Button>
-                                                <Button fx:id="btnDelete" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showDelete" text="Удалить">
+                                                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showDeleteSite" text="Удалить">
                                                    <VBox.margin>
                                                       <Insets bottom="5.0" />
                                                    </VBox.margin>
@@ -69,12 +69,12 @@
                                                       <Insets bottom="5.0" />
                                                    </VBox.margin>
                                                 </Button>
-                                                <Button fx:id="btnHistory" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showHistory" text="История">
+                                                <Button fx:id="btnHistory" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showHistorySite" text="История">
                                                    <VBox.margin>
                                                       <Insets bottom="5.0" />
                                                    </VBox.margin>
                                                 </Button>
-                                                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showRules" text="Правила">
+                                                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showRulesSite" text="Правила">
                                                    <VBox.margin>
                                                       <Insets bottom="5.0" />
                                                    </VBox.margin>
@@ -111,7 +111,7 @@
                                     <AnchorPane minHeight="200.0" prefHeight="200.0" prefWidth="402.0" VBox.vgrow="ALWAYS">
                                        <children>
                                           <ListView fx:id="telephonyList" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                                          <VBox fx:id="buttonBox1" layoutX="204.0" layoutY="-2.0" prefHeight="253.0" prefWidth="70.0">
+                                          <VBox fx:id="buttonBoxTelephony" layoutX="204.0" layoutY="-2.0" prefHeight="253.0" prefWidth="70.0">
                                              <children>
                                                 <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showEditTelephony" text="Изменить">
                                                    <VBox.margin>
@@ -123,12 +123,12 @@
                                                       <Insets bottom="5.0" />
                                                    </VBox.margin>
                                                 </Button>
-                                                <Button fx:id="btnHistory1" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showHistory" text="История">
+                                                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showHistoryTelephony" text="История">
                                                    <VBox.margin>
                                                       <Insets bottom="5.0" />
                                                    </VBox.margin>
                                                 </Button>
-                                                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showRules" text="Правила">
+                                                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showRulesTelephony" text="Правила">
                                                    <VBox.margin>
                                                       <Insets bottom="5.0" />
                                                    </VBox.margin>
@@ -138,7 +138,7 @@
                                                 <Insets top="3.0" />
                                              </padding>
                                           </VBox>
-                                          <HBox prefHeight="100.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="278.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                          <HBox fx:id="phonesBoxTelephony" prefHeight="100.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="278.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                              <children>
                                                 <VBox fillWidth="false" prefHeight="202.0" prefWidth="180.0">
                                                    <children>
