@@ -2,35 +2,50 @@ package model;
 
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class TelephonyCustomer extends Customer{
 
+
     public final CustomerType type = CustomerType.TELEPHONY;
-    private ArrayList<String> innerPhones = new ArrayList<>();
-    private ArrayList<String> outerPhones = new ArrayList<>();
+    private ArrayList<String> innerPhonesList = new ArrayList<>();
+    private ArrayList<String> outerPhonesList = new ArrayList<>();
+    private int outerNumbersCount;
+    private int innerNumbersCount;
 
-    public TelephonyCustomer(String name, String eMail, String googleAnalyticsTrackingId, String password,
-                             ArrayList<String> innerPhones, ArrayList<String> outerPhones) {
+    public TelephonyCustomer(String name, String eMail, String googleAnalyticsTrackingId, String password, int innerNumbersCount, int outerNumbersCount) throws Exception{
         super(name, eMail, googleAnalyticsTrackingId, password);
-        this.innerPhones = innerPhones;
-        this.outerPhones = outerPhones;
+        this.outerNumbersCount = outerNumbersCount;
+        this.innerNumbersCount = innerNumbersCount;
+        updateNumbers();
     }
 
-
-    public ArrayList<String> getInnerPhones() {
-        return innerPhones;
+    @Override
+    public void updateNumbers() throws Exception{
     }
 
-    public void setInnerPhones(ArrayList<String> innerPhones) {
-        this.innerPhones = innerPhones;
+    public int getOuterNumbersCount() {
+        return outerNumbersCount;
     }
 
-    public ArrayList<String> getOuterPhones() {
-        return outerPhones;
+    public int getInnerNumbersCount() {
+        return innerNumbersCount;
     }
 
-    public void setOuterPhones(ArrayList<String> outerPhones) {
-        this.outerPhones = outerPhones;
+    public ArrayList<String> getInnerPhonesList() {
+        return innerPhonesList;
+    }
+
+    public void setInnerPhonesList(ArrayList<String> innerPhonesList) {
+        this.innerPhonesList = innerPhonesList;
+    }
+
+    public ArrayList<String> getOuterPhonesList() {
+        return outerPhonesList;
+    }
+
+    public void setOuterPhonesList(ArrayList<String> outerPhonesList) {
+        this.outerPhonesList = outerPhonesList;
     }
 
     @Override
@@ -41,8 +56,8 @@ public class TelephonyCustomer extends Customer{
                 ", googleAnalyticsTrackingId='" + googleAnalyticsTrackingId + '\'' +
                 ", password='" + password + '\'' +
                 ", rules=" + rules +
-                ", innerPhones=" + innerPhones +
-                ", outerPhones=" + outerPhones +
+                ", innerPhonesList=" + innerPhonesList +
+                ", outerPhonesList=" + outerPhonesList +
                 "} ";
     }
 }

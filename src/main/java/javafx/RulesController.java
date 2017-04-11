@@ -12,14 +12,14 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import dao.Dao;
-import model.Customer;
-import model.Rule;
-import model.RuleHbox;
+import model.*;
 
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class RulesController implements Initializable {
 
@@ -114,6 +114,42 @@ public class RulesController implements Initializable {
         Button fromAddButton = (Button) hBox.lookup("#fromAddButton");
         fromAddButton.setVisible(false);
 
+         // Кнопка добавления номера на
+        Button toAddButton = (Button) hBox.lookup("#toAddButton");
+        toAddButton.setVisible(false);
+
+        // Добавление номера на
+        TextField fieldTo = (TextField) hBox.lookup("#fieldTo");
+        fieldTo.setOnKeyReleased(event -> {
+            String text = fieldTo.getText();
+            Matcher regexMatcher = Pattern.compile("^\\d{9}$").matcher(text);
+            if (regexMatcher.find()){
+                toAddButton.setVisible(true);
+            }else {
+                toAddButton.setVisible(false);
+            }
+        });
+
+
+
+        // Список сип номеров
+        HBox sipHbox = (HBox) hBox.lookup("#sipHbox");
+        ChoiceBox<String> sipList = (ChoiceBox<String>) hBox.lookup("#sipList");
+        TextField sipField = (TextField) hBox.lookup("#sipField");
+        sipList.setOnAction(event -> {
+            String s = sipList.getSelectionModel().getSelectedItem();
+            if (s != null){
+                sipField.setText(s);
+                toAddButton.setVisible(true);
+            }
+        });
+        if (customer instanceof TelephonyCustomer){
+            sipList.setItems(FXCollections.observableList(((TelephonyCustomer) customer).getInnerPhonesList()));
+        }else {
+//            sipList.setScaleY(0);
+//            sipVbox.setScaleY(0.5);
+        }
+
         // Выбор номеров с
         ChoiceBox<String> listFromChoiseBox = (ChoiceBox<String>) hBox.lookup("#listFromChoiseBox");
         choiseBoxes.add(listFromChoiseBox);
@@ -136,10 +172,7 @@ public class RulesController implements Initializable {
             }
         });
 
-        // Список номеров на
-        ListView listTo = (ListView) hBox.lookup("#toListView");
-        ObservableList<String> observableTo = FXCollections.observableList(rule.getTo());
-        listTo.setItems(observableTo);
+
 
         // Выбор времени
         TextField timeChoice = (TextField) hBox.lookup("#timeChoice");
@@ -164,10 +197,60 @@ public class RulesController implements Initializable {
             }
         });
 
+        // Список номеров на
+        ObservableList<String> observableTo = FXCollections.observableList(rule.getTo());
+
         // Выбор типа связи
         ChoiceBox destinationTypeChoice = (ChoiceBox) hBox.lookup("#destinationTypeChoice");
         destinationTypeChoice.setItems(FXCollections.observableArrayList("GSM", "SIP"));
         destinationTypeChoice.setValue(rule.getDestinationType().toString());
+        HBox gsmVbox = (HBox) hBox.lookup("#gsmVbox");
+        destinationTypeChoice.setOnAction(event -> {
+            if (destinationTypeChoice.getSelectionModel().getSelectedIndex() == 0){ // если GSM
+                toAddButton.setVisible(false);
+                gsmVbox.setVisible(true);
+                sipHbox.setVisible(false);
+                observableTo.clear();
+            }else {
+                toAddButton.setVisible(false);
+                gsmVbox.setVisible(false);
+                sipHbox.setVisible(true);
+                observableTo.clear();
+            }
+        });
+        if (DestinationType.valueOf(destinationTypeChoice.getSelectionModel().getSelectedItem().toString())==DestinationType.GSM){
+            gsmVbox.setVisible(true);
+            sipHbox.setVisible(false);
+        }else {
+            gsmVbox.setVisible(false);
+            sipHbox.setVisible(true);
+        }
+
+        // Список номеров на
+        ListView listTo = (ListView) hBox.lookup("#toListView");
+        listTo.setItems(observableTo);
+        toAddButton.setOnMouseClicked(e -> {
+            if (DestinationType.valueOf(destinationTypeChoice.getSelectionModel().getSelectedItem().toString())==DestinationType.GSM) {
+                String text = "0" + fieldTo.getText();
+                observableTo.add(text);
+                fieldTo.setText("");
+                toAddButton.setVisible(false);
+            }else {
+                if (sipField.getText() != null && !sipField.getText().equals("")){
+                    observableTo.add(sipField.getText());
+                    sipField.setText("");
+                    toAddButton.setVisible(false);
+                }
+            }
+        });
+
+        sipField.setOnKeyTyped(event -> {
+            if (sipField.getText() != null && !sipField.getText().equals("")){
+                toAddButton.setVisible(true);
+            }else {
+                toAddButton.setVisible(false);
+            }
+        });
 
         // Выбор мелодии
         ChoiceBox melodyChoice = (ChoiceBox) hBox.lookup("#melodyChoice");
@@ -187,23 +270,6 @@ public class RulesController implements Initializable {
                 fromDeleteButton.setVisible(true);
             }
         });
-
-//        Button toAddButton = (Button) hBox.lookup("#toAddButton");
-//        toAddButton.setOnAction(event -> {
-//            Dialog dialog = new TextInputDialog("");
-//            dialog.setTitle("Введите номер");
-//            dialog.
-//            Optional<String> result = dialog.showAndWait();
-//
-//            String entered = "";
-//            if (result.isPresent()) {
-//                entered = result.get();
-//                System.out.println(entered);
-//            }
-//
-//
-//
-//        });
 
         // Удаление номера на
         Button toDeleteButton = (Button) hBox.lookup("#toDeleteButton");

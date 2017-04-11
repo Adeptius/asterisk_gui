@@ -2,27 +2,42 @@ package model;
 
 
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Site extends Customer {
 
     public final CustomerType type = CustomerType.TRACKING;
-    public Site(String name, List<Phone> phones, String standartNumber, String googleAnalyticsTrackingId, String eMail,
-                List<String> blackIps, String password, int timeToBlock) {
+    public Site(String name,String standartNumber, String googleAnalyticsTrackingId, String eMail,
+                List<String> blackIps, String password, int timeToBlock, int outerNumbersCount) throws Exception {
         super(name, eMail, googleAnalyticsTrackingId, password);
-        this.phones = phones;
         this.standartNumber = standartNumber;
         this.blackIps = blackIps;
         this.timeToBlock = timeToBlock;
+        this.outerNumbersCount = outerNumbersCount;
+//        ArrayList<String> outerPhones = PhonesDao.getCustomersNumbers(name,false);
+//        for (String outerPhone : outerPhones) {
+//            phones.add(new Phone(outerPhone));
+//        }
+//        updateNumbers();
+    }
+
+    @Override
+    public void updateNumbers() throws Exception {
+
     }
 
     private List<String> blackIps;
-    private List<Phone> phones;
+    private List<Phone> phones = new ArrayList<>();
     private String standartNumber;
     private int timeToBlock;
+    private int outerNumbersCount;
 
 
-    private long lastEmailTime;
+    public int getOuterNumbersCount() {
+        return outerNumbersCount;
+    }
 
     public void setTimeToBlock(int timeToBlock) {
         this.timeToBlock = timeToBlock;
@@ -40,17 +55,18 @@ public class Site extends Customer {
         return standartNumber;
     }
 
-    public long getLastEmailTime() {
-        return lastEmailTime;
-    }
+//    public long getLastEmailTime() {
+//        return lastEmailTime;
+//    }
 
-    public void setLastEmailTime(long lastEmailTime) {
-        this.lastEmailTime = lastEmailTime;
-    }
+//    public void setLastEmailTime(long lastEmailTime) {
+//        this.lastEmailTime = lastEmailTime;
+//    }
 
     public List<String> getBlackIps() {
         return blackIps;
     }
+
 
     @Override
     public String toString() {
@@ -64,7 +80,7 @@ public class Site extends Customer {
                 ", password='" + password + '\'' +
                 ", timeToBlock=" + timeToBlock +
                 ", rules=" + rules +
-                ", lastEmailTime=" + lastEmailTime +
+//                ", lastEmailTime=" + lastEmailTime +
                 '}';
     }
 }

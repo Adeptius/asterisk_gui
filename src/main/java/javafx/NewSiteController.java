@@ -9,7 +9,6 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import dao.Dao;
-import model.Phone;
 import model.Site;
 import utils.Validator;
 
@@ -61,6 +60,8 @@ public class NewSiteController implements Initializable{
     @FXML
     private TextField textBlock;
 
+    @FXML
+    private TextField numberOfOuterPhones;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -76,14 +77,15 @@ public class NewSiteController implements Initializable{
             textGoogleId.setText(site.getGoogleAnalyticsTrackingId());
             textPassword.setText(site.getPassword());
             textBlock.setText(String.valueOf(site.getTimeToBlock()));
+            numberOfOuterPhones.setText(String.valueOf(site.getOuterNumbersCount()));
 
-            String phones = "";
-            for (Phone phone : site.getPhones()) {
-                phones += phone.getNumber() + "\n";
-            }
-            if (phones.length() >0){
-                phones = phones.substring(0, phones.length() -1);
-            }
+//            String phones = "";
+//            for (Phone phone : site.getPhones()) {
+//                phones += phone.getNumber() + "\n";
+//            }
+//            if (phones.length() >0){
+//                phones = phones.substring(0, phones.length() -1);
+//            }
 
             String ips = "";
             for (String s : site.getBlackIps()) {
@@ -93,7 +95,7 @@ public class NewSiteController implements Initializable{
                 ips = ips.substring(0, ips.length() -1);
             }
 
-            textPhones.setText(phones);
+//            textPhones.setText(phones);
             textBlackList.setText(ips);
         }
 
@@ -118,19 +120,20 @@ public class NewSiteController implements Initializable{
         String email = textEmail.getText().trim();
         String standartNumber = textNumber.getText().trim();
         String googleId = textGoogleId.getText().trim();
-        String phones = textPhones.getText().trim();
+//        String phones = textPhones.getText().trim();
         String blackList = textBlackList.getText().trim();
         String password = textPassword.getText().trim();
         int timeToBlock = Integer.parseInt(textBlock.getText().trim());
+        int outerNumbersCount = Integer.parseInt(numberOfOuterPhones.getText().trim());
 
-        phones = phones.replaceAll(" ", "").replaceAll("\t","");
+//        phones = phones.replaceAll(" ", "").replaceAll("\t","");
         blackList = blackList.replaceAll(" ", "").replaceAll("\t","");
 
-        List<Phone> phoneList = new ArrayList<>();
-        String[] phonesArr = phones.split("\n");
-        for (String s : phonesArr) {
-            phoneList.add(new Phone(s));
-        }
+//        List<Phone> phoneList = new ArrayList<>();
+//        String[] phonesArr = phones.split("\n");
+//        for (String s : phonesArr) {
+//            phoneList.add(new Phone(s));
+//        }
 
         List<String> blackIps = new ArrayList<>();
         String[] blackIpsArr = blackList.split("\n");
@@ -138,14 +141,14 @@ public class NewSiteController implements Initializable{
             blackIps.add(s);
         }
 
-        Site site = new Site(name, phoneList, standartNumber, googleId, email, blackIps, password, timeToBlock);
         String result = "";
         try {
-           result = Dao.addOrUpdate(site);
+            Site site = new Site(name,standartNumber, googleId, email, blackIps, password, timeToBlock, outerNumbersCount);
+            result = Dao.addOrUpdate(site);
             stage.hide();
             guiController.updateCustomers();
             guiController.updateLogs();
-            guiController.updatePhones();
+            guiController.updateSitePhones();
 
         }catch (Exception e){
             e.printStackTrace();
@@ -164,6 +167,7 @@ public class NewSiteController implements Initializable{
         alert.setHeaderText(null);
         alert.setContentText(result);
         alert.showAndWait();
+        guiController.updateStatus();
 
     }
 }

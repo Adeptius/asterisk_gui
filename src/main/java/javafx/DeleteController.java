@@ -44,7 +44,7 @@ public class DeleteController implements Initializable{
             result = Dao.removeCustomer(customer);
             stage.hide();
             guiController.updateCustomers();
-            guiController.updatePhones();
+            guiController.updateSitePhones();
             guiController.updateLogs();
             guiController.hideSiteTableAndButtons();
         }catch (Exception e){
@@ -56,6 +56,7 @@ public class DeleteController implements Initializable{
         alert.setHeaderText(null);
         alert.setContentText(result);
         alert.showAndWait();
+        guiController.updateStatus();
     }
 
     @Override

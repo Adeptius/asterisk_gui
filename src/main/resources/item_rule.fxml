@@ -6,9 +6,9 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="514.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="324.0" prefWidth="514.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <HBox fx:id="ruleHbox" prefHeight="195.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <HBox fx:id="ruleHbox" prefHeight="300.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <HBox fx:id="innerRuleHbox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="118.0">
                <children>
@@ -18,24 +18,24 @@
                            <font>
                               <Font size="14.0" />
                            </font></Label>
-                        <ListView fx:id="fromListView" prefHeight="200.0" prefWidth="145.0">
+                        <ListView fx:id="fromListView" prefHeight="200.0" prefWidth="145.0" VBox.vgrow="ALWAYS">
                            <VBox.margin>
                               <Insets bottom="5.0" right="5.0" />
                            </VBox.margin>
                         </ListView>
-                        <ChoiceBox fx:id="listFromChoiseBox" prefWidth="150.0">
+                        <ChoiceBox fx:id="listFromChoiseBox" prefWidth="150.0" VBox.vgrow="NEVER">
                            <VBox.margin>
                               <Insets bottom="5.0" right="5.0" />
                            </VBox.margin>
                         </ChoiceBox>
-                        <HBox prefHeight="100.0" prefWidth="200.0">
+                        <HBox prefHeight="28.0" prefWidth="150.0" VBox.vgrow="NEVER">
                            <children>
-                              <Button fx:id="fromAddButton" mnemonicParsing="false" prefWidth="70.0" text="Добавить">
+                              <Button fx:id="fromAddButton" mnemonicParsing="false" prefWidth="70.0" text="Добавить" HBox.hgrow="NEVER">
                                  <HBox.margin>
                                     <Insets right="5.0" />
                                  </HBox.margin>
                               </Button>
-                              <Button fx:id="fromDeleteButton" mnemonicParsing="false" prefWidth="70.0" text="Удалить">
+                              <Button fx:id="fromDeleteButton" mnemonicParsing="false" prefWidth="70.0" text="Удалить" HBox.hgrow="NEVER">
                                  <HBox.margin>
                                     <Insets right="5.0" />
                                  </HBox.margin>
@@ -44,25 +44,34 @@
                         </HBox>
                      </children>
                   </VBox>
-                  <VBox prefHeight="200.0" prefWidth="150.0">
+                  <VBox prefHeight="200.0" prefWidth="150.0" HBox.hgrow="ALWAYS">
                      <children>
-                        <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="На номера" textAlignment="CENTER">
+                        <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="На номера" textAlignment="CENTER" VBox.vgrow="NEVER">
                            <font>
                               <Font size="14.0" />
                            </font></Label>
-                        <ListView fx:id="toListView" prefHeight="200.0" prefWidth="145.0">
+                        <ListView fx:id="toListView" prefHeight="400.0" prefWidth="145.0" VBox.vgrow="ALWAYS">
                            <VBox.margin>
                               <Insets bottom="5.0" right="5.0" />
                            </VBox.margin>
                         </ListView>
-                        <HBox prefHeight="100.0" prefWidth="200.0">
+                        <HBox fx:id="sipHbox" prefHeight="100.0" prefWidth="200.0" VBox.vgrow="NEVER">
                            <children>
-                              <Label alignment="CENTER" prefHeight="25.0" prefWidth="29.0" text="380" textAlignment="CENTER">
+                              <TextField fx:id="sipField" HBox.hgrow="NEVER" />
+                              <ChoiceBox fx:id="sipList" prefHeight="25.0" prefWidth="41.0" HBox.hgrow="NEVER" />
+                           </children>
+                           <VBox.margin>
+                              <Insets bottom="5.0" right="5.0" />
+                           </VBox.margin>
+                        </HBox>
+                        <HBox fx:id="gsmVbox" prefHeight="100.0" prefWidth="200.0" VBox.vgrow="NEVER">
+                           <children>
+                              <Label alignment="CENTER" prefHeight="25.0" prefWidth="29.0" text="380" textAlignment="CENTER" HBox.hgrow="NEVER">
                                  <font>
                                     <Font size="14.0" />
                                  </font>
                               </Label>
-                              <TextField fx:id="fieldTo" prefHeight="25.0" prefWidth="124.0">
+                              <TextField fx:id="fieldTo" prefHeight="25.0" prefWidth="118.0" HBox.hgrow="NEVER">
                                  <HBox.margin>
                                     <Insets right="5.0" />
                                  </HBox.margin>
@@ -72,14 +81,14 @@
                               <Insets bottom="5.0" />
                            </VBox.margin>
                         </HBox>
-                        <HBox prefHeight="100.0" prefWidth="200.0">
+                        <HBox prefHeight="18.0" prefWidth="150.0" VBox.vgrow="NEVER">
                            <children>
-                              <Button fx:id="toAddButton" mnemonicParsing="false" prefWidth="70.0" text="Добавить">
+                              <Button fx:id="toAddButton" mnemonicParsing="false" prefWidth="70.0" text="Добавить" HBox.hgrow="NEVER">
                                  <HBox.margin>
                                     <Insets right="5.0" />
                                  </HBox.margin>
                               </Button>
-                              <Button fx:id="toDeleteButton" mnemonicParsing="false" prefWidth="70.0" text="Удалить">
+                              <Button fx:id="toDeleteButton" mnemonicParsing="false" prefWidth="70.0" text="Удалить" HBox.hgrow="NEVER">
                                  <HBox.margin>
                                     <Insets right="5.0" />
                                  </HBox.margin>

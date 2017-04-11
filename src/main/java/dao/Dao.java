@@ -15,22 +15,24 @@ import java.util.*;
 
 public class Dao {
 
-    //    public static final String IP = "http://194.44.37.30/tracking";
-    public static final String IP = "http://localhost:8080/tracking";
+        public static final String IP = "http://194.44.37.30/tracking";
+//    public static final String IP = "http://localhost:8080/tracking";
     public static final String ADMIN_PASS = "pthy0eds";
     //TODO вернуть адрес
 
-    public static TelephonyCustomer getTelephonyCustomerByName(String name) {
-        try {
-            HashMap<String, String> map = new HashMap<>();
-            map.put("name", name);
-            map.put("password", ADMIN_PASS);
-            String response = sendPost(IP + "/status/telephonyinfo", map);
-            return new Gson().fromJson(response, TelephonyCustomer.class);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new TelephonyCustomer("", "", "", "", new ArrayList<>(), new ArrayList<>());
-        }
+    public static TelephonyCustomer getTelephonyCustomerByName(String name) throws Exception {
+        HashMap<String, String> map = new HashMap<>();
+        map.put("name", name);
+        map.put("password", ADMIN_PASS);
+        String response = sendPost(IP + "/status/telephonyinfo", map);
+        return new Gson().fromJson(response, TelephonyCustomer.class);
+    }
+
+    public static JsonNumbersCount getNumbersCount() throws Exception {
+        HashMap<String, String> map = new HashMap<>();
+        map.put("adminPassword", ADMIN_PASS);
+        String response = sendPost(IP + "/admin/getNumbersCount", map);
+        return new Gson().fromJson(response, JsonNumbersCount.class);
     }
 
     public static String saveRules(String name, List<Rule> rules) {
@@ -170,14 +172,14 @@ public class Dao {
     }
 
 
-    public static ArrayList<CustomerGroup> getListOfCustomers() {
+    public static ArrayList<JsonCustomerGroup> getListOfCustomers() {
         try {
             String url = "/admin/getallcustomers";
             HashMap<String, String> map = new HashMap<>();
             map.put("adminPassword", ADMIN_PASS);
             String response = sendPost(IP + url, map);
 
-            Type listType = new TypeToken<ArrayList<CustomerGroup>>() {
+            Type listType = new TypeToken<ArrayList<JsonCustomerGroup>>() {
             }.getType();
             return new Gson().fromJson(response, listType);
         } catch (Exception e) {

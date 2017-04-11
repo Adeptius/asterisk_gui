@@ -64,21 +64,28 @@ public class GuiController implements Initializable {
     @FXML
     private HBox phonesBoxTelephony;
 
+    @FXML
+    private Label statusLabel;
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         telephonyList.setOnMouseClicked(event -> {
             String telephon = telephonyList.getSelectionModel().getSelectedItem();
             if (telephon != null) {
-                TelephonyCustomer customer = Dao.getTelephonyCustomerByName(telephon);
-                innerNumbers.setItems(FXCollections.observableArrayList(customer.getInnerPhones()));
-                outerNumbers.setItems(FXCollections.observableArrayList(customer.getOuterPhones()));
-                showTelephonyTableAndButtons();
+                try {
+                    TelephonyCustomer customer = Dao.getTelephonyCustomerByName(telephon);
+                    innerNumbers.setItems(FXCollections.observableArrayList(customer.getInnerPhonesList()));
+                    outerNumbers.setItems(FXCollections.observableArrayList(customer.getOuterPhonesList()));
+                    showTelephonyTableAndButtons();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
             }
         });
 
         siteList.setOnMouseClicked(event -> {
-            updatePhones();
+            updateSitePhones();
             String sitename = siteList.getSelectionModel().getSelectedItem();
             if (sitename != null) {
                 Gui.selectedSiteString = sitename;
@@ -88,9 +95,10 @@ public class GuiController implements Initializable {
 
         updateCustomers();
         updateLogs();
-        updatePhones();
+        updateSitePhones();
         hideSiteTableAndButtons();
         hideTelephonyTableAndButtons();
+        updateStatus();
 
         phoneNumber.setCellValueFactory(new PropertyValueFactory<>("number"));
         phoneGoogleId.setCellValueFactory(new PropertyValueFactory<>("googleId"));
@@ -103,7 +111,7 @@ public class GuiController implements Initializable {
                     Thread.sleep(4000);
                     try {
                         updateLogs();
-                        updatePhones();
+                        updateSitePhones();
                     } catch (Exception e) {
                         System.out.println("Нет связи скорее всего");
                     }
@@ -113,6 +121,23 @@ public class GuiController implements Initializable {
         });
         monitor.setDaemon(true);
         monitor.start();
+    }
+
+    public void updateStatus(){
+        try{
+            JsonNumbersCount free = Dao.getNumbersCount();
+            List<JsonCustomerGroup> customers = Dao.getListOfCustomers();
+            int telephonyCustomers = (int) customers.stream().filter(group -> group.type == CustomerType.TELEPHONY).count();
+            int trackingCustomers = (int) customers.stream().filter(group -> group.type == CustomerType.TRACKING).count();
+            int freeOuter = free.freeOuter;
+            int freeInner = free.freeInner;
+            int busyOuter = free.busyOuter;
+            int busyInner = free.busyInner;
+            String status = "Пользователей трекинг: "+trackingCustomers+", телефония: "+ telephonyCustomers+" | Свободных номеров внешних: "+freeOuter+", внутренних: " + freeInner + " | занято внешних: "+ busyOuter + ", внутренних: "+busyInner;
+            statusLabel.setText(status);
+        }catch (Exception e){
+            statusLabel.setText("Ошибка. Возможно нет соединения");
+        }
     }
 
     public void hideSiteTableAndButtons() {
@@ -167,7 +192,7 @@ public class GuiController implements Initializable {
 
 
     public void updateCustomers() {
-        ArrayList<CustomerGroup> groups = Dao.getListOfCustomers();
+        ArrayList<JsonCustomerGroup> groups = Dao.getListOfCustomers();
         List<String> sitesNames = groups.stream()
                 .filter(cg -> cg.type == CustomerType.TRACKING)
                 .map(cg -> cg.name).collect(Collectors.toList());
@@ -184,11 +209,24 @@ public class GuiController implements Initializable {
         Platform.runLater(() -> logList.setItems(FXCollections.observableList(list)));
     }
 
-    public void updatePhones() {
+    public void updateSitePhones() {
         String sitename = siteList.getSelectionModel().getSelectedItem();
         if (sitename != null) {
             Site site = Dao.getSiteByName(sitename);
             phoneTable.setItems(FXCollections.observableArrayList(site.getPhones()));
+        }
+    }
+
+    public void updateTelephonyPhones(){
+        try{
+            String telephonyCustomer = telephonyList.getSelectionModel().getSelectedItem();
+            if (telephonyCustomer != null) {
+                TelephonyCustomer customer = Dao.getTelephonyCustomerByName(telephonyCustomer);
+                innerNumbers.setItems(FXCollections.observableArrayList(customer.getInnerPhonesList()));
+                outerNumbers.setItems(FXCollections.observableArrayList(customer.getOuterPhonesList()));
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 

@@ -1,6 +1,7 @@
 package model;
 
 
+import java.nio.file.NoSuchFileException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,9 +29,6 @@ public abstract class Customer {
         return eMail;
     }
 
-    public List<String> availableNumbers;
-//    public abstract List<String> getAvailableNumbers();
-
     public String getGoogleAnalyticsTrackingId() {
         return googleAnalyticsTrackingId;
     }
@@ -40,15 +38,12 @@ public abstract class Customer {
     }
 
     public void loadRules(){
-//        try {
-//            rules = ConfigDAO.readFromFile(name);
-//        } catch (NoSuchFileException e) {
-//            MyLogger.log(LogCategory.DB_ERROR_CONNECTING,
-//                    "Отсутствует конфиг с правилами переадресации для сайта " + name);
-//        } catch (Exception e){
-//            e.printStackTrace();
-//        }
+
     }
+
+    public List<String> availableNumbers;
+
+    public abstract void updateNumbers() throws Exception;
 
     public void setRules(List<Rule> rules) {
         this.rules = rules;
@@ -59,8 +54,10 @@ public abstract class Customer {
     }
 
     public void saveRules() throws Exception{
-//        ConfigDAO.writeToFile(name, rules);
+
     }
+
+
 
     @Override
     public String toString() {
