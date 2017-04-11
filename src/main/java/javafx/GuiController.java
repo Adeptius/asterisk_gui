@@ -4,6 +4,7 @@ package javafx;
 import dao.Dao;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -67,9 +68,78 @@ public class GuiController implements Initializable {
     @FXML
     private Label statusLabel;
 
+    @FXML
+    private CheckBox MAIL_ANTISPAM;
+
+    @FXML
+    private CheckBox BLOCKED_BY_IP;
+
+    @FXML
+    private CheckBox INCOMING_CALL;
+
+    @FXML
+    private CheckBox ANSWER_CALL;
+
+    @FXML
+    private CheckBox REQUEST_NUMBER;
+
+    @FXML
+    private CheckBox ENDED_CALL;
+
+    @FXML
+    private CheckBox ONLY_ACTIVE_SITE;
+
+    @FXML
+    private CheckBox NUMBER_FREE;
+
+    @FXML
+    private CheckBox INCOMING_CALL_NOT_REGISTER;
+
+    @FXML
+    private CheckBox SENDING_NUMBER;
+
+    @FXML
+    private CheckBox NO_NUMBERS_LEFT;
+
+    @FXML
+    private CheckBox REPEATED_REQUEST;
+
+    @FXML
+    private TextField textUpdateRate;
+
+    @FXML
+    private TextField textCleanRate;
+
+    @FXML
+    private TextField textServerAdress;
+
+    @FXML
+    private TextField textAntiSpam;
+
+    @FXML
+    private Button btnSave;
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        MAIL_ANTISPAM.setSelected(Dao.getSettingBoolean("MAIL_ANTISPAM"));
+        BLOCKED_BY_IP.setSelected(Dao.getSettingBoolean("BLOCKED_BY_IP"));
+        INCOMING_CALL.setSelected(Dao.getSettingBoolean("INCOMING_CALL"));
+        ANSWER_CALL.setSelected(Dao.getSettingBoolean("ANSWER_CALL"));
+        REQUEST_NUMBER.setSelected(Dao.getSettingBoolean("REQUEST_NUMBER"));
+        ENDED_CALL.setSelected(Dao.getSettingBoolean("ENDED_CALL"));
+        NUMBER_FREE.setSelected(Dao.getSettingBoolean("NUMBER_FREE"));
+        INCOMING_CALL_NOT_REGISTER.setSelected(Dao.getSettingBoolean("INCOMING_CALL_NOT_REGISTER"));
+        SENDING_NUMBER.setSelected(Dao.getSettingBoolean("SENDING_NUMBER"));
+        NO_NUMBERS_LEFT.setSelected(Dao.getSettingBoolean("NO_NUMBERS_LEFT"));
+        REPEATED_REQUEST.setSelected(Dao.getSettingBoolean("REPEATED_REQUEST"));
+        ONLY_ACTIVE_SITE.setSelected(Gui.onlyActiveSite);
+
+        textServerAdress.setText(Dao.getSetting("SERVER_ADDRESS_FOR_SCRIPT"));
+        textUpdateRate.setText(Dao.getSetting("SECONDS_TO_UPDATE_PHONE_ON_WEB_PAGE"));
+        textCleanRate.setText(Dao.getSetting("SECONDS_TO_REMOVE_OLD_PHONES"));
+        textAntiSpam.setText(Dao.getSetting("MAIL_ANTISPAM"));
+
         telephonyList.setOnMouseClicked(event -> {
             String telephon = telephonyList.getSelectionModel().getSelectedItem();
             if (telephon != null) {
@@ -363,6 +433,32 @@ public class GuiController implements Initializable {
         stage.initOwner(siteList.getScene().getWindow()); // Указание кого оно перекрывает
         stage.setScene(scene);
         stage.show();
+    }
+
+    public void checkBoxPressed(ActionEvent actionEvent) {
+        Object source = actionEvent.getSource();
+        if (!(source instanceof CheckBox)) {
+            return;
+        }
+
+        CheckBox clickedCheckBox = (CheckBox) source;
+
+        String id = clickedCheckBox.getId();
+        boolean state = clickedCheckBox.isSelected();
+
+        Dao.setSetting(id, ""+state);
+    }
+
+    public void save(){
+        String serverAdress = textServerAdress.getText();
+        String updateRate = textUpdateRate.getText();
+        String cleanRate = textCleanRate.getText();
+        String antispam = textAntiSpam.getText();
+
+        Dao.setSetting("SERVER_ADDRESS_FOR_SCRIPT", serverAdress);
+        Dao.setSetting("SECONDS_TO_UPDATE_PHONE_ON_WEB_PAGE", updateRate);
+        Dao.setSetting("SECONDS_TO_REMOVE_OLD_PHONES", cleanRate);
+        Dao.setSetting("MAIL_ANTISPAM", antispam);
     }
 
     public void exit() {
