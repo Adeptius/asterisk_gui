@@ -126,6 +126,7 @@
                                                       <Insets bottom="5.0" />
                                                    </VBox.margin>
                                                 </Button>
+                                                <Button mnemonicParsing="false" onAction="#showSipPass" prefHeight="25.0" prefWidth="75.0" text="Пароли" />
                                              </children>
                                              <padding>
                                                 <Insets top="3.0" />
@@ -179,7 +180,7 @@
                                                   <CheckBox fx:id="ANSWER_CALL" mnemonicParsing="false" onAction="#checkBoxPressed" text="Ответ на звонок" />
                                                   <CheckBox fx:id="ENDED_CALL" mnemonicParsing="false" onAction="#checkBoxPressed" text="Завершение звонка" />
                                                   <CheckBox fx:id="INCOMING_CALL_NOT_REGISTER" mnemonicParsing="false" onAction="#checkBoxPressed" text="Не привязанные к сайту номера" />
-                                                  <CheckBox fx:id="MAIL_ANTISPAM" mnemonicParsing="false" onAction="#checkBoxPressed" text="Отправка писем" />
+                                                  <CheckBox fx:id="MAIL_ANTISPAM" mnemonicParsing="false" onAction="#checkBoxPressed" text="Остальное" />
                                              </children>
                                           </VBox>
                                             <VBox prefHeight="204.0" prefWidth="350.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="250.0" AnchorPane.topAnchor="0.0">

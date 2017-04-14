@@ -138,7 +138,7 @@ public class GuiController implements Initializable {
         textServerAdress.setText(Dao.getSetting("SERVER_ADDRESS_FOR_SCRIPT"));
         textUpdateRate.setText(Dao.getSetting("SECONDS_TO_UPDATE_PHONE_ON_WEB_PAGE"));
         textCleanRate.setText(Dao.getSetting("SECONDS_TO_REMOVE_OLD_PHONES"));
-        textAntiSpam.setText(Dao.getSetting("MAIL_ANTISPAM"));
+        textAntiSpam.setText(Dao.getSetting("ELSE"));
 
         telephonyList.setOnMouseClicked(event -> {
             String telephon = telephonyList.getSelectionModel().getSelectedItem();
@@ -200,10 +200,12 @@ public class GuiController implements Initializable {
             int telephonyCustomers = (int) customers.stream().filter(group -> group.type == CustomerType.TELEPHONY).count();
             int trackingCustomers = (int) customers.stream().filter(group -> group.type == CustomerType.TRACKING).count();
             int freeOuter = free.freeOuter;
-            int freeInner = free.freeInner;
+//            int freeInner = free.freeInner;
             int busyOuter = free.busyOuter;
             int busyInner = free.busyInner;
-            String status = "Пользователей трекинг: "+trackingCustomers+", телефония: "+ telephonyCustomers+" | Свободных номеров внешних: "+freeOuter+", внутренних: " + freeInner + " | занято внешних: "+ busyOuter + ", внутренних: "+busyInner;
+            String status = String.format("Пользователей трекинг: %d, телефония: %d | Свободных внешних номеров : %d | " +
+                    "занято внешних: %d, внутренних: %d",
+                    trackingCustomers, telephonyCustomers, freeOuter, busyOuter, busyInner);
             statusLabel.setText(status);
         }catch (Exception e){
             statusLabel.setText("Ошибка. Возможно нет соединения");
@@ -407,6 +409,21 @@ public class GuiController implements Initializable {
         stage.show();
     }
 
+    public void showSipPass() throws Exception{
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("passwords.fxml"));
+        Stage stage = new Stage();
+        loader.setController(new PasswordsController(this, stage, telephonyList.getSelectionModel().getSelectedItem()));
+        Parent root = loader.load();
+        Scene scene = new Scene(root);
+        stage.setTitle("Пароли");
+        stage.setResizable(false);
+//        stage.initModality(Modality.WINDOW_MODAL); // Перекрывающее окно
+        stage.initOwner(siteList.getScene().getWindow()); // Указание кого оно перекрывает
+        stage.setScene(scene);
+        stage.show();
+    }
+
+
 
     public void showFilters() throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("filteredit.fxml"));
@@ -460,6 +477,7 @@ public class GuiController implements Initializable {
         Dao.setSetting("SECONDS_TO_REMOVE_OLD_PHONES", cleanRate);
         Dao.setSetting("MAIL_ANTISPAM", antispam);
     }
+
 
     public void exit() {
         Platform.exit();

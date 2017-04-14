@@ -26,7 +26,7 @@ public class RulesController implements Initializable {
     private Customer customer;
     private Stage stage;
     private GuiController guiController;
-    private List<RuleHbox> hBoxes = new ArrayList<>();
+
 
     public RulesController(GuiController guiController, Stage stage, Customer customer) {
         this.customer = customer;
@@ -77,6 +77,23 @@ public class RulesController implements Initializable {
 
     private void saveRules(){
         List<Rule> newRules = new ArrayList<>();
+        List<HBox> hboxes = new ArrayList<>();
+        int hBoxCount = vBoxForRules.getChildren().size();
+        for (int i = 0; i < hBoxCount; i++) {
+            hboxes.add((HBox) vBoxForRules.getChildren().get(i));
+        }
+        List<RuleHbox> hBoxes = new ArrayList<>();
+
+        for (HBox hBox : hboxes) {
+            hBoxes.add(new RuleHbox(
+                    ((ListView) hBox.lookup("#fromListView")),
+                    ((ListView) hBox.lookup("#toListView")),
+                    ((ChoiceBox) hBox.lookup("#forwardTypeChoice")),
+                    ((ChoiceBox) hBox.lookup("#destinationTypeChoice")),
+                    ((ChoiceBox) hBox.lookup("#melodyChoice")),
+                    ((TextField) hBox.lookup("#timeChoice"))));
+        }
+
         for (RuleHbox hBox : hBoxes) {
             Rule rule = new Rule(customer.getName());
             rule.setTo(hBox.getListTo());
@@ -86,7 +103,6 @@ public class RulesController implements Initializable {
             rule.setForwardType(hBox.getForwardTypeChoice());
             rule.setMelody(hBox.getMelodyChoice());
             newRules.add(rule);
-            System.out.println(rule);
         }
         String result = Dao.saveRules(customer.getName(), newRules);
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -254,7 +270,9 @@ public class RulesController implements Initializable {
 
         // Выбор мелодии
         ChoiceBox melodyChoice = (ChoiceBox) hBox.lookup("#melodyChoice");
-        melodyChoice.setItems(FXCollections.observableArrayList("m(simple)"));
+        List<String> melodies = Dao.getMelodies();
+        melodyChoice.setItems(FXCollections.observableArrayList(melodies));
+        melodyChoice.getSelectionModel().select(0);
         melodyChoice.setValue(rule.getMelody());
 
         // Удаление номера с
@@ -288,12 +306,10 @@ public class RulesController implements Initializable {
         //Удаление правила
         Button removeRuleButton = (Button) hBox.lookup("#removeRuleButton");
         removeRuleButton.setOnAction(event -> {
+//            hBoxes.remove(current);
             vBoxForRules.getChildren().remove(hBox);
-            hBoxes.remove(hBox);
         });
 
-
-        hBoxes.add(new RuleHbox(listFrom, listTo, forwardTypeChoice, destinationTypeChoice, melodyChoice, timeChoice));
         vBoxForRules.getChildren().add(hBox);
     }
 }

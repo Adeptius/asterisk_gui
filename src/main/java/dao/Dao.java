@@ -15,10 +15,39 @@ import java.util.*;
 
 public class Dao {
 
-        public static final String IP = "http://194.44.37.30/tracking";
+            public static final String IP = "http://194.44.37.30/tracking";
 //    public static final String IP = "http://localhost:8080/tracking";
     public static final String ADMIN_PASS = "pthy0eds";
     //TODO вернуть адрес
+
+
+    public static ArrayList<JsonSipAndPass> getPasswords(String name) throws Exception {
+        HashMap<String, String> map = new HashMap<>();
+        map.put("name", name);
+        map.put("password", ADMIN_PASS);
+        String response = sendPost(IP + "/telephony/sipPasswords", map);
+        Type listType = new TypeToken<HashMap<String, String>>() {
+        }.getType();
+        HashMap<String, String> resultMap = new Gson().fromJson(response, listType);
+        ArrayList<JsonSipAndPass> sips = new ArrayList<>();
+        for (Map.Entry<String, String> entry : resultMap.entrySet()) {
+            sips.add(new JsonSipAndPass(entry.getKey(),entry.getValue()));
+        }
+        return sips;
+    }
+
+    public static List<String> getMelodies() {
+        try {
+            String response = getJsonFromUrl(IP + "/status/getMelodies");
+            Type listType = new TypeToken<ArrayList<String>>() {
+            }.getType();
+            return new Gson().fromJson(response, listType);
+        } catch (Exception e) {
+            ArrayList<String> list = new ArrayList<>();
+            list.add("none");
+            return list;
+        }
+    }
 
     public static TelephonyCustomer getTelephonyCustomerByName(String name) throws Exception {
         HashMap<String, String> map = new HashMap<>();
