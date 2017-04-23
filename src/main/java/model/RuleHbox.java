@@ -58,7 +58,12 @@ public class RuleHbox {
     }
 
     public String getMelodyChoice() {
-        return melodyChoice.getSelectionModel().getSelectedItem().toString();
+        try {
+            return melodyChoice.getSelectionModel().getSelectedItem().toString();
+        }catch (NullPointerException e){
+            return "default";
+        }
+
     }
 
     public int getTimeChoice() {

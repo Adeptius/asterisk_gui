@@ -13,6 +13,7 @@
             <TableColumn fx:id="dateColumn" maxWidth="200.0" minWidth="120.0" prefWidth="120.0" text="Дата" />
           <TableColumn fx:id="fromColumn" maxWidth="200.0" minWidth="100.0" prefWidth="100.0" text="От" />
           <TableColumn fx:id="toColumn" maxWidth="200.0" minWidth="100.0" prefWidth="100.0" text="Кому" />
+            <TableColumn fx:id="statusColumn" maxWidth="200.0" minWidth="100.0" prefWidth="100.0" text="Состояние" />
             <TableColumn fx:id="timeToAnswerColumn" maxWidth="70.0" minWidth="70.0" prefWidth="70.0" text="До ответа" />
             <TableColumn fx:id="talkingTimeColumn" maxWidth="90.0" minWidth="90.0" prefWidth="90.0" text="Длительность" />
             <TableColumn fx:id="googleIDColumn" maxWidth="200.0" minWidth="150.0" prefWidth="200.0" text="GoogleId" />

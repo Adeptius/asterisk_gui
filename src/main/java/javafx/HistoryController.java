@@ -9,7 +9,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import dao.Dao;
-import model.History;
+import model.Call;
+import model.User;
 
 import java.awt.*;
 import java.io.IOException;
@@ -22,40 +23,45 @@ import java.util.List;
 
 public class HistoryController implements Initializable {
 
+    private GuiController guiController;
     private Stage stage;
-    private String site;
+    private User user;
 
-    public HistoryController(String site, Stage stage) {
-        this.site = site;
+    public HistoryController(GuiController guiController, Stage stage, User user) {
+        this.guiController = guiController;
         this.stage = stage;
+        this.user = user;
     }
 
     @FXML
-    private TableColumn<History, String> toColumn;
+    private TableColumn<Call, String> toColumn;
 
     @FXML
-    private TableColumn<History, String> fromColumn;
+    private TableColumn<Call, String> fromColumn;
 
     @FXML
-    private TableColumn<History, String> dateColumn;
+    private TableColumn<Call, String> dateColumn;
 
     @FXML
-    private TableColumn<History, String> talkingTimeColumn;
+    private TableColumn<Call, String> statusColumn;
 
     @FXML
-    private TableColumn<History, String> timeToAnswerColumn;
+    private TableColumn<Call, String> talkingTimeColumn;
 
     @FXML
-    private TableColumn<History, String> googleIDColumn;
+    private TableColumn<Call, String> timeToAnswerColumn;
 
     @FXML
-    private TableColumn<History, String> callIDColumn;
+    private TableColumn<Call, String> googleIDColumn;
 
     @FXML
-    private TableColumn<History, String> utmColumn;
+    private TableColumn<Call, String> callIDColumn;
 
     @FXML
-    private TableView<History> table;
+    private TableColumn<Call, String> utmColumn;
+
+    @FXML
+    private TableView<Call> table;
 
     @FXML
     private Button buttonShowOut;
@@ -82,12 +88,13 @@ public class HistoryController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         toColumn.setCellValueFactory(new PropertyValueFactory<>("to"));
         fromColumn.setCellValueFactory(new PropertyValueFactory<>("from"));
-        dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
-        talkingTimeColumn.setCellValueFactory(new PropertyValueFactory<>("talkingTime"));
-        timeToAnswerColumn.setCellValueFactory(new PropertyValueFactory<>("timeToAnswerForWebInSeconds"));
+        statusColumn.setCellValueFactory(new PropertyValueFactory<>("callState"));
+        dateColumn.setCellValueFactory(new PropertyValueFactory<>("called"));
+        talkingTimeColumn.setCellValueFactory(new PropertyValueFactory<>("ended"));
+        timeToAnswerColumn.setCellValueFactory(new PropertyValueFactory<>("answered"));
         googleIDColumn.setCellValueFactory(new PropertyValueFactory<>("googleId"));
-        callIDColumn.setCellValueFactory(new PropertyValueFactory<>("callUniqueId"));
-        utmColumn.setCellValueFactory(new PropertyValueFactory<>("request"));
+        callIDColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+        utmColumn.setCellValueFactory(new PropertyValueFactory<>("utm"));
         buttonShowIn.setOnAction(e -> showHistory(textFrom.getText(), textTo.getText(), "IN"));
         buttonShowOut.setOnAction(e -> showHistory(textFrom.getText(), textTo.getText(), "OUT"));
         btnDownload.setOnAction(e -> openInBrowser());
@@ -109,12 +116,15 @@ public class HistoryController implements Initializable {
         });
     }
 
-
     private void showHistory(String from, String to, String direction) {
-        List<History> histories = Dao.getHistory(site, from, to, direction);
-        Collections.reverse(histories);
-        table.setItems(FXCollections.observableArrayList(histories));
-        btnDownload.setVisible(false);
+        try {
+            List<Call> histories = Dao.getHistory(user, from, to, direction);
+            Collections.reverse(histories);
+            table.setItems(FXCollections.observableArrayList(histories));
+            btnDownload.setVisible(false);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     public static String doTwoSymb(int i) {
@@ -125,12 +135,12 @@ public class HistoryController implements Initializable {
 
 
     private void openInBrowser() {
-        History history = table.getSelectionModel().getSelectedItem();
-        String date = history.getDate();
+        Call history = table.getSelectionModel().getSelectedItem();
+        String date = history.getCalled();
         date = date.substring(0, date.indexOf(" "));
 
         String url = Dao.IP+"/status/record/"
-                + history.getCallUniqueId()
+                + history.getId()
                 + "/"
                 + date;
         try {

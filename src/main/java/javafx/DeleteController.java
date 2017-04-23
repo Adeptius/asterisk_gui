@@ -8,6 +8,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import dao.Dao;
+import model.User;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -15,15 +16,15 @@ import java.util.ResourceBundle;
 @SuppressWarnings("Duplicates")
 public class DeleteController implements Initializable{
 
-    private String customer;
     private Stage stage;
     private GuiController guiController;
+    private User user;
 
 
-    public DeleteController(GuiController guiController, Stage stage, String customer) {
-        this.customer = customer;
-        this.stage = stage;
+    public DeleteController(GuiController guiController, Stage stage, User user) {
         this.guiController = guiController;
+        this.user = user;
+        this.stage = stage;
     }
 
     @FXML
@@ -41,12 +42,12 @@ public class DeleteController implements Initializable{
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
 
         try{
-            result = Dao.removeCustomer(customer);
+            result = Dao.removeUser(user);
             stage.hide();
             guiController.updateCustomers();
             guiController.updateSitePhones();
             guiController.updateLogs();
-            guiController.hideSiteTableAndButtons();
+//            guiController.hideSiteTableAndButtons();
         }catch (Exception e){
             e.printStackTrace();
             result = "Ошибка: " + e.getMessage();
@@ -61,7 +62,7 @@ public class DeleteController implements Initializable{
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        label.setText("Внимание!\nПользователь " + customer + "\nбудет удалён!");
+        label.setText("Внимание!\nПользователь " + user.getLogin() + "\nбудет удалён!");
         btnDelete.setOnAction(event ->  delete());
         btnCancel.setOnAction(event ->  cancel());
         btnCancel.setFocusTraversable(true);

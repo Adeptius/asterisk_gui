@@ -9,6 +9,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import model.JsonSipAndPass;
+import model.User;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -16,15 +17,14 @@ import java.util.ResourceBundle;
 @SuppressWarnings("Duplicates")
 public class PasswordsController implements Initializable{
 
-    private String customer;
     private Stage stage;
     private GuiController guiController;
+    private User user;
 
-
-    public PasswordsController(GuiController guiController, Stage stage, String customer) {
-        this.customer = customer;
+    public PasswordsController(GuiController guiController, Stage stage, User user) {
         this.stage = stage;
         this.guiController = guiController;
+        this.user = user;
     }
 
     @FXML
@@ -41,7 +41,7 @@ public class PasswordsController implements Initializable{
         columnSip.setCellValueFactory(new PropertyValueFactory<>("sip"));
         columnPass.setCellValueFactory(new PropertyValueFactory<>("pass"));
         try {
-            table.setItems(FXCollections.observableList(Dao.getPasswords(customer)));
+            table.setItems(FXCollections.observableList(Dao.getPasswords(user)));
         }catch (Exception e){
             e.printStackTrace();
         }

@@ -1,42 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="515.0" prefWidth="646.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="javafx.GuiController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="515.0" prefWidth="908.0" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="javafx.GuiController">
 
    <children>
       <MenuBar>
         <menus>
-          <Menu mnemonicParsing="false" text="Сайт">
+          <Menu mnemonicParsing="false" text="Пользователь">
             <items>
-              <MenuItem mnemonicParsing="false" onAction="#showAddSite" text="Добавить" />
+              <MenuItem mnemonicParsing="false" onAction="#showAddUser" text="Добавить" />
+                  <MenuItem mnemonicParsing="false" onAction="#showDeleteUser" text="Удалить" />
             </items>
           </Menu>
-            <Menu mnemonicParsing="false" text="Телефония">
-               <items>
-                  <MenuItem mnemonicParsing="false" onAction="#showAddTelephony" text="Добавить" />
-               </items>
-            </Menu>
         </menus>
       </MenuBar>
       <SplitPane dividerPositions="0.5" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" VBox.vgrow="ALWAYS">
         <items>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                <children>
-                  <TabPane prefHeight="500.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <ListView fx:id="userList" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="5.0" />
+                  <TabPane prefHeight="500.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="210.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <tabs>
                       <Tab text="Трекинг">
                            <content>
@@ -44,15 +48,20 @@
                                  <children>
                                     <AnchorPane minHeight="200.0" prefHeight="200.0" prefWidth="402.0" VBox.vgrow="ALWAYS">
                                        <children>
-                                          <ListView fx:id="siteList" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                                          <VBox fx:id="buttonBox" layoutX="204.0" layoutY="-2.0" prefHeight="253.0" prefWidth="70.0">
+                                          <VBox fx:id="buttonBox" layoutY="-2.0" prefHeight="253.0" prefWidth="90.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
                                              <children>
-                                                <Button fx:id="btnEdit" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showEdit" text="Изменить">
+                                                <Label fx:id="statusTracking" alignment="CENTER" prefHeight="17.0" prefWidth="98.0" textAlignment="CENTER" />
+                                                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#connectTracking" text="Управление">
+                                                   <VBox.margin>
+                                                      <Insets bottom="5.0" top="5.0" />
+                                                   </VBox.margin>
+                                                </Button>
+                                                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showHistory" text="История">
                                                    <VBox.margin>
                                                       <Insets bottom="5.0" />
                                                    </VBox.margin>
                                                 </Button>
-                                                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showDeleteSite" text="Удалить">
+                                                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showRules" text="Правила">
                                                    <VBox.margin>
                                                       <Insets bottom="5.0" />
                                                    </VBox.margin>
@@ -62,22 +71,12 @@
                                                       <Insets bottom="5.0" />
                                                    </VBox.margin>
                                                 </Button>
-                                                <Button fx:id="btnHistory" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showHistorySite" text="История">
-                                                   <VBox.margin>
-                                                      <Insets bottom="5.0" />
-                                                   </VBox.margin>
-                                                </Button>
-                                                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showRulesSite" text="Правила">
-                                                   <VBox.margin>
-                                                      <Insets bottom="5.0" />
-                                                   </VBox.margin>
-                                                </Button>
                                              </children>
                                              <padding>
                                                 <Insets top="3.0" />
                                              </padding>
                                           </VBox>
-                                          <TableView fx:id="phoneTable" layoutX="277.0" prefHeight="200.0" prefWidth="349.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="277.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                          <TableView fx:id="phoneTable" layoutX="277.0" prefHeight="200.0" prefWidth="349.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="95.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                             <columns>
                                               <TableColumn fx:id="phoneNumber" prefWidth="75.0" text="Телефон" />
                                               <TableColumn fx:id="phoneGoogleId" prefWidth="75.0" text="Google ID" />
@@ -103,36 +102,31 @@
                                  <children>
                                     <AnchorPane minHeight="200.0" prefHeight="200.0" prefWidth="402.0" VBox.vgrow="ALWAYS">
                                        <children>
-                                          <ListView fx:id="telephonyList" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                                          <VBox fx:id="buttonBoxTelephony" layoutX="204.0" layoutY="-2.0" prefHeight="253.0" prefWidth="70.0">
+                                          <VBox fx:id="buttonBoxTelephony" layoutY="-2.0" prefHeight="253.0" prefWidth="90.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
                                              <children>
-                                                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showEditTelephony" text="Изменить">
+                                                <Label fx:id="statusTelephony" alignment="CENTER" prefHeight="19.0" prefWidth="115.0" textAlignment="CENTER" />
+                                                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#connectTelephony" text="Управление">
+                                                   <VBox.margin>
+                                                      <Insets bottom="5.0" top="5.0" />
+                                                   </VBox.margin>
+                                                </Button>
+                                                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showHistory" text="История">
                                                    <VBox.margin>
                                                       <Insets bottom="5.0" />
                                                    </VBox.margin>
                                                 </Button>
-                                                <Button fx:id="btnDelete1" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showDeleteTelephony" text="Удалить">
+                                                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showRules" text="Правила">
                                                    <VBox.margin>
                                                       <Insets bottom="5.0" />
                                                    </VBox.margin>
                                                 </Button>
-                                                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showHistoryTelephony" text="История">
-                                                   <VBox.margin>
-                                                      <Insets bottom="5.0" />
-                                                   </VBox.margin>
-                                                </Button>
-                                                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showRulesTelephony" text="Правила">
-                                                   <VBox.margin>
-                                                      <Insets bottom="5.0" />
-                                                   </VBox.margin>
-                                                </Button>
-                                                <Button mnemonicParsing="false" onAction="#showSipPass" prefHeight="25.0" prefWidth="75.0" text="Пароли" />
+                                                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showSipPass" text="Пароли" />
                                              </children>
                                              <padding>
                                                 <Insets top="3.0" />
                                              </padding>
                                           </VBox>
-                                          <HBox fx:id="phonesBoxTelephony" prefHeight="100.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="278.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                          <HBox fx:id="phonesBoxTelephony" prefHeight="100.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="95.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                              <children>
                                                 <VBox fillWidth="false" prefHeight="202.0" prefWidth="180.0">
                                                    <children>

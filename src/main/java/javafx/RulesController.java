@@ -23,13 +23,13 @@ import java.util.regex.Pattern;
 
 public class RulesController implements Initializable {
 
-    private Customer customer;
     private Stage stage;
     private GuiController guiController;
+    private User user;
 
 
-    public RulesController(GuiController guiController, Stage stage, Customer customer) {
-        this.customer = customer;
+    public RulesController(GuiController guiController, Stage stage, User user) {
+        this.user = user;
         this.stage = stage;
         this.guiController = guiController;
     }
@@ -51,7 +51,7 @@ public class RulesController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         vBoxForRules.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
-        List<Rule> rules = customer.getRules();
+        List<Rule> rules = user.getRules();
 
         for (Rule rule : rules) {
             System.out.println(rule);
@@ -66,7 +66,7 @@ public class RulesController implements Initializable {
 
         newRuleButton.setOnAction(event -> {
            try{
-               addRuleEditorToScreen(new Rule(customer.getName()));
+               addRuleEditorToScreen(new Rule());
            }catch (Exception e){
                e.printStackTrace();
            }
@@ -95,7 +95,7 @@ public class RulesController implements Initializable {
         }
 
         for (RuleHbox hBox : hBoxes) {
-            Rule rule = new Rule(customer.getName());
+            Rule rule = new Rule();
             rule.setTo(hBox.getListTo());
             rule.setFrom(hBox.getListFrom());
             rule.setTime(hBox.getTimeChoice());
@@ -104,7 +104,7 @@ public class RulesController implements Initializable {
             rule.setMelody(hBox.getMelodyChoice());
             newRules.add(rule);
         }
-        String result = Dao.saveRules(customer.getName(), newRules);
+        String result = Dao.saveRules(user.getLogin(), newRules);
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Результат");
         alert.setHeaderText(null);
@@ -159,17 +159,15 @@ public class RulesController implements Initializable {
                 toAddButton.setVisible(true);
             }
         });
-        if (customer instanceof TelephonyCustomer){
-            sipList.setItems(FXCollections.observableList(((TelephonyCustomer) customer).getInnerPhonesList()));
-        }else {
-//            sipList.setScaleY(0);
-//            sipVbox.setScaleY(0.5);
+
+        if (user.getTelephony() != null){
+            sipList.setItems(FXCollections.observableList(user.getTelephony().getInnerPhonesList()));
         }
 
         // Выбор номеров с
         ChoiceBox<String> listFromChoiseBox = (ChoiceBox<String>) hBox.lookup("#listFromChoiseBox");
         choiseBoxes.add(listFromChoiseBox);
-        availableNumbers = customer.availableNumbers;
+        availableNumbers = user.getAvailableNumbers();
         listFromChoiseBox.setItems(FXCollections.observableList(availableNumbers));
         listFromChoiseBox.setOnAction(e -> {
             if (listFromChoiseBox.getSelectionModel().getSelectedItem() != null){

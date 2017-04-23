@@ -18,16 +18,14 @@ public class Rule {
     private DestinationType destinationType = GSM;
     private int time;
     private String melody;
-    private String siteName;
 
-    public Rule(String sitename) {
-        this.siteName = sitename;
+    public Rule() {
         if (forwardType == QUEUE){
             time = 10;
         }else {
             time = 600;
         }
-        melody = "m(simple)";
+        melody = "simple";
     }
 
     public Rule(List<String> lines) {
