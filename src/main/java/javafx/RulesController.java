@@ -167,7 +167,7 @@ public class RulesController implements Initializable {
         // Выбор номеров с
         ChoiceBox<String> listFromChoiseBox = (ChoiceBox<String>) hBox.lookup("#listFromChoiseBox");
         choiseBoxes.add(listFromChoiseBox);
-        availableNumbers = user.getAvailableNumbers();
+        availableNumbers = Dao.getAvailableNumbers(user);
         listFromChoiseBox.setItems(FXCollections.observableList(availableNumbers));
         listFromChoiseBox.setOnAction(e -> {
             if (listFromChoiseBox.getSelectionModel().getSelectedItem() != null){

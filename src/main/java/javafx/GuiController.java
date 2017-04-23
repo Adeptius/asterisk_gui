@@ -374,203 +374,24 @@ public class GuiController implements Initializable {
         Dao.setSetting("MAIL_ANTISPAM", antispam);
     }
 
+    public void updateStatus() {
+        try{
+            JsonNumbersCount free = Dao.getNumbersCount();
+            List<String> customers = Dao.getListOfCustomers();
+            int users = customers.size();
+            int freeOuter = free.freeOuter;
+            int busyOuter = free.busyOuter;
+            int busyInner = free.busyInner;
+            String status = String.format("Пользователей: %d | Свободных внешних номеров : %d | " +
+                    "занято внешних: %d, внутренних: %d",
+                    users, freeOuter, busyOuter, busyInner);
+            statusLabel.setText(status);
+        }catch (Exception e){
+            statusLabel.setText("Ошибка. Возможно нет соединения");
+        }
+    }
 
     public void exit() {
         Platform.exit();
-    }
-
-
-    public void updateStatus() {
-//        try{
-//            JsonNumbersCount free = Dao.getNumbersCount();
-//            List<String> customers = Dao.getListOfCustomers();
-//            int telephonyCustomers = (int) customers.stream().filter(group -> group.type == CustomerType.TELEPHONY).count();
-//            int trackingCustomers = (int) customers.stream().filter(group -> group.type == CustomerType.TRACKING).count();
-//            int freeOuter = free.freeOuter;
-//            int busyOuter = free.busyOuter;
-//            int busyInner = free.busyInner;
-//            String status = String.format("Пользователей трекинг: %d, телефония: %d | Свободных внешних номеров : %d | " +
-//                    "занято внешних: %d, внутренних: %d",
-//                    trackingCustomers, telephonyCustomers, freeOuter, busyOuter, busyInner);
-//            statusLabel.setText(status);
-//        }catch (Exception e){
-//            statusLabel.setText("Ошибка. Возможно нет соединения");
-//        }
-    }
-
-//    public void hideSiteTableAndButtons() {
-//        buttonBox.setVisible(false);
-//        phoneTable.setVisible(false);
-//    }
-//
-//    public void showSiteTableAndButtons() {
-//        buttonBox.setVisible(true);
-//        phoneTable.setVisible(true);
-//    }
-//
-//    public void hideTelephonyTableAndButtons() {
-//        buttonBoxTelephony.setVisible(false);
-//        phonesBoxTelephony.setVisible(false);
-//    }
-//
-//    public void showTelephonyTableAndButtons() {
-//        buttonBoxTelephony.setVisible(true);
-//        phonesBoxTelephony.setVisible(true);
-//    }
-
-
-    public void showAddTelephony() throws Exception {
-//        FXMLLoader loader = new FXMLLoader(getClass().getResource("newtelephony.fxml"));
-//        Stage stage = new Stage();
-//        loader.setController(new NewTelephonyController(this, stage, null));
-//        Parent root = loader.load();
-//        Scene scene = new Scene(root);
-//        stage.setTitle("Добавление телефонии");
-//        stage.setResizable(false);
-//        stage.initModality(Modality.WINDOW_MODAL); // Перекрывающее окно
-//        stage.initOwner(userList.getScene().getWindow()); // Указание кого оно перекрывает
-//        stage.setScene(scene);
-//        stage.show();
-    }
-
-
-    public void showEditTelephony() throws Exception {
-//        FXMLLoader loader = new FXMLLoader(getClass().getResource("newtelephony.fxml"));
-//        Stage stage = new Stage();
-//        loader.setController(new NewTelephonyController(this, stage, telephonyList.getSelectionModel().getSelectedItem()));
-//        Parent root = loader.load();
-//        Scene scene = new Scene(root);
-//        stage.setTitle("Изменение телефонии");
-//        stage.setResizable(false);
-//        stage.initModality(Modality.WINDOW_MODAL); // Перекрывающее окно
-//        stage.initOwner(userList.getScene().getWindow()); // Указание кого оно перекрывает
-//        stage.setScene(scene);
-//        stage.show();
-    }
-
-
-    public void updateTelephonyPhones() {
-//        try{
-//            String telephonyCustomer = telephonyList.getSelectionModel().getSelectedItem();
-//            if (telephonyCustomer != null) {
-//                TelephonyCustomer customer = Dao.getTelephonyCustomerByName(telephonyCustomer);
-//                innerNumbers.setItems(FXCollections.observableArrayList(customer.getInnerPhonesList()));
-//                outerNumbers.setItems(FXCollections.observableArrayList(customer.getOuterPhonesList()));
-//            }
-//        }catch (Exception e){
-//            e.printStackTrace();
-//        }
-    }
-
-
-    public void showHistorySite() throws Exception {
-//        showHistory(userList.getSelectionModel().getSelectedItem());
-    }
-
-    public void showHistoryTelephony() throws Exception {
-//        showHistory(userList.getSelectionModel().getSelectedItem());
-    }
-
-    public void showHistory(String customer) throws Exception {
-//        FXMLLoader loader = new FXMLLoader(getClass().getResource("history.fxml"));
-//        Stage stage = new Stage();
-//        loader.setController(new HistoryController(customer, stage));
-//        Parent root = loader.load();
-//        Scene scene = new Scene(root);
-//        stage.setTitle("История звонков");
-//        stage.initOwner(userList.getScene().getWindow()); // Указание кого оно перекрывает
-//        stage.setScene(scene);
-//        stage.show();
-    }
-
-    public void showRulesTelephony() throws Exception {
-//        TelephonyCustomer customer = Dao.getTelephonyCustomerByName(telephonyList.getSelectionModel().getSelectedItem());
-//        showRules(customer);
-    }
-
-    public void showRulesSite() throws Exception {
-//        Site site = Dao.getSiteByName(userList.getSelectionModel().getSelectedItem());
-//        showRules(site);
-    }
-
-
-    public void showSettings() throws Exception {
-//        FXMLLoader loader = new FXMLLoader(getClass().getResource("settings.fxml"));
-//        Stage stage = new Stage();
-//        loader.setController(new SettingsController(stage));
-//        Parent root = loader.load();
-//        Scene scene = new Scene(root);
-//        stage.setTitle("Настройки");
-//        stage.setResizable(false);
-//        stage.initModality(Modality.WINDOW_MODAL); // Перекрывающее окно
-//        stage.initOwner(userList.getScene().getWindow()); // Указание кого оно перекрывает
-//        stage.setScene(scene);
-//        stage.show();
-    }
-
-    public void showDeleteTelephony() throws Exception {
-//        showDelete(telephonyList.getSelectionModel().getSelectedItem());
-    }
-
-    public void showDeleteSite() throws Exception {
-//        showDelete(userList.getSelectionModel().getSelectedItem());
-    }
-
-    public void showDelete(String customer) throws Exception {
-//        FXMLLoader loader = new FXMLLoader(getClass().getResource("dbdelete.fxml"));
-//        Stage stage = new Stage();
-//        loader.setController(new DeleteController(this, stage, customer));
-//        Parent root = loader.load();
-//        Scene scene = new Scene(root);
-//        stage.setTitle("Удаление пользователя");
-//        stage.setResizable(false);
-//        stage.initModality(Modality.WINDOW_MODAL); // Перекрывающее окно
-//        stage.initOwner(userList.getScene().getWindow()); // Указание кого оно перекрывает
-//        stage.setScene(scene);
-//        stage.show();
-    }
-
-    public void showAddSite() throws Exception {
-//        FXMLLoader loader = new FXMLLoader(getClass().getResource("newsite.fxml"));
-//        Stage stage = new Stage();
-//        loader.setController(new NewSiteController(this, stage, null));
-//        Parent root = loader.load();
-//        Scene scene = new Scene(root);
-//        stage.setTitle("Добавление сайта");
-//        stage.setResizable(false);
-//        stage.initModality(Modality.WINDOW_MODAL); // Перекрывающее окно
-//        stage.initOwner(userList.getScene().getWindow()); // Указание кого оно перекрывает
-//        stage.setScene(scene);
-//        stage.show();
-    }
-
-
-    public void showEdit() throws Exception {
-//        FXMLLoader loader = new FXMLLoader(getClass().getResource("newsite.fxml"));
-//        Stage stage = new Stage();
-//        loader.setController(new NewSiteController(this, stage, siteList.getSelectionModel().getSelectedItem()));
-//        Parent root = loader.load();
-//        Scene scene = new Scene(root);
-//        stage.setTitle("Изменение сайта");
-//        stage.setResizable(false);
-//        stage.initModality(Modality.WINDOW_MODAL); // Перекрывающее окно
-//        stage.initOwner(userList.getScene().getWindow()); // Указание кого оно перекрывает
-//        stage.setScene(scene);
-//        stage.show();
-    }
-
-
-
-    public void showFilters() throws Exception {
-//        FXMLLoader loader = new FXMLLoader(getClass().getResource("filteredit.fxml"));
-//        Parent root = loader.load();
-//        Scene scene = new Scene(root);
-//        Stage stage = new Stage();
-//        stage.setTitle("Настройка фильтров");
-//        stage.setResizable(false);
-//        stage.initModality(Modality.WINDOW_MODAL); // Перекрывающее окно
-//        stage.initOwner(userList.getScene().getWindow()); // Указание кого оно перекрывает
-//        stage.setScene(scene);
-//        stage.show();
     }
 }

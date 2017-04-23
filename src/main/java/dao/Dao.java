@@ -38,24 +38,24 @@ public class Dao {
     }
 
     public static User getUserByName(String selectedUser) throws Exception {
-        String response = sendPost(IP + "/user/getUser", null, false, hashes.get(selectedUser));
+        String response = sendPost(IP + "/user/get", null, false, hashes.get(selectedUser));
         return new Gson().fromJson(response, User.class);
     }
 
     public static String setTracking(User user, Tracking tracking) throws Exception {
-        return sendJsonObject(IP + "/user/setTracking", tracking, hashes.get(user.getLogin()));
+        return sendJsonObject(IP + "/tracking/set", tracking, hashes.get(user.getLogin()));
     }
 
     public static String removeTracking(User user) throws Exception {
-        return sendPost(IP + "/user/removeTracking", null, false, hashes.get(user.getLogin()));
+        return sendPost(IP + "/tracking/remove", null, false, hashes.get(user.getLogin()));
     }
 
     public static String setTelephony(User user, Telephony telephony) throws Exception {
-        return sendJsonObject(IP + "/user/setTelephony", telephony, hashes.get(user.getLogin()));
+        return sendJsonObject(IP + "/telephony/set", telephony, hashes.get(user.getLogin()));
     }
 
     public static String removeTelephony(User user) throws Exception {
-        return sendPost(IP + "/user/removeTelephony", null, false, hashes.get(user.getLogin()));
+        return sendPost(IP + "/telephony/remove", null, false, hashes.get(user.getLogin()));
     }
 
     public static String removeUser(User user) throws Exception {
@@ -69,9 +69,8 @@ public class Dao {
         JsonHistoryQuery query = new JsonHistoryQuery(from, to, direction);
         Type listType = new TypeToken<ArrayList<Call>>() {
         }.getType();
-        String response = sendJsonObject(IP + "/user/getHistory", query, hashes.get(user.getLogin()));
+        String response = sendJsonObject(IP + "/history/get", query, hashes.get(user.getLogin()));
         return new Gson().fromJson(response, listType);
-
     }
 
     public static String getScriptForUser(User user) throws Exception{
@@ -79,7 +78,7 @@ public class Dao {
     }
 
     public static ArrayList<JsonSipAndPass> getPasswords(User user) throws Exception {
-        String result = sendPost(IP + "/user/sipPasswords", null, false, hashes.get(user.getLogin()));
+        String result = sendPost(IP + "/telephony/getSipPasswords", null, false, hashes.get(user.getLogin()));
         Type listType = new TypeToken<HashMap<String, String>>() {
         }.getType();
         HashMap<String, String> resultMap = new Gson().fromJson(result, listType);
@@ -90,9 +89,19 @@ public class Dao {
         return sips;
     }
 
+    public static List<String> getAvailableNumbers(User user) {
+        try{
+            String result = sendPost(IP + "/rules/getAvailableNumbers", null, false, hashes.get(user.getLogin()));
+            Type listType = new TypeToken<List<String>>() {}.getType();
+            return new Gson().fromJson(result, listType);
+        }catch (Exception e){
+            return new LinkedList<>();
+        }
+    }
+
     public static List<String> getMelodies() {
         try {
-            String response = getJsonFromUrl(IP + "/status/getMelodies");
+            String response = getJsonFromUrl(IP + "/getMelodies");
             Type listType = new TypeToken<ArrayList<String>>() {
             }.getType();
             return new Gson().fromJson(response, listType);
@@ -101,14 +110,6 @@ public class Dao {
             list.add("none");
             return list;
         }
-    }
-
-    public static TelephonyCustomer getTelephonyCustomerByName(String name) throws Exception {
-        HashMap<String, String> map = new HashMap<>();
-        map.put("name", name);
-        map.put("password", ADMIN_PASS);
-        String response = sendPost(IP + "/status/telephonyinfo", map);
-        return new Gson().fromJson(response, TelephonyCustomer.class);
     }
 
     public static JsonNumbersCount getNumbersCount() throws Exception {
@@ -120,7 +121,7 @@ public class Dao {
 
     public static String saveRules(String name, List<Rule> rules) {
         try {
-            return sendJsonObject(IP + "/rules/update", rules, hashes.get(name));
+            return sendJsonObject(IP + "/rules/set", rules, hashes.get(name));
         } catch (Exception e) {
             e.printStackTrace();
             return "Ошибка отправки на сервер " + e;
@@ -176,29 +177,6 @@ public class Dao {
         }
     }
 
-    public static String removeCustomer(String name) throws Exception {
-        HashMap<String, String> map = new HashMap<>();
-        map.put("name", name);
-        map.put("adminPassword", ADMIN_PASS);
-        return sendPost(IP + "/admin/userremove", map);
-    }
-
-    public static String addOrUpdate(TelephonyCustomer customer) throws Exception {
-        String name = new Gson().toJson(customer);
-        HashMap<String, String> map = new HashMap<>();
-        map.put("adminPassword", ADMIN_PASS);
-        map.put("telephonyCustomer", name);
-        return sendPost(IP + "/admin/telephony/add", map);
-    }
-
-    public static String addOrUpdate(Site site) throws Exception {
-        String name = new Gson().toJson(site);
-        HashMap<String, String> map = new HashMap<>();
-        map.put("adminPassword", ADMIN_PASS);
-        map.put("siteCustomer", name);
-        return sendPost(IP + "/admin/site/add", map);
-    }
-
 
     public static ArrayList<String> getLogs() {
         try {
@@ -240,23 +218,6 @@ public class Dao {
         }
     }
 
-
-    public static Site getSiteByName(String siteName) {
-        siteName = siteName.replaceAll(" ", "%20");
-        try {
-            String url = "/status/siteinfo";
-
-            HashMap<String, String> map = new HashMap<>();
-            map.put("name", siteName);
-            map.put("password", ADMIN_PASS);
-            String response = sendPost(IP + url, map);
-
-            return new Gson().fromJson(response, Site.class);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
 
     public static String getJsonFromUrl(String url) throws Exception {
         URL obj = new URL(url);
@@ -356,6 +317,7 @@ public class Dao {
         in.close();
         return result;
     }
+
 
 
 }

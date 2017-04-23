@@ -139,7 +139,7 @@ public class HistoryController implements Initializable {
         String date = history.getCalled();
         date = date.substring(0, date.indexOf(" "));
 
-        String url = Dao.IP+"/status/record/"
+        String url = Dao.IP+"/history/record/"
                 + history.getId()
                 + "/"
                 + date;
