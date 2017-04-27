@@ -100,6 +100,15 @@ public class GuiController implements Initializable {
     private CheckBox REPEATED_REQUEST;
 
     @FXML
+    private CheckBox SENDING_ANALYTICS;
+
+    @FXML
+    private CheckBox MAIL_SENDING_LOG;
+
+    @FXML
+    private CheckBox MAIL_SENDING_ERRORS;
+
+    @FXML
     private TextField textUpdateRate;
 
     @FXML
@@ -126,26 +135,27 @@ public class GuiController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         try {
             Dao.updateHashes();
+            Dao.loadSettings();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        MAIL_ANTISPAM.setSelected(Dao.getSettingBoolean("MAIL_ANTISPAM"));
-        BLOCKED_BY_IP.setSelected(Dao.getSettingBoolean("BLOCKED_BY_IP"));
-        INCOMING_CALL.setSelected(Dao.getSettingBoolean("INCOMING_CALL"));
-        ANSWER_CALL.setSelected(Dao.getSettingBoolean("ANSWER_CALL"));
-        REQUEST_NUMBER.setSelected(Dao.getSettingBoolean("REQUEST_NUMBER"));
-        ENDED_CALL.setSelected(Dao.getSettingBoolean("ENDED_CALL"));
-        NUMBER_FREE.setSelected(Dao.getSettingBoolean("NUMBER_FREE"));
-        INCOMING_CALL_NOT_REGISTER.setSelected(Dao.getSettingBoolean("INCOMING_CALL_NOT_REGISTER"));
-        SENDING_NUMBER.setSelected(Dao.getSettingBoolean("SENDING_NUMBER"));
-        NO_NUMBERS_LEFT.setSelected(Dao.getSettingBoolean("NO_NUMBERS_LEFT"));
-        REPEATED_REQUEST.setSelected(Dao.getSettingBoolean("REPEATED_REQUEST"));
         ONLY_ACTIVE_SITE.setSelected(Gui.onlyActiveSite);
+        REQUEST_NUMBER.setSelected(Boolean.parseBoolean(Dao.settings.get("REQUEST_NUMBER"))); // запрос номера
+        BLOCKED_BY_IP.setSelected(Boolean.parseBoolean(Dao.settings.get("BLOCKED_BY_IP"))); // выдача по ip
+        REPEATED_REQUEST.setSelected(Boolean.parseBoolean(Dao.settings.get("REPEATED_REQUEST"))); // выдача по google id
+        SENDING_NUMBER.setSelected(Boolean.parseBoolean(Dao.settings.get("SENDING_NUMBER"))); // выдача номера
+        NUMBER_FREE.setSelected(Boolean.parseBoolean(Dao.settings.get("NUMBER_FREE"))); // освобождение номера
+        NO_NUMBERS_LEFT.setSelected(Boolean.parseBoolean(Dao.settings.get("NO_NUMBERS_LEFT"))); // нет свободных номеров
+        ENDED_CALL.setSelected(Boolean.parseBoolean(Dao.settings.get("ENDED_CALL"))); // Закончен разговор
+        SENDING_ANALYTICS.setSelected(Boolean.parseBoolean(Dao.settings.get("SENDING_ANALYTICS"))); // отправка аналитики
+        MAIL_SENDING_LOG.setSelected(Boolean.parseBoolean(Dao.settings.get("MAIL_SENDING_LOG"))); // отправка писем
+        MAIL_SENDING_ERRORS.setSelected(Boolean.parseBoolean(Dao.settings.get("MAIL_SENDING_ERRORS"))); // ошибки отправки писем
 
-        textServerAdress.setText(Dao.getSetting("SERVER_ADDRESS_FOR_SCRIPT"));
-        textUpdateRate.setText(Dao.getSetting("SECONDS_TO_UPDATE_PHONE_ON_WEB_PAGE"));
-        textCleanRate.setText(Dao.getSetting("SECONDS_TO_REMOVE_OLD_PHONES"));
-        textAntiSpam.setText(Dao.getSetting("ELSE"));
+
+        textUpdateRate.setText(Dao.settings.get("SECONDS_TO_UPDATE_PHONE_ON_WEB_PAGE"));
+        textCleanRate.setText(Dao.settings.get("SECONDS_TO_REMOVE_OLD_PHONES"));
+        textAntiSpam.setText(Dao.settings.get("MAIL_ANTISPAM"));
+
 
         userList.setOnMouseClicked(event -> {
             updateSitePhones();
@@ -235,13 +245,25 @@ public class GuiController implements Initializable {
     }
 
 
+    public void showEditUser() throws Exception {
+        showAddOrEditUser(activeUser);
+    }
+
     public void showAddUser() throws Exception {
+        showAddOrEditUser(null);
+    }
+
+    public void showAddOrEditUser(User user) throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("newuser.fxml"));
         Stage stage = new Stage();
-        loader.setController(new NewUserController(this, stage, userList.getSelectionModel().getSelectedItem()));
+        loader.setController(new NewUserController(this, stage, user));
         Parent root = loader.load();
         Scene scene = new Scene(root);
-        stage.setTitle("Добавление пользователя");
+        if (user != null) {
+            stage.setTitle("Редактирование пользователя");
+        } else {
+            stage.setTitle("Добавление пользователя");
+        }
         stage.setResizable(false);
         stage.initModality(Modality.WINDOW_MODAL); // Перекрывающее окно
         stage.initOwner(userList.getScene().getWindow()); // Указание кого оно перекрывает
@@ -363,19 +385,17 @@ public class GuiController implements Initializable {
     }
 
     public void save() {
-        String serverAdress = textServerAdress.getText();
         String updateRate = textUpdateRate.getText();
         String cleanRate = textCleanRate.getText();
         String antispam = textAntiSpam.getText();
 
-        Dao.setSetting("SERVER_ADDRESS_FOR_SCRIPT", serverAdress);
         Dao.setSetting("SECONDS_TO_UPDATE_PHONE_ON_WEB_PAGE", updateRate);
         Dao.setSetting("SECONDS_TO_REMOVE_OLD_PHONES", cleanRate);
         Dao.setSetting("MAIL_ANTISPAM", antispam);
     }
 
     public void updateStatus() {
-        try{
+        try {
             JsonNumbersCount free = Dao.getNumbersCount();
             List<String> customers = Dao.getListOfCustomers();
             int users = customers.size();
@@ -383,10 +403,10 @@ public class GuiController implements Initializable {
             int busyOuter = free.busyOuter;
             int busyInner = free.busyInner;
             String status = String.format("Пользователей: %d | Свободных внешних номеров : %d | " +
-                    "занято внешних: %d, внутренних: %d",
+                            "занято внешних: %d, внутренних: %d",
                     users, freeOuter, busyOuter, busyInner);
             statusLabel.setText(status);
-        }catch (Exception e){
+        } catch (Exception e) {
             statusLabel.setText("Ошибка. Возможно нет соединения");
         }
     }

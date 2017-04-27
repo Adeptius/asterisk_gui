@@ -6,16 +6,12 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import model.Site;
+import json.JsonUser;
 import model.User;
-import utils.Validator;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.ResourceBundle;
 
 @SuppressWarnings("Duplicates")
@@ -23,13 +19,13 @@ public class NewUserController implements Initializable {
 
     private GuiController guiController;
     private Stage stage;
-    private String userLogin;
+    private User user;
 
 
-    public NewUserController(GuiController guiController, Stage stage, String userLogin) {
+    public NewUserController(GuiController guiController, Stage stage, User user) {
         this.guiController = guiController;
         this.stage = stage;
-        this.userLogin = userLogin;
+        this.user = user;
     }
 
     @FXML
@@ -53,16 +49,16 @@ public class NewUserController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         try {
-//            if (userLogin != null) {// если мы меняем сайт
-//                btnSave.setText("Изменить");
-//                textName.setEditable(false);
-//
-//                User user = Dao.getUserByName(userLogin);
-//                textName.setText(user.getLogin());
-//                textEmail.setText(user.getEmail());
-//                textGoogleId.setText(user.getTrackingId());
-//                textPassword.setText(user.getPassword());
-//            }
+            if (user != null) {// если мы меняем сайт
+                btnSave.setText("Изменить");
+                textName.setEditable(false);
+
+                textName.setText(user.getLogin());
+                textName.setEditable(false);
+                textEmail.setText(user.getEmail());
+                textGoogleId.setText(user.getTrackingId());
+                textPassword.setText(user.getPassword());
+            }
             btnCancel.setOnAction(e -> cancel());
             btnSave.setOnAction(e -> save());
         } catch (Exception e) {
@@ -77,32 +73,37 @@ public class NewUserController implements Initializable {
 
     private void save() {
         String login = textName.getText().trim();
-        if (!Validator.isValidLogin(login)) {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Ошибка");
-            alert.setHeaderText(null);
-            alert.setContentText("Логин должен состоять только из английских букв");
-            alert.showAndWait();
-            return;
-        }
+//        if (!Validator.isValidLogin(login)) {
+//            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+//            alert.setTitle("Ошибка");
+//            alert.setHeaderText(null);
+//            alert.setContentText("Логин должен состоять только из английских букв");
+//            alert.showAndWait();
+//            return;
+//        }
 
         String email = textEmail.getText();
         String googleId = textGoogleId.getText();
         String password = textPassword.getText();
 
-        User user = new User();
-        user.setLogin(login);
-        user.setEmail(email);
-        user.setPassword(password);
-        user.setTrackingId(googleId);
+        JsonUser newUser = new JsonUser();
+        newUser.setLogin(login);
+        newUser.setEmail(email);
+        newUser.setPassword(password);
+        newUser.setTrackingId(googleId);
 
         String result;
         try {
-            result = Dao.createNewUser(user);
+            if (user != null){
+                result = Dao.editUser(newUser);
+            }else {
+                result = Dao.createNewUser(newUser);
+            }
             stage.hide();
             guiController.updateCustomers();
             guiController.updateLogs();
             guiController.updateSitePhones();
+            Dao.updateHashes();
 
         } catch (Exception e) {
             e.printStackTrace();

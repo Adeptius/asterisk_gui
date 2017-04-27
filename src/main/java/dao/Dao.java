@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import javafx.Gui;
 import json.JsonHistoryQuery;
+import json.JsonUser;
 import model.*;
 
 import java.io.BufferedReader;
@@ -16,25 +17,30 @@ import java.util.*;
 
 public class Dao {
 
-    //            public static final String IP = "http://194.44.37.30/tracking";
+//                public static final String IP = "http://194.44.37.30/tracking";
     public static final String IP = "http://localhost:8080/tracking";
     public static final String ADMIN_PASS = "pthy0eds";
     //TODO вернуть адрес
 
+    public static HashMap<String, String> settings = new HashMap<>();
 
     public static HashMap<String, String> hashes = new HashMap<>();
 
     public static void updateHashes() throws Exception {
         HashMap<String, String> map = new HashMap<>();
         map.put("adminPassword", ADMIN_PASS);
-        String response = sendPost(IP + "/admin/getHash", map, false, "");
+        String response = sendPost(IP + "/admin/getTokens", map, false, "");
         Type listType = new TypeToken<HashMap<String, String>>() {
         }.getType();
         hashes = new Gson().fromJson(response, listType);
     }
 
-    public static String createNewUser(User user) throws Exception {
-        return sendJsonObject(IP + "/addUser", user, "");
+    public static String createNewUser(JsonUser user) throws Exception {
+        return sendJsonObject(IP + "/user/add", user, "");
+    }
+
+    public static String editUser(JsonUser user) throws Exception {
+        return sendJsonObject(IP + "/user/set", user, hashes.get(user.getLogin()));
     }
 
     public static User getUserByName(String selectedUser) throws Exception {
@@ -62,7 +68,7 @@ public class Dao {
         HashMap<String, String> map = new HashMap<>();
         map.put("username", user.getLogin());
         map.put("adminPassword", ADMIN_PASS);
-        return sendPost(IP + "/admin/removeUser", map);
+        return sendPost(IP + "/user/remove", map);
     }
 
     public static ArrayList<Call> getHistory(User user, String from, String to, String direction) throws Exception {
@@ -101,7 +107,7 @@ public class Dao {
 
     public static List<String> getMelodies() {
         try {
-            String response = getJsonFromUrl(IP + "/getMelodies");
+            String response = sendPost(IP + "/rules/getMelodies",null);
             Type listType = new TypeToken<ArrayList<String>>() {
             }.getType();
             return new Gson().fromJson(response, listType);
@@ -143,6 +149,14 @@ public class Dao {
         }
     }
 
+    public static void loadSettings() throws Exception{
+        HashMap<String, String> map = new HashMap<>();
+        map.put("adminPassword", ADMIN_PASS);
+        String result = sendPost(IP + "/admin/getAllSettings", map);
+        Type listType = new TypeToken<HashMap<String, String>>() {
+        }.getType();
+        settings = new Gson().fromJson(result, listType);
+    }
 
     public static String setSetting(String name, String value) {
         if (name.equals("ONLY_ACTIVE_SITE")) {
@@ -241,18 +255,20 @@ public class Dao {
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
         con.setRequestMethod("POST");
         String urlParameters = "";
-        Object[] keys = jSonQuery.keySet().toArray();
-        for (int i = 0; i < keys.length; i++) {
-            String key = (String) keys[i];
-            urlParameters += key + "=" + jSonQuery.get(key);
-            if (!(i == keys.length - 1)) urlParameters += "&";
+        if (jSonQuery != null) {
+            Object[] keys = jSonQuery.keySet().toArray();
+            for (int i = 0; i < keys.length; i++) {
+                String key = (String) keys[i];
+                urlParameters += key + "=" + jSonQuery.get(key);
+                if (!(i == keys.length - 1)) urlParameters += "&";
+            }
+            con.setDoOutput(true);
+            DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+            System.out.println("Передаю параметры: " + urlParameters);
+            wr.writeBytes(urlParameters);
+            wr.flush();
+            wr.close();
         }
-        con.setDoOutput(true);
-        DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-        System.out.println("Передаю параметры: " + urlParameters);
-        wr.writeBytes(urlParameters);
-        wr.flush();
-        wr.close();
         BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
         String result = in.readLine();
 //        result = org.apache.commons.lang3.StringEscapeUtils.unescapeJava(result);

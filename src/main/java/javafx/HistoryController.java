@@ -139,10 +139,8 @@ public class HistoryController implements Initializable {
         String date = history.getCalled();
         date = date.substring(0, date.indexOf(" "));
 
-        String url = Dao.IP+"/history/record/"
-                + history.getId()
-                + "/"
-                + date;
+        String url = Dao.IP + "/history/record/" + history.getId() + "/" + date;
+
         try {
             Desktop.getDesktop().browse(new URI(url));
         } catch (IOException | URISyntaxException e1) {
