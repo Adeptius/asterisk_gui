@@ -9,6 +9,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import json.JsonTracking;
 import model.Tracking;
 import model.User;
 
@@ -32,34 +33,14 @@ public class AddTrackingController implements Initializable{
     private Button btnCancel;
 
     @FXML
-    private TextField textName;
-
-    @FXML
     private TextField textNumber;
 
     @FXML
     private Button btnSave;
 
     @FXML
-    private TextField textGoogleId;
-
-    @FXML
-    private TextArea textBlackList;
-
-    @FXML
-    private TextField textEmail;
-
-    @FXML
-    private TextArea textPhones;
-
-    @FXML
-    private TextField textPassword;
-
-    @FXML
     private TextField textBlock;
 
-    @FXML
-    private TextField numberOfOuterPhones;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -69,7 +50,6 @@ public class AddTrackingController implements Initializable{
 
             textNumber.setText(user.getTracking().getStandartNumber());
             textBlock.setText(String.valueOf(user.getTracking().getTimeToBlock()));
-            numberOfOuterPhones.setText(String.valueOf(user.getTracking().getSiteNumbersCount()));
         }
         btnSave.setOnAction(e -> save());
     }
@@ -98,15 +78,22 @@ public class AddTrackingController implements Initializable{
     }
 
     private void save(){
-        Tracking tracking = new Tracking();
-        tracking.setSiteNumbersCount(Integer.parseInt(numberOfOuterPhones.getText()));
+        JsonTracking tracking = new JsonTracking();
         tracking.setStandartNumber(textNumber.getText());
         tracking.setTimeToBlock(Integer.parseInt(textBlock.getText()));
 
         String result;
-        try{
-            result = Dao.setTracking(user, tracking);
 
+
+
+
+
+        try{
+            if (user.getTracking() != null){
+                result = Dao.setTracking(user, tracking);
+            }else {
+                result = Dao.addTracking(user, tracking);
+            }
         }catch (Exception e){
             e.printStackTrace();
             result = e.getMessage();

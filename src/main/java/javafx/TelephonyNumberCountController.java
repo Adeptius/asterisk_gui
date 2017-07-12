@@ -9,20 +9,20 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import json.JsonTelephony;
-import model.Telephony;
+import json.JsonTracking;
 import model.User;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class AddTelephonyController implements Initializable {
+public class TelephonyNumberCountController implements Initializable{
 
     private GuiController guiController;
     private Stage stage;
     private User user;
 
 
-    public AddTelephonyController(GuiController guiController, Stage stage, User user) {
+    public TelephonyNumberCountController(GuiController guiController, Stage stage, User user) {
         this.guiController = guiController;
         this.stage = stage;
         this.user = user;
@@ -34,46 +34,34 @@ public class AddTelephonyController implements Initializable {
     @FXML
     private Button btnSave;
 
+    @FXML
+    private TextField innerText;
+
+    @FXML
+    private TextField outerText;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         btnCancel.setOnAction(e -> cancel());
-//        if (user.getTelephony() != null) {// если мы добавляем
-//            btnSave.setVisible(false);
-//        }
+        innerText.setText(user.getTelephony().getInnerCount()+"");
+                outerText.setText(user.getTelephony().getOuterCount()+"");
         btnSave.setOnAction(e -> save());
     }
 
-    private void cancel() {
+    private void cancel(){
         stage.hide();
     }
 
-    public void remove() {
-        String result;
-        try {
-            result = Dao.removeTelephony(user);
-        } catch (Exception e) {
-            e.printStackTrace();
-            result = e.getMessage();
-        }
+    private void save(){
 
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-
-        alert.setTitle("Information");
-        alert.setHeaderText(null);
-        alert.setContentText(result);
-        alert.showAndWait();
-        guiController.updateStatus();
-        stage.hide();
-    }
-
-    private void save() {
-
+        JsonTelephony jsonTelephony = new JsonTelephony();
+        jsonTelephony.setInnerCount(Integer.parseInt(innerText.getText()));
+        jsonTelephony.setOuterCount(Integer.parseInt(outerText.getText()));
 
         String result;
-        try {
-            result = Dao.addTelephony(user);
-        } catch (Exception e) {
+        try{
+            result = Dao.setTelephonyNumberCount(user,jsonTelephony);
+        }catch (Exception e){
             e.printStackTrace();
             result = e.getMessage();
         }

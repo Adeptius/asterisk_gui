@@ -8,21 +8,21 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import json.JsonTelephony;
+import json.JsonTracking;
 import model.Telephony;
 import model.User;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class AddTelephonyController implements Initializable {
+public class TrackingNumberCountController implements Initializable{
 
     private GuiController guiController;
     private Stage stage;
     private User user;
 
 
-    public AddTelephonyController(GuiController guiController, Stage stage, User user) {
+    public TrackingNumberCountController(GuiController guiController, Stage stage, User user) {
         this.guiController = guiController;
         this.stage = stage;
         this.user = user;
@@ -34,46 +34,30 @@ public class AddTelephonyController implements Initializable {
     @FXML
     private Button btnSave;
 
+    @FXML
+    private TextField numberOfOuterPhones;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         btnCancel.setOnAction(e -> cancel());
-//        if (user.getTelephony() != null) {// если мы добавляем
-//            btnSave.setVisible(false);
-//        }
+        if (user.getTracking() != null) {// если мы добавляем
+            btnSave.setText("Изменить");
+            numberOfOuterPhones.setText(String.valueOf(user.getTracking().getSiteNumbersCount()));
+        }
         btnSave.setOnAction(e -> save());
     }
 
-    private void cancel() {
+    private void cancel(){
         stage.hide();
     }
 
-    public void remove() {
+    private void save(){
+        JsonTracking jsonTracking = new JsonTracking();
+        jsonTracking.setSiteNumbersCount(Integer.parseInt(numberOfOuterPhones.getText()));
         String result;
-        try {
-            result = Dao.removeTelephony(user);
-        } catch (Exception e) {
-            e.printStackTrace();
-            result = e.getMessage();
-        }
-
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-
-        alert.setTitle("Information");
-        alert.setHeaderText(null);
-        alert.setContentText(result);
-        alert.showAndWait();
-        guiController.updateStatus();
-        stage.hide();
-    }
-
-    private void save() {
-
-
-        String result;
-        try {
-            result = Dao.addTelephony(user);
-        } catch (Exception e) {
+        try{
+            result = Dao.setTrackingNumberCount(user, jsonTracking);
+        }catch (Exception e){
             e.printStackTrace();
             result = e.getMessage();
         }

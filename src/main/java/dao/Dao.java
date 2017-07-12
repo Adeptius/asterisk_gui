@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import javafx.Gui;
 import json.JsonHistoryQuery;
+import json.JsonTelephony;
+import json.JsonTracking;
 import json.JsonUser;
 import model.*;
 
@@ -17,7 +19,7 @@ import java.util.*;
 
 public class Dao {
 
-//                public static final String IP = "http://194.44.37.30/tracking";
+//    public static final String IP = "http://cstat.nextel.com.ua/tracking";
     public static final String IP = "http://localhost:8080/tracking";
     public static final String ADMIN_PASS = "pthy0eds";
     //TODO вернуть адрес
@@ -48,21 +50,75 @@ public class Dao {
         return new Gson().fromJson(response, User.class);
     }
 
-    public static String setTracking(User user, Tracking tracking) throws Exception {
+
+
+    public static String addTracking(User user, JsonTracking tracking) throws  Exception{
+        return sendJsonObject(IP + "/tracking/add", tracking, hashes.get(user.getLogin()));
+    }
+    public static String setTracking(User user, JsonTracking tracking) throws Exception {
         return sendJsonObject(IP + "/tracking/set", tracking, hashes.get(user.getLogin()));
+    }
+
+    public static String setTrackingNumberCount(User user, JsonTracking tracking) throws Exception {
+        return sendJsonObject(IP + "/tracking/setNumberCount", tracking, hashes.get(user.getLogin()));
     }
 
     public static String removeTracking(User user) throws Exception {
         return sendPost(IP + "/tracking/remove", null, false, hashes.get(user.getLogin()));
     }
 
-    public static String setTelephony(User user, Telephony telephony) throws Exception {
-        return sendJsonObject(IP + "/telephony/set", telephony, hashes.get(user.getLogin()));
+
+
+
+
+    public static String addTelephony(User user) throws Exception {
+        return sendJsonObject(IP + "/telephony/add", null, hashes.get(user.getLogin()));
+    }
+
+    public static String setTelephonyNumberCount(User user, JsonTelephony telephony) throws Exception {
+        return sendJsonObject(IP + "/telephony/setNumberCount", telephony, hashes.get(user.getLogin()));
     }
 
     public static String removeTelephony(User user) throws Exception {
         return sendPost(IP + "/telephony/remove", null, false, hashes.get(user.getLogin()));
     }
+
+
+
+    public static ArrayList<String> getBlacklist(User user) {
+        try {
+            String response = sendPost(IP + "/blacklist/get",null,false,hashes.get(user.getLogin()));
+            Type listType = new TypeToken<ArrayList<String>>() {
+            }.getType();
+            return new Gson().fromJson(response, listType);
+        } catch (Exception e) {
+            ArrayList<String> list = new ArrayList<>();
+            list.add("Error");
+            return list;
+        }
+    }
+
+    public static void addIpToBlackList(String ip, User user){
+        try {
+            HashMap<String, String> map = new HashMap<>();
+            map.put("ip", ip);
+            sendPost(IP + "/blacklist/add",map,false,hashes.get(user.getLogin()));
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public static void removeIpFromBlackList(String ip, User user){
+        try {
+            HashMap<String, String> map = new HashMap<>();
+            map.put("ip", ip);
+            sendPost(IP + "/blacklist/remove",map,false,hashes.get(user.getLogin()));
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+
 
     public static String removeUser(User user) throws Exception {
         HashMap<String, String> map = new HashMap<>();
@@ -333,7 +389,6 @@ public class Dao {
         in.close();
         return result;
     }
-
 
 
 }

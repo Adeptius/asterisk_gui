@@ -44,8 +44,8 @@ public class DeleteController implements Initializable{
         try{
             result = Dao.removeUser(user);
             stage.hide();
-            guiController.updateCustomers();
-            guiController.updateSitePhones();
+            guiController.updateUserList();
+            guiController.updateTrackingAndTelephonyPhones();
             guiController.updateLogs();
 //            guiController.hideSiteTableAndButtons();
         }catch (Exception e){

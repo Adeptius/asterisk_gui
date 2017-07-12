@@ -1,6 +1,7 @@
 package javafx;
 
 import javafx.application.Application;
+import javafx.application.HostServices;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -13,6 +14,7 @@ public class Gui  extends Application {
 
     public static boolean onlyActiveSite;
     public static String selectedSiteString;
+    public static HostServices hostServices;
 
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -27,6 +29,7 @@ public class Gui  extends Application {
         primaryStage.getIcons().add(new Image(Gui.class.getResourceAsStream( "adeptius64.png" )));
         primaryStage.show();
 //        guiController = fxmlLoader.getController();
+        hostServices = getHostServices();
     }
 
 

@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
@@ -22,7 +26,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="515.0" prefWidth="908.0" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="javafx.GuiController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="515.0" prefWidth="1057.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="javafx.GuiController">
 
    <children>
       <MenuBar>
@@ -57,6 +61,11 @@
                                                       <Insets bottom="5.0" top="5.0" />
                                                    </VBox.margin>
                                                 </Button>
+                                                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#changeTrackingCount" text="Номера">
+                                                   <VBox.margin>
+                                                      <Insets bottom="5.0" />
+                                                   </VBox.margin>
+                                                </Button>
                                                 <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showHistory" text="История">
                                                    <VBox.margin>
                                                       <Insets bottom="5.0" />
@@ -77,7 +86,7 @@
                                                 <Insets top="3.0" />
                                              </padding>
                                           </VBox>
-                                          <TableView fx:id="phoneTable" layoutX="277.0" prefHeight="200.0" prefWidth="349.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="95.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                          <TableView fx:id="phoneTable" layoutX="277.0" prefHeight="200.0" prefWidth="349.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="95.0" AnchorPane.rightAnchor="130.0" AnchorPane.topAnchor="0.0">
                                             <columns>
                                               <TableColumn fx:id="phoneNumber" prefWidth="75.0" text="Телефон" />
                                               <TableColumn fx:id="phoneGoogleId" prefWidth="75.0" text="Google ID" />
@@ -88,6 +97,34 @@
                                                 <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                                              </columnResizePolicy>
                                           </TableView>
+                                          <VBox prefHeight="200.0" prefWidth="120.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                             <children>
+                                                <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Черный список" />
+                                                <ListView fx:id="blackList" prefHeight="200.0" prefWidth="200.0">
+                                                   <VBox.margin>
+                                                      <Insets top="5.0" />
+                                                   </VBox.margin>
+                                                </ListView>
+                                                <TextField fx:id="blackIPText">
+                                                   <VBox.margin>
+                                                      <Insets top="5.0" />
+                                                   </VBox.margin>
+                                                </TextField>
+                                                <HBox prefHeight="30.0" prefWidth="200.0">
+                                                   <children>
+                                                      <Button mnemonicParsing="false" onAction="#addToBlackList" prefWidth="55.0" text="ADD" />
+                                                      <Button mnemonicParsing="false" onAction="#removeFromBlackList" prefWidth="55.0" text="DEL">
+                                                         <HBox.margin>
+                                                            <Insets left="10.0" />
+                                                         </HBox.margin>
+                                                      </Button>
+                                                   </children>
+                                                   <VBox.margin>
+                                                      <Insets top="5.0" />
+                                                   </VBox.margin>
+                                                </HBox>
+                                             </children>
+                                          </VBox>
                                        </children>
                                     </AnchorPane>
                                  </children>
@@ -109,6 +146,11 @@
                                                 <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#connectTelephony" text="Управление">
                                                    <VBox.margin>
                                                       <Insets bottom="5.0" top="5.0" />
+                                                   </VBox.margin>
+                                                </Button>
+                                                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#changeTelephonyCount" text="Номера">
+                                                   <VBox.margin>
+                                                      <Insets bottom="5.0" />
                                                    </VBox.margin>
                                                 </Button>
                                                 <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showHistory" text="История">

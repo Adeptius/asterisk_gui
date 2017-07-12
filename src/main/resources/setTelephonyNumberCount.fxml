@@ -21,22 +21,21 @@
             <RowConstraints maxHeight="40.0" minHeight="10.0" prefHeight="10.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <Label prefHeight="62.0" prefWidth="193.0" text="Номер по умолчанию">
+            <Label prefHeight="62.0" prefWidth="193.0" text="Внешних номеров">
                <font>
                   <Font size="14.0" />
                </font>
             </Label>
-            <TextField fx:id="textNumber" GridPane.columnIndex="1" />
-            <Label prefHeight="76.0" prefWidth="193.0" text="Минут до автоблокировки" GridPane.rowIndex="1">
+            <TextField fx:id="outerText" GridPane.columnIndex="1" />
+            <Label prefHeight="76.0" prefWidth="193.0" text="Внутренних номеров" GridPane.rowIndex="1">
                <font>
                   <Font size="14.0" />
                </font>
             </Label>
-            <TextField fx:id="textBlock" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <TextField fx:id="innerText" GridPane.columnIndex="1" GridPane.rowIndex="1" />
          </children>
       </GridPane>
       <Button fx:id="btnCancel" layoutX="317.0" layoutY="94.0" mnemonicParsing="false" text="Отменить" />
-      <Button fx:id="btnSave" layoutX="238.0" layoutY="94.0" mnemonicParsing="false" text="Добавить" />
-      <Button layoutX="171.0" layoutY="94.0" mnemonicParsing="false" onAction="#remove" text="Удалить" />
+      <Button fx:id="btnSave" layoutX="238.0" layoutY="94.0" mnemonicParsing="false" text="Изменить" />
    </children>
 </Pane>
