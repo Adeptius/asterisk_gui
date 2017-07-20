@@ -13,24 +13,44 @@ public class User {
     private String trackingId;
     private Tracking tracking;
     private Telephony telephony;
-    private List<Rule> rules = new ArrayList<>();
+    private AmoAccount amoAccount;
+    private RoistatAccount roistatAccount;
+//    private List<Rule> rules = new ArrayList<>();
     private List<String> availableNumbers;
+    private List<Scenario> scenarios = new ArrayList<>();
 
     public List<String> getAvailableNumbers() {
         return availableNumbers;
+    }
+
+
+    public RoistatAccount getRoistatAccount() {
+        return roistatAccount;
+    }
+
+    public void setRoistatAccount(RoistatAccount roistatAccount) {
+        this.roistatAccount = roistatAccount;
+    }
+
+    public AmoAccount getAmoAccount() {
+        return amoAccount;
+    }
+
+    public void setAmoAccount(AmoAccount amoAccount) {
+        this.amoAccount = amoAccount;
     }
 
     public void setAvailableNumbers(List<String> availableNumbers) {
         this.availableNumbers = availableNumbers;
     }
 
-    public List<Rule> getRules() {
-        return rules;
-    }
+//    public List<Rule> getRules() {
+//        return rules;
+//    }
 
-    public void setRules(List<Rule> rules) {
-        this.rules = rules;
-    }
+//    public void setRules(List<Rule> rules) {
+//        this.rules = rules;
+//    }
 
     public Telephony getTelephony() {
         return telephony;
@@ -50,6 +70,14 @@ public class User {
 
     public String getLogin() {
         return login;
+    }
+
+    public List<Scenario> getScenarios() {
+        return scenarios;
+    }
+
+    public void setScenarios(List<Scenario> scenarios) {
+        this.scenarios = scenarios;
     }
 
     public void setLogin(String login) {

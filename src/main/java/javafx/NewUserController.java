@@ -102,7 +102,7 @@ public class NewUserController implements Initializable {
             stage.hide();
             guiController.updateUserList();
             guiController.updateLogs();
-            guiController.updateTrackingAndTelephonyPhones();
+            guiController.updateAllUserInfo();
             Dao.updateHashes();
 
         } catch (Exception e) {

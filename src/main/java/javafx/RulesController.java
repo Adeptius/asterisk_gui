@@ -34,9 +34,8 @@ public class RulesController implements Initializable {
         this.guiController = guiController;
     }
 
-
     @FXML
-    private Button newRuleButton;
+    private Button newScenarioButton;
 
     @FXML
     private Button saveButton;
@@ -51,22 +50,22 @@ public class RulesController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         vBoxForRules.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
-        List<Rule> rules = user.getRules();
+        List<Scenario> scenarios = user.getScenarios();
 
-        for (Rule rule : rules) {
-            System.out.println(rule);
+        for (Scenario scenario : scenarios) {
+            System.out.println(scenario);
         }
         try {
-            for (Rule rule : rules) {
-                addRuleEditorToScreen(rule);
+            for (Scenario scenario : scenarios) {
+                addScenarioEditorToScreen(scenario);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        newRuleButton.setOnAction(event -> {
+        newScenarioButton.setOnAction(event -> {
            try{
-               addRuleEditorToScreen(new Rule());
+               addScenarioEditorToScreen(new Scenario());
            }catch (Exception e){
                e.printStackTrace();
            }
@@ -112,7 +111,7 @@ public class RulesController implements Initializable {
         alert.showAndWait();
     }
 
-    private void addRuleEditorToScreen(Rule rule) throws Exception{
+    private void addScenarioEditorToScreen(Scenario scenario) throws Exception{
         FXMLLoader fxmlLoader = new FXMLLoader();
         fxmlLoader.setLocation(getClass().getResource("item_rule.fxml"));
         Parent root = fxmlLoader.load();
@@ -123,7 +122,7 @@ public class RulesController implements Initializable {
 
         // Список номеров с
         ListView listFrom = (ListView) hBox.lookup("#fromListView");
-        ObservableList<String> observableFrom = FXCollections.observableList(rule.getFrom());
+        ObservableList<String> observableFrom = FXCollections.observableList(scenario.getFromList());
         listFrom.setItems(observableFrom);
 
         // Кнопка добавления номера с
@@ -190,12 +189,12 @@ public class RulesController implements Initializable {
 
         // Выбор времени
         TextField timeChoice = (TextField) hBox.lookup("#timeChoice");
-        timeChoice.setText(rule.getTime()+"");
+        timeChoice.setText(scenario.getAwaitingTime()+"");
 
         // Выбор типа переадресации
         ChoiceBox forwardTypeChoice = (ChoiceBox) hBox.lookup("#forwardTypeChoice");
         forwardTypeChoice.setItems(FXCollections.observableArrayList("Всем сразу", "По очереди"));
-        forwardTypeChoice.setValue(rule.getForwardType().name);
+        forwardTypeChoice.setValue(scenario.getForwardType().name);
 
         if ("Всем сразу".equals(forwardTypeChoice.getSelectionModel().getSelectedItem().toString())){
             timeChoice.setDisable(true);
@@ -212,12 +211,12 @@ public class RulesController implements Initializable {
         });
 
         // Список номеров на
-        ObservableList<String> observableTo = FXCollections.observableList(rule.getTo());
+        ObservableList<String> observableTo = FXCollections.observableList(scenario.getToList());
 
         // Выбор типа связи
         ChoiceBox destinationTypeChoice = (ChoiceBox) hBox.lookup("#destinationTypeChoice");
         destinationTypeChoice.setItems(FXCollections.observableArrayList("GSM", "SIP"));
-        destinationTypeChoice.setValue(rule.getDestinationType().toString());
+        destinationTypeChoice.setValue(scenario.getDestinationType().toString());
         HBox gsmVbox = (HBox) hBox.lookup("#gsmVbox");
         destinationTypeChoice.setOnAction(event -> {
             if (destinationTypeChoice.getSelectionModel().getSelectedIndex() == 0){ // если GSM
@@ -271,7 +270,7 @@ public class RulesController implements Initializable {
         List<String> melodies = Dao.getMelodies();
         melodyChoice.setItems(FXCollections.observableArrayList(melodies));
         melodyChoice.getSelectionModel().select(0);
-        melodyChoice.setValue(rule.getMelody());
+        melodyChoice.setValue(scenario.getMelody());
 
         // Удаление номера с
         Button fromDeleteButton = (Button) hBox.lookup("#fromDeleteButton");

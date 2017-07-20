@@ -14,6 +14,8 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import json.JsonAmoForController;
+import json.JsonRoistatForController;
 import model.*;
 
 import java.net.URL;
@@ -25,7 +27,7 @@ public class GuiController implements Initializable {
     public static User activeUser;
 
     @Override
-    public void initialize(URL location, ResourceBundle resources){
+    public void initialize(URL location, ResourceBundle resources) {
         try {
             Dao.updateHashes();
         } catch (Exception e) {
@@ -41,9 +43,9 @@ public class GuiController implements Initializable {
 //        update
         updateUserList();
         updateLogs();
-        updateTrackingAndTelephonyPhones();
+//        updateTrackingAndTelephonyPhones();
         updateStatus();
-        updateAmo();
+//        updateAmo();
 
         Thread monitor = new Thread(() -> {
             while (true) {
@@ -51,8 +53,16 @@ public class GuiController implements Initializable {
                     Thread.sleep(4000);
                     try {
                         updateLogs();
-                        updateTrackingAndTelephonyPhones();
-                        updateBlackList();
+                        String selectedUser = userList.getSelectionModel().getSelectedItem();
+                        if (selectedUser != null) {
+                            User user = Dao.getUserByName(selectedUser);
+                            activeUser = user;
+                            Gui.selectedSiteString = selectedUser;
+                            updateTelephony(user);
+                            updateTracking(user);
+//                            updateAmo(user);
+                            updateBlackList(user);
+                        }
                     } catch (Exception e) {
                         System.out.println("Нет связи скорее всего");
                     }
@@ -64,6 +74,18 @@ public class GuiController implements Initializable {
         monitor.start();
     }
 
+    public void updateAllUserInfo() throws Exception {
+        String selectedUser = userList.getSelectionModel().getSelectedItem();
+        if (selectedUser != null) {
+            User user = Dao.getUserByName(selectedUser);
+            activeUser = user;
+            Gui.selectedSiteString = selectedUser;
+            updateTelephony(user);
+            updateTracking(user);
+            updateAmo(user);
+            updateBlackList(user);
+        }
+    }
 
     /**
      * =================================== MENU BAR =======================================
@@ -114,13 +136,24 @@ public class GuiController implements Initializable {
     @FXML
     private ListView<String> userList;
 
-    private void initUserList(){
+    private void initUserList() {
         userList.setOnMouseClicked(event -> {
-            updateTrackingAndTelephonyPhones();
-            String sitename = userList.getSelectionModel().getSelectedItem();
-            if (sitename != null) {
-                Gui.selectedSiteString = sitename;
+            try {
+                String selectedUser = userList.getSelectionModel().getSelectedItem();
+                if (selectedUser != null) {
+                    User user = Dao.getUserByName(selectedUser);
+                    activeUser = user;
+                    Gui.selectedSiteString = selectedUser;
+                    updateTelephony(user);
+                    updateTracking(user);
+                    updateAmo(user);
+                    updateRoistat(user);
+                    updateBlackList(user);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
+
         });
     }
 
@@ -157,10 +190,10 @@ public class GuiController implements Initializable {
     @FXML
     private TextField blackIPText;
 
-    private void initTrackingTab(){
+    private void initTrackingTab() {
         phoneTable.setOnMouseClicked(event -> {
             Phone selectedPhone = phoneTable.getSelectionModel().getSelectedItem();
-            if (selectedPhone != null){
+            if (selectedPhone != null) {
                 String ip = selectedPhone.getIp();
                 blackIPText.setText(ip);
             }
@@ -171,8 +204,12 @@ public class GuiController implements Initializable {
         phoneIp.setCellValueFactory(new PropertyValueFactory<>("ip"));
     }
 
-    public void updateBlackList(){
-        ArrayList<String> list = Dao.getBlacklist(activeUser);
+    public void updateBlackList(User user) {
+        Tracking tracking = user.getTracking();
+        if (tracking == null) {
+            return;
+        }
+        List<String> list = tracking.getBlackListAsList();
         Platform.runLater(() -> {
             blackList.setItems(FXCollections.observableList(list));
         });
@@ -235,54 +272,29 @@ public class GuiController implements Initializable {
     }
 
 
-    public void addToBlackList(){
-        Dao.addIpToBlackList(blackIPText.getText(),activeUser);
+    public void addToBlackList() {
+        Dao.addIpToBlackList(blackIPText.getText(), activeUser);
         blackIPText.setText("");
     }
 
-    public void removeFromBlackList(){
+    public void removeFromBlackList() {
         Dao.removeIpFromBlackList(blackList.getSelectionModel().getSelectedItem().trim(), activeUser);
     }
 
-    public void updateTrackingAndTelephonyPhones() {
-        try {
-            String selectedUser = userList.getSelectionModel().getSelectedItem();
-            if (selectedUser != null) {
-                User user = Dao.getUserByName(selectedUser);
-                activeUser = user;
-                if (user.getTracking() != null) {
-                    Tracking tracking = user.getTracking();
-                    phoneTable.setItems(FXCollections.observableArrayList(tracking.getPhones()));
-                    Platform.runLater(() -> {
-                        statusTracking.setText("Подключено");
-                        statusTracking.setStyle("-fx-background-color: chartreuse");
-                    });
-                } else {
-                    Platform.runLater(() -> {
-                        statusTracking.setText("Отключено");
-                        statusTracking.setStyle("-fx-background-color: darkgray");
-                        phoneTable.setItems(FXCollections.emptyObservableList());
-                    });
-                }
-                if (user.getTelephony() != null) {
-                    Telephony telephony = user.getTelephony();
-                    Platform.runLater(() -> {
-                        outerNumbers.setItems(FXCollections.observableList(telephony.getOuterPhonesList()));
-                        innerNumbers.setItems(FXCollections.observableList(telephony.getInnerPhonesList()));
-                        statusTelephony.setText("Подключено");
-                        statusTelephony.setStyle("-fx-background-color: chartreuse");
-                    });
-                } else {
-                    Platform.runLater(() -> {
-                        statusTelephony.setText("Отключено");
-                        statusTelephony.setStyle("-fx-background-color: darkgray");
-                        outerNumbers.setItems(FXCollections.emptyObservableList());
-                        innerNumbers.setItems(FXCollections.emptyObservableList());
-                    });
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+    public void updateTracking(User user) {
+        if (user.getTracking() != null) {
+            Tracking tracking = user.getTracking();
+            phoneTable.setItems(FXCollections.observableArrayList(tracking.getPhones()));
+            Platform.runLater(() -> {
+                statusTracking.setText("Подключено");
+                statusTracking.setStyle("-fx-background-color: chartreuse");
+            });
+        } else {
+            Platform.runLater(() -> {
+                statusTracking.setText("Отключено");
+                statusTracking.setStyle("-fx-background-color: darkgray");
+                phoneTable.setItems(FXCollections.emptyObservableList());
+            });
         }
     }
 
@@ -301,8 +313,27 @@ public class GuiController implements Initializable {
 
 
     /**
-     * Метод ShowHistory, showRules, updateTrackingAndTelephonyPhones, общий с трекингом
+     * Метод ShowHistory, showScenarios, updateTrackingAndTelephonyPhones, общий с трекингом
      */
+
+    private void updateTelephony(User user) {
+        if (user.getTelephony() != null) {
+            Telephony telephony = user.getTelephony();
+            Platform.runLater(() -> {
+                outerNumbers.setItems(FXCollections.observableList(telephony.getOuterPhonesList()));
+                innerNumbers.setItems(FXCollections.observableList(telephony.getInnerPhonesList()));
+                statusTelephony.setText("Подключено");
+                statusTelephony.setStyle("-fx-background-color: chartreuse");
+            });
+        } else {
+            Platform.runLater(() -> {
+                statusTelephony.setText("Отключено");
+                statusTelephony.setStyle("-fx-background-color: darkgray");
+                outerNumbers.setItems(FXCollections.emptyObservableList());
+                innerNumbers.setItems(FXCollections.emptyObservableList());
+            });
+        }
+    }
 
     public void connectTelephony() throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("addTelephony.fxml"));
@@ -332,13 +363,13 @@ public class GuiController implements Initializable {
         stage.show();
     }
 
-    public void showRules() throws Exception {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("rules2.fxml"));
+    public void showScenarios() throws Exception {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("scenarios.fxml"));
         Stage stage = new Stage();
         loader.setController(new RulesController(this, stage, activeUser));
         Parent root = loader.load();
         Scene scene = new Scene(root);
-        stage.setTitle("Редактор правил");
+        stage.setTitle("Редактор сценариев");
         stage.initOwner(userList.getScene().getWindow()); // Указание кого оно перекрывает
         stage.setScene(scene);
         stage.show();
@@ -356,7 +387,6 @@ public class GuiController implements Initializable {
         stage.setScene(scene);
         stage.show();
     }
-
 
 
     /**
@@ -423,7 +453,7 @@ public class GuiController implements Initializable {
     @FXML
     private Button btnSave;
 
-    private void initSettingsTab(){
+    private void initSettingsTab() {
         try {
             Dao.loadSettings();
         } catch (Exception e) {
@@ -472,7 +502,6 @@ public class GuiController implements Initializable {
     }
 
 
-
     /**
      * =================================== AMOCRM TAB =======================================
      */
@@ -487,8 +516,17 @@ public class GuiController implements Initializable {
     @FXML
     private TextField textAmoApiKey;
 
-    private void updateAmo(){
-
+    private void updateAmo(User user) {
+        AmoAccount amoAccount = user.getAmoAccount();
+        if (amoAccount == null) {
+            textAmoDomain.setText("");
+            textAmoAccount.setText("");
+            textAmoApiKey.setText("");
+            return;
+        }
+        textAmoDomain.setText(amoAccount.getDomain());
+        textAmoAccount.setText(amoAccount.getAmoLogin());
+        textAmoApiKey.setText(amoAccount.getApiKey());
     }
 
     public void gotoAmoApiPage(ActionEvent actionEvent) {
@@ -496,32 +534,110 @@ public class GuiController implements Initializable {
     }
 
     public void onAmoSaveButton() throws Exception {
-
+        JsonAmoForController jsonAmo = new JsonAmoForController();
+        jsonAmo.setDomain(textAmoDomain.getText());
+        jsonAmo.setAmoLogin(textAmoAccount.getText());
+        jsonAmo.setApiKey(textAmoApiKey.getText());
+        String result = Dao.setAmoAccount(activeUser, jsonAmo);
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Information");
+        alert.setHeaderText(null);
+        alert.setContentText(result);
+        alert.showAndWait();
     }
 
 
     public void onAmoTestButton() throws Exception {
-
+        String result = Dao.testAmoAccount(activeUser);
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Information");
+        alert.setHeaderText(null);
+        alert.setContentText(result);
+        alert.showAndWait();
     }
 
 
+    public void onAmoRemoveButton() throws Exception {
+        String result = Dao.removeAmoAccount(activeUser);
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Information");
+        alert.setHeaderText(null);
+        alert.setContentText(result);
+        alert.showAndWait();
+    }
 
 
+    /**
+     * =================================== Roistat TAB =======================================
+     */
 
 
+    @FXML
+    private TextField textRoistatProjectNumber;
 
-   /**
+    @FXML
+    private TextField textRoistatApiKey;
+
+    private void updateRoistat(User user) {
+        RoistatAccount roistatAccount = user.getRoistatAccount();
+        if (roistatAccount == null) {
+            textRoistatApiKey.setText("");
+            textRoistatProjectNumber.setText("");
+            return;
+        }
+
+        textRoistatProjectNumber.setText(roistatAccount.getProjectNumber());
+        textRoistatApiKey.setText(roistatAccount.getApiKey());
+    }
+
+    public void gotoRoistatApiPage(ActionEvent actionEvent) {
+        Gui.hostServices.showDocument("https://cloud.roistat.com/user/profile/api");
+    }
+
+    public void onRoistatSaveButton() throws Exception {
+        JsonRoistatForController jsonRoistat = new JsonRoistatForController();
+        jsonRoistat.setApiKey(textRoistatApiKey.getText());
+        jsonRoistat.setProjectNumber(textRoistatProjectNumber.getText());
+        String result = Dao.setRoistatAccount(activeUser, jsonRoistat);
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Information");
+        alert.setHeaderText(null);
+        alert.setContentText(result);
+        alert.showAndWait();
+    }
+
+
+    public void onRoistatTestButton() throws Exception {
+        String result = Dao.testRoistatAccount(activeUser);
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Information");
+        alert.setHeaderText(null);
+        alert.setContentText(result);
+        alert.showAndWait();
+    }
+
+
+    public void onRoistatRemoveButton() throws Exception {
+        String result = Dao.removeRoistatAccount(activeUser);
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Information");
+        alert.setHeaderText(null);
+        alert.setContentText(result);
+        alert.showAndWait();
+    }
+
+
+    /**
      * =================================== LOGS =======================================
      */
 
-   @FXML
-   private ListView<String> logList;
+    @FXML
+    private ListView<String> logList;
 
-   public void updateLogs() {
-       ArrayList<String> list = Dao.getLogs();
-       Platform.runLater(() -> logList.setItems(FXCollections.observableList(list)));
-   }
-
+    public void updateLogs() {
+        ArrayList<String> list = Dao.getLogs();
+        Platform.runLater(() -> logList.setItems(FXCollections.observableList(list)));
+    }
 
 
     /**
@@ -546,13 +662,6 @@ public class GuiController implements Initializable {
             statusLabel.setText("Ошибка. Возможно нет соединения");
         }
     }
-
-
-
-
-
-
-
 
     public void exit() {
         Platform.exit();

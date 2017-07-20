@@ -3,10 +3,7 @@ package dao;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import javafx.Gui;
-import json.JsonHistoryQuery;
-import json.JsonTelephony;
-import json.JsonTracking;
-import json.JsonUser;
+import json.*;
 import model.*;
 
 import java.io.BufferedReader;
@@ -50,7 +47,9 @@ public class Dao {
         return new Gson().fromJson(response, User.class);
     }
 
-
+    /**
+     * Tracking
+     */
 
     public static String addTracking(User user, JsonTracking tracking) throws  Exception{
         return sendJsonObject(IP + "/tracking/add", tracking, hashes.get(user.getLogin()));
@@ -67,9 +66,9 @@ public class Dao {
         return sendPost(IP + "/tracking/remove", null, false, hashes.get(user.getLogin()));
     }
 
-
-
-
+    /**
+     * Telephony
+     */
 
     public static String addTelephony(User user) throws Exception {
         return sendJsonObject(IP + "/telephony/add", null, hashes.get(user.getLogin()));
@@ -83,7 +82,42 @@ public class Dao {
         return sendPost(IP + "/telephony/remove", null, false, hashes.get(user.getLogin()));
     }
 
+    /**
+     * AMOcrm
+     */
 
+    public static String setAmoAccount(User user, JsonAmoForController amoAccount) throws Exception {
+        return sendJsonObject(IP + "/amo/set", amoAccount, hashes.get(user.getLogin()));
+    }
+
+    public static String testAmoAccount(User user) throws Exception {
+        return sendJsonObject(IP + "/amo/test", "", hashes.get(user.getLogin()));
+    }
+
+    public static String removeAmoAccount(User user) throws Exception {
+        return sendJsonObject(IP + "/amo/remove", "", hashes.get(user.getLogin()));
+    }
+
+    /**
+     * Roistat
+     */
+
+    public static String setRoistatAccount(User user, JsonRoistatForController roistatAccount) throws Exception {
+        return sendJsonObject(IP + "/roistat/set", roistatAccount, hashes.get(user.getLogin()));
+    }
+
+    public static String testRoistatAccount(User user) throws Exception {
+        return sendJsonObject(IP + "/roistat/test", "", hashes.get(user.getLogin()));
+    }
+
+    public static String removeRoistatAccount(User user) throws Exception {
+        return sendJsonObject(IP + "/roistat/remove", "", hashes.get(user.getLogin()));
+    }
+
+
+    /**
+     * BlackList Tracking
+     */
 
     public static ArrayList<String> getBlacklist(User user) {
         try {
@@ -320,7 +354,7 @@ public class Dao {
             }
             con.setDoOutput(true);
             DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-            System.out.println("Передаю параметры: " + urlParameters);
+//            System.out.println("Передаю параметры: " + urlParameters);
             wr.writeBytes(urlParameters);
             wr.flush();
             wr.close();
@@ -345,7 +379,7 @@ public class Dao {
         con.setRequestProperty("Content-Type", "application/json");
         con.setDoOutput(true);
         DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-        System.out.println("Передаю параметры: " + urlParameters);
+//        System.out.println("Передаю параметры: " + urlParameters);
         wr.writeBytes(urlParameters);
         wr.flush();
         wr.close();
@@ -377,7 +411,7 @@ public class Dao {
             }
             con.setDoOutput(true);
             DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-            System.out.println("Передаю параметры: " + urlParameters);
+//            System.out.println("Передаю параметры: " + urlParameters);
             wr.writeBytes(urlParameters);
             wr.flush();
             wr.close();
