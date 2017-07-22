@@ -1,6 +1,7 @@
 package model;
 
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -12,17 +13,16 @@ public class Scenario {
 
     private int id;
     private String name;
-    private List<String> fromList;
-    private List<String> toList;
-    private ForwardType forwardType;
-    private DestinationType destinationType;
-    private ScenarioStatus status;
+    private List<String> fromList = new ArrayList<>();
+    private List<String> toList = new ArrayList<>();
+    private ForwardType forwardType = ForwardType.TO_ALL;
+    private DestinationType destinationType = DestinationType.SIP;
+    private ScenarioStatus status = ScenarioStatus.DEACTIVATED;
     private int awaitingTime;
     private String melody;
-    private int startTime;
-    private int endTime;
+    private int startHour;
+    private int endHour = 24;
     private boolean[] days;
-
 
     public List<String> getFromList() {
         return fromList;
@@ -64,20 +64,20 @@ public class Scenario {
         this.name = name;
     }
 
-    public int getStartTime() {
-        return startTime;
+    public int getStartHour() {
+        return startHour;
     }
 
-    public void setStartTime(int startTime) {
-        this.startTime = startTime;
+    public void setStartHour(int startHour) {
+        this.startHour = startHour;
     }
 
-    public int getEndTime() {
-        return endTime;
+    public int getEndHour() {
+        return endHour;
     }
 
-    public void setEndTime(int endTime) {
-        this.endTime = endTime;
+    public void setEndHour(int endHour) {
+        this.endHour = endHour;
     }
 
     public int getId() {
@@ -120,21 +120,23 @@ public class Scenario {
         this.melody = melody;
     }
 
+
     @Override
     public String toString() {
         return "Scenario{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", fromList=" + fromList +
-                ", toList=" + toList +
-                ", forwardType=" + forwardType +
-                ", destinationType=" + destinationType +
-                ", status=" + status +
-                ", awaitingTime=" + awaitingTime +
-                ", melody='" + melody + '\'' +
-                ", startTime=" + startTime +
-                ", endTime=" + endTime +
-                ", days=" + Arrays.toString(days) +
-                '}';
+                "\n  id=" + id +
+                "\n  name='" + name + '\'' +
+                "\n  fromList=" + fromList +
+                "\n  toList=" + toList +
+                "\n  forwardType=" + forwardType +
+                "\n  destinationType=" + destinationType +
+                "\n  status=" + status +
+                "\n  awaitingTime=" + awaitingTime +
+                "\n  melody='" + melody + '\'' +
+                "\n  startHour=" + startHour +
+                "\n  endHour=" + endHour +
+                "\n  days=" + Arrays.toString(days) +
+                "}";
     }
 }
+

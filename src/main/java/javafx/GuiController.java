@@ -42,7 +42,7 @@ public class GuiController implements Initializable {
 
 //        update
         updateUserList();
-        updateLogs();
+//        updateLogs();
 //        updateTrackingAndTelephonyPhones();
         updateStatus();
 //        updateAmo();
@@ -52,7 +52,7 @@ public class GuiController implements Initializable {
                 try {
                     Thread.sleep(4000);
                     try {
-                        updateLogs();
+//                        updateLogs();
                         String selectedUser = userList.getSelectionModel().getSelectedItem();
                         if (selectedUser != null) {
                             User user = Dao.getUserByName(selectedUser);
@@ -366,7 +366,7 @@ public class GuiController implements Initializable {
     public void showScenarios() throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("scenarios.fxml"));
         Stage stage = new Stage();
-        loader.setController(new RulesController(this, stage, activeUser));
+        loader.setController(new ScenarioController(this, stage, activeUser));
         Parent root = loader.load();
         Scene scene = new Scene(root);
         stage.setTitle("Редактор сценариев");
