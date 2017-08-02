@@ -18,7 +18,7 @@ import java.util.*;
 
 public class Dao {
 
-    //    public static final String IP = "http://cstat.nextel.com.ua/tracking";
+    //        public static final String IP = "http://cstat.nextel.com.ua/tracking";
     public static final String IP = "http://localhost:8080/tracking";
     public static final String ADMIN_PASS = "pthy0eds";
     //TODO вернуть адрес
@@ -111,6 +111,16 @@ public class Dao {
         return sendJsonObject(IP + "/amo/remove", "", hashes.get(user.getLogin()));
     }
 
+    public static HashMap<String, String> getAmoBindings(User user) throws Exception {
+        String response = sendPost(IP + "/amo/getBindings", null, false, hashes.get(user.getLogin()));
+        return new Gson().fromJson(response, new TypeToken<HashMap<String, String>>() {}.getType());
+    }
+
+    public static String setAmoBindings(User user, HashMap<String, String> map) throws Exception {
+        return sendJsonObject(IP + "/amo/setBindings", map, hashes.get(user.getLogin()));
+    }
+
+
     /**
      * Roistat
      */
@@ -173,6 +183,14 @@ public class Dao {
         return sendJsonObject(IP + "/scenario/set", scenario, hashes.get(user.getLogin()));
     }
 
+    public static List<Scenario> getScenarios(User user) throws Exception {
+        String responce = sendJsonObject(IP + "/scenario/get", null, hashes.get(user.getLogin()));
+        Type listType = new TypeToken<List<Scenario>>() {
+        }.getType();
+        List<Scenario> list = new Gson().fromJson(responce, listType);
+        return list;
+    }
+
     public static String activateScenario(User user, int scenarioId) throws Exception {
         HashMap<String, String> map = new HashMap<>();
         map.put("id", "" + scenarioId);
@@ -183,6 +201,12 @@ public class Dao {
         HashMap<String, String> map = new HashMap<>();
         map.put("id", "" + scenarioId);
         return sendPost(IP + "/scenario/deactivate", map, false, hashes.get(user.getLogin()));
+    }
+
+    public static String removeScenario(User user, int scenarioId) throws Exception {
+        HashMap<String, String> map = new HashMap<>();
+        map.put("id", "" + scenarioId);
+        return sendPost(IP + "/scenario/remove", map, false, hashes.get(user.getLogin()));
     }
 
 
@@ -302,10 +326,6 @@ public class Dao {
     }
 
 
-
-
-
-
     public static String sendPost(String url, HashMap<String, String> jSonQuery) throws Exception {
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -383,6 +403,4 @@ public class Dao {
         in.close();
         return result;
     }
-
-
 }

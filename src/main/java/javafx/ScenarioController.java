@@ -1,5 +1,6 @@
 package javafx;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -51,31 +52,58 @@ public class ScenarioController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         vBoxForRules.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
-        List<Scenario> scenarios = user.getScenarios();
+//        List<Scenario> scenarios = user.getScenarios();
 
-        for (Scenario scenario : scenarios) {
-            System.out.println(scenario);
-        }
-        try {
-            for (Scenario scenario : scenarios) {
-                addScenarioEditorToScreen(scenario);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        for (Scenario scenario : scenarios) {
+//            System.out.println(scenario);
+//        }
+//        try {
+//            for (Scenario scenario : scenarios) {
+//                addScenarioEditorToScreen(scenario);
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
         newScenarioButton.setOnAction(event -> {
             try {
                 Scenario scenario = new Scenario();
                 scenario.setDays(new boolean[]{false, false, false, false, false, false, false});
-
-
                 addScenarioEditorToScreen(scenario);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         });
+        refreshScreen();
 
+    }
+
+    private void refreshScreen(){
+
+        if (vBoxForRules.getChildren().size()>0){
+            vBoxForRules.getChildren().clear();
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        new Thread(() -> {
+            Platform.runLater(() -> {
+                try {
+                    List<Scenario> scenarios = Dao.getScenarios(user);
+                    for (Scenario scenario : scenarios) {
+                        System.out.println(scenario);
+                    }
+                    for (Scenario scenario : scenarios) {
+                        addScenarioEditorToScreen(scenario);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+        }).start();
     }
 
     private void addScenarioEditorToScreen(Scenario scenario) throws Exception {
@@ -320,7 +348,14 @@ public class ScenarioController implements Initializable {
         //Удаление правила
         Button removeRuleButton = (Button) rootNode.lookup("#removeRuleButton");
         removeRuleButton.setOnAction(event -> {
-            System.out.println("remove");
+            try {
+                String result = Dao.removeScenario(user, scenario.getId());
+                showInformationAlert(result);
+            } catch (Exception e) {
+                e.printStackTrace();
+                showInformationAlert(e.getMessage());
+            }
+            refreshScreen();
         });
 
 //        Активация сценария
@@ -333,6 +368,7 @@ public class ScenarioController implements Initializable {
                 showInformationAlert(e.getMessage());
                 e.printStackTrace();
             }
+            refreshScreen();
         });
 
         Button deactivateRuleButton = (Button) rootNode.lookup("#deactivateRuleButton");
@@ -344,6 +380,7 @@ public class ScenarioController implements Initializable {
                 showInformationAlert(e.getMessage());
                 e.printStackTrace();
             }
+            refreshScreen();
         });
 
 
@@ -420,6 +457,7 @@ public class ScenarioController implements Initializable {
                 e.printStackTrace();
                 showInformationAlert(e.getMessage());
             }
+            refreshScreen();
         });
 
         vBoxForRules.getChildren().add(mainNode);

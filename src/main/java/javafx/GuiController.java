@@ -198,10 +198,12 @@ public class GuiController implements Initializable {
                 blackIPText.setText(ip);
             }
         });
+
         phoneNumber.setCellValueFactory(new PropertyValueFactory<>("number"));
         phoneGoogleId.setCellValueFactory(new PropertyValueFactory<>("googleId"));
         phoneTime.setCellValueFactory(new PropertyValueFactory<>("busyTimeText"));
         phoneIp.setCellValueFactory(new PropertyValueFactory<>("ip"));
+
     }
 
     public void updateBlackList(User user) {
@@ -564,6 +566,19 @@ public class GuiController implements Initializable {
         alert.setHeaderText(null);
         alert.setContentText(result);
         alert.showAndWait();
+    }
+
+
+    public void onAmoPhoneAndWorkersButton() throws Exception {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("phonesAndWorkers.fxml"));
+        Stage stage = new Stage();
+        loader.setController(new PhonesAndWorkersController(this, stage, activeUser));
+        Parent root = loader.load();
+        Scene scene = new Scene(root);
+        stage.setTitle("Редактор привязок");
+        stage.initOwner(userList.getScene().getWindow()); // Указание кого оно перекрывает
+        stage.setScene(scene);
+        stage.show();
     }
 
 
