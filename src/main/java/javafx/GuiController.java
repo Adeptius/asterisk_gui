@@ -359,7 +359,7 @@ public class GuiController implements Initializable {
         } else {
             Platform.runLater(() -> {
                 statusTelephony.setText("Отключено");
-                statusTelephony.setStyle("-fx-background-color: darkgray");
+                statusTelephony.setStyle("-fx-background-color: darkgray" );
                 outerNumbers.setItems(FXCollections.emptyObservableList());
                 innerNumbers.setItems(FXCollections.emptyObservableList());
             });
