@@ -11,13 +11,38 @@ public class User {
     private String password;
     private String email;
     private String trackingId;
-    private Tracking tracking;
     private Telephony telephony;
     private AmoAccount amoAccount;
     private RoistatAccount roistatAccount;
-//    private List<Rule> rules = new ArrayList<>();
     private List<String> availableNumbers;
     private List<Scenario> scenarios = new ArrayList<>();
+    private List<Site> sites = new ArrayList<>();
+    private List<OuterPhone> outerPhones = new ArrayList<>();
+
+    public Site getSiteByName(String sitename) {
+        for (Site site : sites) {
+            if (site.getName().equals(sitename)) {
+                return site;
+            }
+        }
+        return null;
+    }
+
+    public List<OuterPhone> getOuterPhones() {
+        return outerPhones;
+    }
+
+    public void setOuterPhones(List<OuterPhone> outerPhones) {
+        this.outerPhones = outerPhones;
+    }
+
+    public List<Site> getSites() {
+        return sites;
+    }
+
+    public void setSites(List<Site> sites) {
+        this.sites = sites;
+    }
 
     public List<String> getAvailableNumbers() {
         return availableNumbers;
@@ -44,28 +69,12 @@ public class User {
         this.availableNumbers = availableNumbers;
     }
 
-//    public List<Rule> getRules() {
-//        return rules;
-//    }
-
-//    public void setRules(List<Rule> rules) {
-//        this.rules = rules;
-//    }
-
     public Telephony getTelephony() {
         return telephony;
     }
 
     public void setTelephony(Telephony telephony) {
         this.telephony = telephony;
-    }
-
-    public Tracking getTracking() {
-        return tracking;
-    }
-
-    public void setTracking(Tracking tracking) {
-        this.tracking = tracking;
     }
 
     public String getLogin() {
@@ -140,7 +149,7 @@ public class User {
                 ", password='" + password + '\'' +
                 ", email='" + email + '\'' +
                 ", trackingId='" + trackingId + '\'' +
-                ", site=" + tracking +
+//                ", site=" + tracking +
                 ", telephony=" + telephony +
                 '}';
     }

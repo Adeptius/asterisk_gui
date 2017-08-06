@@ -20,6 +20,7 @@ import model.*;
 
 import java.net.URL;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("ALL")
 public class GuiController implements Initializable {
@@ -42,10 +43,7 @@ public class GuiController implements Initializable {
 
 //        update
         updateUserList();
-//        updateLogs();
-//        updateTrackingAndTelephonyPhones();
         updateStatus();
-//        updateAmo();
 
         Thread monitor = new Thread(() -> {
             while (true) {
@@ -167,7 +165,10 @@ public class GuiController implements Initializable {
      */
 
     @FXML
-    private TableView<Phone> phoneTable;
+    private ListView<String> siteList;
+
+    @FXML
+    private TableView<OuterPhone> phoneTable;
 
     @FXML
     private TableColumn<Phone, String> phoneNumber;
@@ -182,7 +183,7 @@ public class GuiController implements Initializable {
     private TableColumn<Phone, String> phoneIp;
 
     @FXML
-    private Label statusTracking;
+    private TableColumn<Phone, String> phoneUtm;
 
     @FXML
     private ListView<String> blackList;
@@ -190,9 +191,11 @@ public class GuiController implements Initializable {
     @FXML
     private TextField blackIPText;
 
+    public static String choicedSitename;
+
     private void initTrackingTab() {
         phoneTable.setOnMouseClicked(event -> {
-            Phone selectedPhone = phoneTable.getSelectionModel().getSelectedItem();
+            OuterPhone selectedPhone = phoneTable.getSelectionModel().getSelectedItem();
             if (selectedPhone != null) {
                 String ip = selectedPhone.getIp();
                 blackIPText.setText(ip);
@@ -201,20 +204,20 @@ public class GuiController implements Initializable {
 
         phoneNumber.setCellValueFactory(new PropertyValueFactory<>("number"));
         phoneGoogleId.setCellValueFactory(new PropertyValueFactory<>("googleId"));
-        phoneTime.setCellValueFactory(new PropertyValueFactory<>("busyTimeText"));
         phoneIp.setCellValueFactory(new PropertyValueFactory<>("ip"));
-
+        phoneTime.setCellValueFactory(new PropertyValueFactory<>("busyTimeText"));
+        phoneUtm.setCellValueFactory(new PropertyValueFactory<>("utmRequest"));
     }
 
     public void updateBlackList(User user) {
-        Tracking tracking = user.getTracking();
-        if (tracking == null) {
-            return;
-        }
-        List<String> list = tracking.getBlackListAsList();
-        Platform.runLater(() -> {
-            blackList.setItems(FXCollections.observableList(list));
-        });
+//        Tracking tracking = user.getTracking();
+//        if (tracking == null) {
+//            return;
+//        }
+//        List<String> list = tracking.getBlackListAsList();
+//        Platform.runLater(() -> {
+//            blackList.setItems(FXCollections.observableList(list));
+//        });
     }
 
     public void connectTracking() throws Exception {
@@ -232,17 +235,17 @@ public class GuiController implements Initializable {
     }
 
     public void changeTrackingCount() throws Exception {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("setTrackingNumberCount.fxml"));
-        Stage stage = new Stage();
-        loader.setController(new TrackingNumberCountController(this, stage, activeUser));
-        Parent root = loader.load();
-        Scene scene = new Scene(root);
-        stage.setTitle("Изменение количества номеров");
-        stage.setResizable(false);
-        stage.initModality(Modality.WINDOW_MODAL); // Перекрывающее окно
-        stage.initOwner(userList.getScene().getWindow()); // Указание кого оно перекрывает
-        stage.setScene(scene);
-        stage.show();
+//        FXMLLoader loader = new FXMLLoader(getClass().getResource("setTrackingNumberCount.fxml"));
+//        Stage stage = new Stage();
+//        loader.setController(new TrackingNumberCountController(this, stage, activeUser));
+//        Parent root = loader.load();
+//        Scene scene = new Scene(root);
+//        stage.setTitle("Изменение количества номеров");
+//        stage.setResizable(false);
+//        stage.initModality(Modality.WINDOW_MODAL); // Перекрывающее окно
+//        stage.initOwner(userList.getScene().getWindow()); // Указание кого оно перекрывает
+//        stage.setScene(scene);
+//        stage.show();
     }
 
     public void showHistory() throws Exception {
@@ -262,7 +265,7 @@ public class GuiController implements Initializable {
     public void showScript() throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("script.fxml"));
         Stage stage = new Stage();
-        loader.setController(new ScriptController(activeUser, stage));
+        loader.setController(new ScriptController(activeUser, stage,choicedSitename));
         Parent root = loader.load();
         Scene scene = new Scene(root);
         stage.setTitle("Генератор скрипта");
@@ -283,20 +286,46 @@ public class GuiController implements Initializable {
         Dao.removeIpFromBlackList(blackList.getSelectionModel().getSelectedItem().trim(), activeUser);
     }
 
-    public void updateTracking(User user) {
-        if (user.getTracking() != null) {
-            Tracking tracking = user.getTracking();
-            phoneTable.setItems(FXCollections.observableArrayList(tracking.getPhones()));
-            Platform.runLater(() -> {
-                statusTracking.setText("Подключено");
-                statusTracking.setStyle("-fx-background-color: chartreuse");
-            });
-        } else {
-            Platform.runLater(() -> {
-                statusTracking.setText("Отключено");
-                statusTracking.setStyle("-fx-background-color: darkgray");
-                phoneTable.setItems(FXCollections.emptyObservableList());
-            });
+    public void updateTracking(User user){
+        try {
+            List<Site> sites = user.getSites();
+            if (sites != null) {
+                siteList.setItems(FXCollections.observableArrayList(user.getSites().stream().map(site -> site.getName()).collect(Collectors.toList())));
+                MultipleSelectionModel<String> selectionModel = siteList.getSelectionModel();
+                String selectedItem = selectionModel.getSelectedItem();
+                if (selectedItem == null) {
+                    return;// не выбран сайт
+                }
+                choicedSitename = selectedItem.toString();
+                if (choicedSitename != null) {
+//                    List<OuterPhone> phones = Dao.getOuterPhones(user, sitename); // напрямую у дао спросить только телефоны
+                    Site siteByName = user.getSiteByName(choicedSitename);
+                    if (siteByName == null) {
+                        return;
+                    }
+                    siteByName.setUser(user);
+                    List<OuterPhone> phones = siteByName.getOuterPhones();
+
+
+                    phoneTable.setItems(FXCollections.observableArrayList(phones));
+//                Platform.runLater(() -> {
+//                    statusTracking.setText("Подключено");
+//                    statusTracking.setStyle("-fx-background-color: chartreuse");
+//                });
+
+
+                }
+
+
+            } else {
+//            Platform.runLater(() -> {
+//                statusTracking.setText("Отключено");
+//                statusTracking.setStyle("-fx-background-color: darkgray");
+//                phoneTable.setItems(FXCollections.emptyObservableList());
+//            });
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 
@@ -352,17 +381,17 @@ public class GuiController implements Initializable {
     }
 
     public void changeTelephonyCount() throws Exception {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("setTelephonyNumberCount.fxml"));
-        Stage stage = new Stage();
-        loader.setController(new TelephonyNumberCountController(this, stage, activeUser));
-        Parent root = loader.load();
-        Scene scene = new Scene(root);
-        stage.setTitle("Изменение количества номеров");
-        stage.setResizable(false);
-        stage.initModality(Modality.WINDOW_MODAL); // Перекрывающее окно
-        stage.initOwner(userList.getScene().getWindow()); // Указание кого оно перекрывает
-        stage.setScene(scene);
-        stage.show();
+//        FXMLLoader loader = new FXMLLoader(getClass().getResource("setTelephonyNumberCount.fxml"));
+//        Stage stage = new Stage();
+//        loader.setController(new TelephonyNumberCountController(this, stage, activeUser));
+//        Parent root = loader.load();
+//        Scene scene = new Scene(root);
+//        stage.setTitle("Изменение количества номеров");
+//        stage.setResizable(false);
+//        stage.initModality(Modality.WINDOW_MODAL); // Перекрывающее окно
+//        stage.initOwner(userList.getScene().getWindow()); // Указание кого оно перекрывает
+//        stage.setScene(scene);
+//        stage.show();
     }
 
     public void showScenarios() throws Exception {
@@ -396,51 +425,6 @@ public class GuiController implements Initializable {
      */
 
     @FXML
-    private CheckBox MAIL_ANTISPAM;
-
-    @FXML
-    private CheckBox BLOCKED_BY_IP;
-
-    @FXML
-    private CheckBox INCOMING_CALL;
-
-    @FXML
-    private CheckBox ANSWER_CALL;
-
-    @FXML
-    private CheckBox REQUEST_NUMBER;
-
-    @FXML
-    private CheckBox ENDED_CALL;
-
-    @FXML
-    private CheckBox ONLY_ACTIVE_SITE;
-
-    @FXML
-    private CheckBox NUMBER_FREE;
-
-    @FXML
-    private CheckBox INCOMING_CALL_NOT_REGISTER;
-
-    @FXML
-    private CheckBox SENDING_NUMBER;
-
-    @FXML
-    private CheckBox NO_NUMBERS_LEFT;
-
-    @FXML
-    private CheckBox REPEATED_REQUEST;
-
-    @FXML
-    private CheckBox SENDING_ANALYTICS;
-
-    @FXML
-    private CheckBox MAIL_SENDING_LOG;
-
-    @FXML
-    private CheckBox MAIL_SENDING_ERRORS;
-
-    @FXML
     private TextField textUpdateRate;
 
     @FXML
@@ -461,22 +445,10 @@ public class GuiController implements Initializable {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        ONLY_ACTIVE_SITE.setSelected(Gui.onlyActiveSite);
-        REQUEST_NUMBER.setSelected(Boolean.parseBoolean(Dao.settings.get("REQUEST_NUMBER"))); // запрос номера
-        BLOCKED_BY_IP.setSelected(Boolean.parseBoolean(Dao.settings.get("BLOCKED_BY_IP"))); // выдача по ip
-        REPEATED_REQUEST.setSelected(Boolean.parseBoolean(Dao.settings.get("REPEATED_REQUEST"))); // выдача по google id
-        SENDING_NUMBER.setSelected(Boolean.parseBoolean(Dao.settings.get("SENDING_NUMBER"))); // выдача номера
-        NUMBER_FREE.setSelected(Boolean.parseBoolean(Dao.settings.get("NUMBER_FREE"))); // освобождение номера
-        NO_NUMBERS_LEFT.setSelected(Boolean.parseBoolean(Dao.settings.get("NO_NUMBERS_LEFT"))); // нет свободных номеров
-        ENDED_CALL.setSelected(Boolean.parseBoolean(Dao.settings.get("ENDED_CALL"))); // Закончен разговор
-        SENDING_ANALYTICS.setSelected(Boolean.parseBoolean(Dao.settings.get("SENDING_ANALYTICS"))); // отправка аналитики
-        MAIL_SENDING_LOG.setSelected(Boolean.parseBoolean(Dao.settings.get("MAIL_SENDING_LOG"))); // отправка писем
-        MAIL_SENDING_ERRORS.setSelected(Boolean.parseBoolean(Dao.settings.get("MAIL_SENDING_ERRORS"))); // ошибки отправки писем
 
         textUpdateRate.setText(Dao.settings.get("SECONDS_TO_UPDATE_PHONE_ON_WEB_PAGE"));
         textCleanRate.setText(Dao.settings.get("SECONDS_TO_REMOVE_OLD_PHONES"));
         textAntiSpam.setText(Dao.settings.get("MAIL_ANTISPAM"));
-
     }
 
     public void checkBoxPressed(ActionEvent actionEvent) {

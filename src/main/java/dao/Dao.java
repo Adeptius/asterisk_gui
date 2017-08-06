@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.request.HttpRequestWithBody;
 import javafx.Gui;
 import json.*;
 import model.*;
@@ -18,7 +19,7 @@ import java.util.*;
 
 public class Dao {
 
-    //        public static final String IP = "http://cstat.nextel.com.ua/tracking";
+//            public static final String IP = "http://cstat.nextel.com.ua/tracking";
     public static final String IP = "http://localhost:8080/tracking";
     public static final String ADMIN_PASS = "pthy0eds";
     //TODO вернуть адрес
@@ -49,7 +50,9 @@ public class Dao {
 
     public static User getUserByName(String selectedUser) throws Exception {
         String response = sendPost(IP + "/user/get", null, false, hashes.get(selectedUser));
-        return new Gson().fromJson(response, User.class);
+        User user = new Gson().fromJson(response, User.class);
+        user.setLogin(selectedUser);
+        return user;
     }
 
     public static String removeUser(User user) throws Exception {
@@ -78,6 +81,18 @@ public class Dao {
     public static String removeTracking(User user) throws Exception {
         return sendPost(IP + "/tracking/remove", null, false, hashes.get(user.getLogin()));
     }
+
+    public static List<OuterPhone> getOuterPhones(User user,String site) throws Exception {
+        HashMap<String, String> map = new HashMap<>();
+        map.put("sitename", site);
+        String result =  sendPost(IP + "/phones/get", map, false, hashes.get(user.getLogin()));
+        Type listType = new TypeToken<List<OuterPhone>>() {
+        }.getType();
+        List<OuterPhone> phones = new Gson().fromJson(result, listType);
+        return phones;
+    }
+
+
 
     /**
      * Telephony
@@ -289,8 +304,8 @@ public class Dao {
         return new Gson().fromJson(response, listType);
     }
 
-    public static String getScriptForUser(User user) throws Exception {
-        return sendPost(IP + "/script/get", null, false, hashes.get(user.getLogin()));
+    public static String getScriptForUser(User user, String sitename) throws Exception {
+        return sendPost(IP + "/script/get/"+sitename, null, false, hashes.get(user.getLogin()));
     }
 
 
@@ -355,6 +370,20 @@ public class Dao {
         return result;
     }
 
+
+    static String sendPostParams(String url, String authorization, String... params) throws Exception {
+        HttpRequestWithBody request = Unirest.post(url).header("authorization", authorization);
+
+        for (int i = 0; i < 0; i=i+2) {
+            request.field(params[i], params[i+1]);
+        }
+
+        HttpResponse<String> stringHttpResponse = request.asString();
+
+        String result = stringHttpResponse.getBody();
+        System.out.println("Ответ: " + result);
+        return result;
+    }
 
     static String sendJsonObject(String url, Object object, String authorization) throws Exception {
         String body = new Gson().toJson(object);

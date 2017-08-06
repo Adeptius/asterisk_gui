@@ -44,14 +44,14 @@ public class AddTrackingController implements Initializable{
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        btnCancel.setOnAction(e -> cancel());
-        if (user.getTracking() != null) {// если мы добавляем
-            btnSave.setText("Изменить");
-
-            textNumber.setText(user.getTracking().getStandartNumber());
-            textBlock.setText(String.valueOf(user.getTracking().getTimeToBlock()));
-        }
-        btnSave.setOnAction(e -> save());
+//        btnCancel.setOnAction(e -> cancel());
+//        if (user.getTracking() != null) {// если мы добавляем
+//            btnSave.setText("Изменить");
+//
+//            textNumber.setText(user.getTracking().getStandartNumber());
+//            textBlock.setText(String.valueOf(user.getTracking().getTimeToBlock()));
+//        }
+//        btnSave.setOnAction(e -> save());
     }
 
     private void cancel(){
@@ -88,24 +88,24 @@ public class AddTrackingController implements Initializable{
 
 
 
-        try{
-            if (user.getTracking() != null){
-                result = Dao.setTracking(user, tracking);
-            }else {
-                result = Dao.addTracking(user, tracking);
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-            result = e.getMessage();
-        }
-
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-
-        alert.setTitle("Information");
-        alert.setHeaderText(null);
-        alert.setContentText(result);
-        alert.showAndWait();
-        guiController.updateStatus();
-        stage.hide();
+//        try{
+//            if (user.getTracking() != null){
+//                result = Dao.setTracking(user, tracking);
+//            }else {
+//                result = Dao.addTracking(user, tracking);
+//            }
+//        }catch (Exception e){
+//            e.printStackTrace();
+//            result = e.getMessage();
+//        }
+//
+//        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+//
+//        alert.setTitle("Information");
+//        alert.setHeaderText(null);
+//        alert.setContentText(result);
+//        alert.showAndWait();
+//        guiController.updateStatus();
+//        stage.hide();
     }
 }

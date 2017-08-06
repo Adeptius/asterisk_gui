@@ -19,10 +19,12 @@ public class ScriptController implements Initializable {
 
     private User user;
     private Stage stage;
+    private String sitename;
 
-    public ScriptController(User user, Stage stage) {
+    public ScriptController(User user, Stage stage, String sitename) {
         this.user = user;
         this.stage = stage;
+        this.sitename = sitename;
     }
 
     @FXML
@@ -37,7 +39,7 @@ public class ScriptController implements Initializable {
         textForScript.setWrapText(true);
         String result;
         try{
-            result = Dao.getScriptForUser(user);
+            result = Dao.getScriptForUser(user, sitename);
             JSONObject object = new JSONObject(result);
             textForScript.setText(object.getString("Message"));
 

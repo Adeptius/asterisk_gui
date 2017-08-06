@@ -22,9 +22,8 @@ public class Gui  extends Application {
         fxmlLoader.setLocation(getClass().getResource("main.fxml"));
         Parent root = fxmlLoader.load();
         primaryStage.setTitle("Астериск монитор");
-        primaryStage.setScene(new Scene(root, 840, 600));
-        primaryStage.setMinHeight(600);
-        primaryStage.setMinWidth(840);
+        primaryStage.setScene(new Scene(root, 1270, 450));
+        primaryStage.setResizable(false);
         primaryStage.setOnCloseRequest(e -> Platform.exit());
         primaryStage.getIcons().add(new Image(Gui.class.getResourceAsStream( "adeptius64.png" )));
         primaryStage.show();
