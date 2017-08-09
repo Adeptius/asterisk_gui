@@ -46,7 +46,6 @@ public class DeleteController implements Initializable{
             stage.hide();
             guiController.updateUserList();
             guiController.updateAllUserInfo();
-            guiController.updateLogs();
 //            guiController.hideSiteTableAndButtons();
         }catch (Exception e){
             e.printStackTrace();

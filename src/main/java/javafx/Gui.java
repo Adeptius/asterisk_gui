@@ -6,11 +6,12 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 
-public class Gui  extends Application {
+public class Gui extends Application {
 
     public static boolean onlyActiveSite;
     public static String selectedSiteString;
@@ -40,5 +41,4 @@ public class Gui  extends Application {
         Gui gui = new Gui();
         gui.startGui();
     }
-
 }

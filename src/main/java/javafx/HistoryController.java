@@ -86,14 +86,14 @@ public class HistoryController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        toColumn.setCellValueFactory(new PropertyValueFactory<>("to"));
-        fromColumn.setCellValueFactory(new PropertyValueFactory<>("from"));
+        toColumn.setCellValueFactory(new PropertyValueFactory<>("calledTo"));
+        fromColumn.setCellValueFactory(new PropertyValueFactory<>("calledFrom"));
         statusColumn.setCellValueFactory(new PropertyValueFactory<>("callState"));
-        dateColumn.setCellValueFactory(new PropertyValueFactory<>("called"));
-        talkingTimeColumn.setCellValueFactory(new PropertyValueFactory<>("ended"));
-        timeToAnswerColumn.setCellValueFactory(new PropertyValueFactory<>("answered"));
+        dateColumn.setCellValueFactory(new PropertyValueFactory<>("calledDate"));
+        talkingTimeColumn.setCellValueFactory(new PropertyValueFactory<>("secondsTalk"));
+        timeToAnswerColumn.setCellValueFactory(new PropertyValueFactory<>("secondsToAnswer"));
         googleIDColumn.setCellValueFactory(new PropertyValueFactory<>("googleId"));
-        callIDColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+        callIDColumn.setCellValueFactory(new PropertyValueFactory<>("asteriskId"));
         utmColumn.setCellValueFactory(new PropertyValueFactory<>("utm"));
         buttonShowIn.setOnAction(e -> showHistory(textFrom.getText(), textTo.getText(), "IN"));
         buttonShowOut.setOnAction(e -> showHistory(textFrom.getText(), textTo.getText(), "OUT"));
@@ -136,10 +136,10 @@ public class HistoryController implements Initializable {
 
     private void openInBrowser() {
         Call history = table.getSelectionModel().getSelectedItem();
-        String date = history.getCalled();
+        String date = history.getCalledDate();
         date = date.substring(0, date.indexOf(" "));
 
-        String url = Dao.IP + "/history/record/" + history.getId() + "/" + date;
+        String url = Dao.IP + "/history/record/" + history.getAsteriskId() + "/" + date;
 
         try {
             Desktop.getDesktop().browse(new URI(url));

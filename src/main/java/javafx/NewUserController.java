@@ -100,10 +100,9 @@ public class NewUserController implements Initializable {
                 result = Dao.createNewUser(newUser);
             }
             stage.hide();
-            guiController.updateUserList();
-            guiController.updateLogs();
-            guiController.updateAllUserInfo();
             Dao.updateHashes();
+            guiController.updateUserList();
+            guiController.updateAllUserInfo();
 
         } catch (Exception e) {
             e.printStackTrace();

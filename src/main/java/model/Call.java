@@ -1,34 +1,62 @@
 package model;
 
 
-import java.text.SimpleDateFormat;
-
-
 public class Call {
-
-    private String id;
-    private String from;
-    private String to;
-    private String called;
-    private int answered;
-    private int ended;
-    private CallState callState;
-    private Direction direction;
-    private String googleId;
+    private String calledFrom;
+    private String calledTo;
+    private String callState;
+    private String direction;
+    private String asteriskId;
     private String utm;
+    private String googleId;
+    private String calledDate;
+    private long calledMillis;
+    private int secondsFullTime;
+    private int secondsToAnswer;
+    private int secondsTalk;
 
-    private transient long calledMillis;
-
-    public void setDateForDb(long millis) {
-        called = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(millis);
+    public Call() {
     }
 
-    public String getGoogleId() {
-        return googleId;
+
+    public String getCalledFrom() {
+        return calledFrom;
     }
 
-    public void setGoogleId(String googleId) {
-        this.googleId = googleId;
+    public void setCalledFrom(String calledFrom) {
+        this.calledFrom = calledFrom;
+    }
+
+    public String getCalledTo() {
+        return calledTo;
+    }
+
+    public void setCalledTo(String calledTo) {
+        this.calledTo = calledTo;
+    }
+
+    public String getCallState() {
+        return callState;
+    }
+
+    public void setCallState(String callState) {
+        this.callState = callState;
+    }
+
+    public String getDirection() {
+        return direction;
+    }
+
+    public void setDirection(String direction) {
+        this.direction = direction;
+    }
+
+    public String getAsteriskId() {
+        return asteriskId;
+    }
+
+    public void setAsteriskId(String asteriskId) {
+        this.asteriskId = asteriskId;
     }
 
     public String getUtm() {
@@ -39,28 +67,20 @@ public class Call {
         this.utm = utm;
     }
 
-    public Direction getDirection() {
-        return direction;
+    public String getGoogleId() {
+        return googleId;
     }
 
-    public void setDirection(Direction direction) {
-        this.direction = direction;
+    public void setGoogleId(String googleId) {
+        this.googleId = googleId;
     }
 
-    public CallState getCallState() {
-        return callState;
+    public String getCalledDate() {
+        return calledDate;
     }
 
-    public void setCallState(CallState callState) {
-        this.callState = callState;
-    }
-
-    public String getCalled() {
-        return called;
-    }
-
-    public void setCalled(String called) {
-        this.called = called;
+    public void setCalledDate(String calledDate) {
+        this.calledDate = calledDate;
     }
 
     public long getCalledMillis() {
@@ -71,77 +91,27 @@ public class Call {
         this.calledMillis = calledMillis;
     }
 
-    public int getAnswered() {
-        return answered;
+    public int getSecondsFullTime() {
+        return secondsFullTime;
     }
 
-    public void setAnswered(int answered) {
-        this.answered = answered;
+    public void setSecondsFullTime(int secondsFullTime) {
+        this.secondsFullTime = secondsFullTime;
     }
 
-    public int getEnded() {
-        return ended;
+    public int getSecondsToAnswer() {
+        return secondsToAnswer;
     }
 
-    public void setEnded(int ended) {
-        this.ended = ended;
+    public void setSecondsToAnswer(int secondsToAnswer) {
+        this.secondsToAnswer = secondsToAnswer;
     }
 
-    public String getFrom() {
-        return from;
+    public int getSecondsTalk() {
+        return secondsTalk;
     }
 
-    public void setFrom(String from) {
-        this.from = addZero(from);
-    }
-
-    public String getTo() {
-        return to;
-    }
-
-    public void setTo(String to) {
-        this.to = addZero(to);
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public static String addZero(String source) {
-        try {
-            if (source.length() == 9 && !source.startsWith("0")) {
-                source = "0" + source;
-            }
-        } catch (Exception e) {
-//            System.out.println("Ошибка добавления нолика. Пришло " + source);
-        }
-        return source;
-    }
-
-    public enum CallState{
-        ANSWERED, BUSY, FAIL
-    }
-
-    public enum Direction{
-        IN, OUT
-    }
-
-
-    @Override
-    public String toString() {
-        return "Call{" +
-                "\nid='" + id + '\'' +
-                "\nfrom='" + from + '\'' +
-                "\nto='" + to + '\'' +
-                "\ncalled=" + called +
-                "\nanswered=" + answered +
-                "\nended=" + ended +
-                "\ncallState=" + callState +
-                "\ndirection=" + direction +
-                "\n}";
+    public void setSecondsTalk(int secondsTalk) {
+        this.secondsTalk = secondsTalk;
     }
 }

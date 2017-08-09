@@ -1,6 +1,8 @@
 package javafx;
 
 
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import dao.Dao;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -15,6 +17,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import json.JsonAmoForController;
+import json.JsonInnerAndOuterPhones;
 import json.JsonRoistatForController;
 import model.*;
 
@@ -26,6 +29,8 @@ import java.util.stream.Collectors;
 public class GuiController implements Initializable {
 
     public static User activeUser;
+
+    public static boolean allRequersSeparated = true;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -53,7 +58,7 @@ public class GuiController implements Initializable {
 //                        updateLogs();
                         String selectedUser = userList.getSelectionModel().getSelectedItem();
                         if (selectedUser != null) {
-                            User user = Dao.getUserByName(selectedUser);
+                            User user = Dao.getUser(selectedUser);
                             activeUser = user;
                             Gui.selectedSiteString = selectedUser;
                             updateTelephony(user);
@@ -75,7 +80,8 @@ public class GuiController implements Initializable {
     public void updateAllUserInfo() throws Exception {
         String selectedUser = userList.getSelectionModel().getSelectedItem();
         if (selectedUser != null) {
-            User user = Dao.getUserByName(selectedUser);
+            choicedSitename = null;
+            User user = Dao.getUser(selectedUser);
             activeUser = user;
             Gui.selectedSiteString = selectedUser;
             updateTelephony(user);
@@ -139,7 +145,7 @@ public class GuiController implements Initializable {
             try {
                 String selectedUser = userList.getSelectionModel().getSelectedItem();
                 if (selectedUser != null) {
-                    User user = Dao.getUserByName(selectedUser);
+                    User user = Dao.getUser(selectedUser);
                     activeUser = user;
                     Gui.selectedSiteString = selectedUser;
                     updateTelephony(user);
@@ -147,6 +153,7 @@ public class GuiController implements Initializable {
                     updateAmo(user);
                     updateRoistat(user);
                     updateBlackList(user);
+                    choicedSitename = null;
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -210,31 +217,43 @@ public class GuiController implements Initializable {
     }
 
     public void updateBlackList(User user) {
-//        Tracking tracking = user.getTracking();
-//        if (tracking == null) {
-//            return;
-//        }
-//        List<String> list = tracking.getBlackListAsList();
-//        Platform.runLater(() -> {
-//            blackList.setItems(FXCollections.observableList(list));
-//        });
+        if (choicedSitename != null) {
+            Site siteByName = user.getSiteByName(choicedSitename);
+            if (siteByName == null) {
+                Platform.runLater(() -> {
+                    blackList.setItems(FXCollections.emptyObservableList());
+                });
+                return;
+            }
+            List<String> list;
+            if (allRequersSeparated) {
+                list = Dao.getBlackList(user, choicedSitename);
+            } else {
+                list = siteByName.getBlackList();
+            }
+
+            Platform.runLater(() -> {
+                blackList.setItems(FXCollections.observableList(list));
+            });
+        }
+
     }
 
-    public void connectTracking() throws Exception {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("addTracking.fxml"));
+    public void crudSite() throws Exception {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("crudSite.fxml"));
         Stage stage = new Stage();
-        loader.setController(new AddTrackingController(this, stage, activeUser));
+        loader.setController(new SiteController(this, stage, activeUser, choicedSitename));
         Parent root = loader.load();
         Scene scene = new Scene(root);
-        stage.setTitle("Трекинг");
+        stage.setTitle("Управление сайтами");
         stage.setResizable(false);
         stage.initModality(Modality.WINDOW_MODAL); // Перекрывающее окно
         stage.initOwner(userList.getScene().getWindow()); // Указание кого оно перекрывает
         stage.setScene(scene);
         stage.show();
     }
-
-    public void changeTrackingCount() throws Exception {
+//
+//    public void changeTrackingCount() throws Exception {
 //        FXMLLoader loader = new FXMLLoader(getClass().getResource("setTrackingNumberCount.fxml"));
 //        Stage stage = new Stage();
 //        loader.setController(new TrackingNumberCountController(this, stage, activeUser));
@@ -246,7 +265,7 @@ public class GuiController implements Initializable {
 //        stage.initOwner(userList.getScene().getWindow()); // Указание кого оно перекрывает
 //        stage.setScene(scene);
 //        stage.show();
-    }
+//    }
 
     public void showHistory() throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("history.fxml"));
@@ -265,7 +284,7 @@ public class GuiController implements Initializable {
     public void showScript() throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("script.fxml"));
         Stage stage = new Stage();
-        loader.setController(new ScriptController(activeUser, stage,choicedSitename));
+        loader.setController(new ScriptController(activeUser, stage, choicedSitename));
         Parent root = loader.load();
         Scene scene = new Scene(root);
         stage.setTitle("Генератор скрипта");
@@ -278,53 +297,55 @@ public class GuiController implements Initializable {
 
 
     public void addToBlackList() {
-        Dao.addIpToBlackList(blackIPText.getText(), activeUser);
+        Dao.addIpToBlackList(blackIPText.getText(), activeUser, choicedSitename);
         blackIPText.setText("");
     }
 
     public void removeFromBlackList() {
-        Dao.removeIpFromBlackList(blackList.getSelectionModel().getSelectedItem().trim(), activeUser);
+        Dao.removeIpFromBlackList(blackList.getSelectionModel().getSelectedItem().trim(), activeUser, choicedSitename);
     }
 
-    public void updateTracking(User user){
+    public void updateTracking(User user) {
         try {
-            List<Site> sites = user.getSites();
+            List<Site> sites = Dao.getSites(user);
             if (sites != null) {
-                siteList.setItems(FXCollections.observableArrayList(user.getSites().stream().map(site -> site.getName()).collect(Collectors.toList())));
+                Platform.runLater(() -> {
+                    siteList.setItems(FXCollections.observableArrayList(
+                            sites.stream()
+                                    .map(site -> site.getName())
+                                    .collect(Collectors.toList())
+                    ));
+                });
                 MultipleSelectionModel<String> selectionModel = siteList.getSelectionModel();
                 String selectedItem = selectionModel.getSelectedItem();
                 if (selectedItem == null) {
+                    Platform.runLater(() -> {
+                        phoneTable.setItems(FXCollections.emptyObservableList());
+                    });
                     return;// не выбран сайт
                 }
                 choicedSitename = selectedItem.toString();
                 if (choicedSitename != null) {
-//                    List<OuterPhone> phones = Dao.getOuterPhones(user, sitename); // напрямую у дао спросить только телефоны
-                    Site siteByName = user.getSiteByName(choicedSitename);
+                    List<OuterPhone> phones;
+                    Site siteByName = sites.stream().filter(site -> site.getName().equals(choicedSitename)).findFirst().get();
+
+                    phones = Dao.getOuterPhones(user, choicedSitename);
+
                     if (siteByName == null) {
                         return;
                     }
                     siteByName.setUser(user);
-                    List<OuterPhone> phones = siteByName.getOuterPhones();
-
-
-                    phoneTable.setItems(FXCollections.observableArrayList(phones));
-//                Platform.runLater(() -> {
-//                    statusTracking.setText("Подключено");
-//                    statusTracking.setStyle("-fx-background-color: chartreuse");
-//                });
-
-
+                    Platform.runLater(() -> {
+                        phoneTable.setItems(FXCollections.observableArrayList(phones));
+                    });
                 }
-
-
             } else {
-//            Platform.runLater(() -> {
-//                statusTracking.setText("Отключено");
-//                statusTracking.setStyle("-fx-background-color: darkgray");
-//                phoneTable.setItems(FXCollections.emptyObservableList());
-//            });
+                Platform.runLater(() -> {
+                    phoneTable.setItems(FXCollections.emptyObservableList());
+                });
             }
-        }catch (Exception e){
+        } catch (JsonSyntaxException ignored) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -332,9 +353,6 @@ public class GuiController implements Initializable {
     /**
      * =================================== TELEPHONY TAB =======================================
      */
-
-    @FXML
-    private Label statusTelephony;
 
     @FXML
     private ListView<String> innerNumbers;
@@ -348,21 +366,20 @@ public class GuiController implements Initializable {
      */
 
     private void updateTelephony(User user) {
-        if (user.getTelephony() != null) {
-            Telephony telephony = user.getTelephony();
+        try {
+            JsonInnerAndOuterPhones innerAndOuterPhones = Dao.getInnerAndOuterPhones(user);
+
+            List<InnerPhone> innerPhones = innerAndOuterPhones.getInnerPhones();
+            List<OuterPhone> outerPhones = innerAndOuterPhones.getOuterPhones();
+
+            List<String> innerList = innerPhones.stream().map(InnerPhone::getNumber).sorted().collect(Collectors.toList());
+            List<String> outerList = outerPhones.stream().map(OuterPhone::getNumber).sorted().collect(Collectors.toList());
             Platform.runLater(() -> {
-                outerNumbers.setItems(FXCollections.observableList(telephony.getOuterPhonesList()));
-                innerNumbers.setItems(FXCollections.observableList(telephony.getInnerPhonesList()));
-                statusTelephony.setText("Подключено");
-                statusTelephony.setStyle("-fx-background-color: chartreuse");
+                outerNumbers.setItems(FXCollections.observableList(outerList));
+                innerNumbers.setItems(FXCollections.observableList(innerList));
             });
-        } else {
-            Platform.runLater(() -> {
-                statusTelephony.setText("Отключено");
-                statusTelephony.setStyle("-fx-background-color: darkgray" );
-                outerNumbers.setItems(FXCollections.emptyObservableList());
-                innerNumbers.setItems(FXCollections.emptyObservableList());
-            });
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -381,17 +398,17 @@ public class GuiController implements Initializable {
     }
 
     public void changeTelephonyCount() throws Exception {
-//        FXMLLoader loader = new FXMLLoader(getClass().getResource("setTelephonyNumberCount.fxml"));
-//        Stage stage = new Stage();
-//        loader.setController(new TelephonyNumberCountController(this, stage, activeUser));
-//        Parent root = loader.load();
-//        Scene scene = new Scene(root);
-//        stage.setTitle("Изменение количества номеров");
-//        stage.setResizable(false);
-//        stage.initModality(Modality.WINDOW_MODAL); // Перекрывающее окно
-//        stage.initOwner(userList.getScene().getWindow()); // Указание кого оно перекрывает
-//        stage.setScene(scene);
-//        stage.show();
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("setPhonesCount.fxml"));
+        Stage stage = new Stage();
+        loader.setController(new PhonesCountController(this, stage, activeUser));
+        Parent root = loader.load();
+        Scene scene = new Scene(root);
+        stage.setTitle("Изменение количества номеров");
+        stage.setResizable(false);
+        stage.initModality(Modality.WINDOW_MODAL); // Перекрывающее окно
+        stage.initOwner(userList.getScene().getWindow()); // Указание кого оно перекрывает
+        stage.setScene(scene);
+        stage.show();
     }
 
     public void showScenarios() throws Exception {
@@ -491,7 +508,21 @@ public class GuiController implements Initializable {
     private TextField textAmoApiKey;
 
     private void updateAmo(User user) {
-        AmoAccount amoAccount = user.getAmoAccount();
+        AmoAccount amoAccount;
+        if (allRequersSeparated) {
+            String response = "";
+            try {
+                response = Dao.getAmoAccount(user);
+                amoAccount = new Gson().fromJson(response, AmoAccount.class);
+            } catch (Exception e) {
+                e.printStackTrace();
+//                showInformationAlert(response);
+                return;
+            }
+        } else {
+            amoAccount = user.getAmoAccount();
+        }
+
         if (amoAccount == null) {
             textAmoDomain.setText("");
             textAmoAccount.setText("");
@@ -566,7 +597,18 @@ public class GuiController implements Initializable {
     private TextField textRoistatApiKey;
 
     private void updateRoistat(User user) {
-        RoistatAccount roistatAccount = user.getRoistatAccount();
+        RoistatAccount roistatAccount;
+        if (allRequersSeparated) {
+            try {
+                roistatAccount = new Gson().fromJson(Dao.getRoistatAccount(user), RoistatAccount.class);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return;
+            }
+        } else {
+            roistatAccount = user.getRoistatAccount();
+        }
+
         if (roistatAccount == null) {
             textRoistatApiKey.setText("");
             textRoistatProjectNumber.setText("");
@@ -611,19 +653,6 @@ public class GuiController implements Initializable {
         alert.setHeaderText(null);
         alert.setContentText(result);
         alert.showAndWait();
-    }
-
-
-    /**
-     * =================================== LOGS =======================================
-     */
-
-    @FXML
-    private ListView<String> logList;
-
-    public void updateLogs() {
-        ArrayList<String> list = Dao.getLogs();
-        Platform.runLater(() -> logList.setItems(FXCollections.observableList(list)));
     }
 
 

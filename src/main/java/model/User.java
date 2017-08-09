@@ -18,6 +18,7 @@ public class User {
     private List<Scenario> scenarios = new ArrayList<>();
     private List<Site> sites = new ArrayList<>();
     private List<OuterPhone> outerPhones = new ArrayList<>();
+    private List<InnerPhone> innerPhones = new ArrayList<>();
 
     public Site getSiteByName(String sitename) {
         for (Site site : sites) {
@@ -32,61 +33,23 @@ public class User {
         return outerPhones;
     }
 
-    public void setOuterPhones(List<OuterPhone> outerPhones) {
-        this.outerPhones = outerPhones;
+    public List<InnerPhone> getInnerPhones() {
+        return innerPhones;
     }
-
-    public List<Site> getSites() {
-        return sites;
-    }
-
-    public void setSites(List<Site> sites) {
-        this.sites = sites;
-    }
-
-    public List<String> getAvailableNumbers() {
-        return availableNumbers;
-    }
-
-
     public RoistatAccount getRoistatAccount() {
         return roistatAccount;
-    }
-
-    public void setRoistatAccount(RoistatAccount roistatAccount) {
-        this.roistatAccount = roistatAccount;
     }
 
     public AmoAccount getAmoAccount() {
         return amoAccount;
     }
 
-    public void setAmoAccount(AmoAccount amoAccount) {
-        this.amoAccount = amoAccount;
-    }
-
-    public void setAvailableNumbers(List<String> availableNumbers) {
-        this.availableNumbers = availableNumbers;
-    }
-
     public Telephony getTelephony() {
         return telephony;
     }
 
-    public void setTelephony(Telephony telephony) {
-        this.telephony = telephony;
-    }
-
     public String getLogin() {
         return login;
-    }
-
-    public List<Scenario> getScenarios() {
-        return scenarios;
-    }
-
-    public void setScenarios(List<Scenario> scenarios) {
-        this.scenarios = scenarios;
     }
 
     public void setLogin(String login) {
@@ -97,25 +60,14 @@ public class User {
         return password;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     public String getEmail() {
         return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public String getTrackingId() {
         return trackingId;
     }
 
-    public void setTrackingId(String trackingId) {
-        this.trackingId = trackingId;
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -149,7 +101,6 @@ public class User {
                 ", password='" + password + '\'' +
                 ", email='" + email + '\'' +
                 ", trackingId='" + trackingId + '\'' +
-//                ", site=" + tracking +
                 ", telephony=" + telephony +
                 '}';
     }

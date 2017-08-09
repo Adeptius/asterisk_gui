@@ -3,7 +3,7 @@ package json;
 
 
 
-public class JsonTelephony {
+public class JsonPhoneCount {
 
     private Integer innerCount;
     private Integer outerCount;

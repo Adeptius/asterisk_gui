@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="149.0" prefWidth="401.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <GridPane layoutX="8.0" layoutY="7.0" prefHeight="106.0" prefWidth="385.0">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints maxHeight="40.0" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="40.0" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="40.0" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <Label prefHeight="62.0" prefWidth="193.0" text="Номер по умолчанию" GridPane.rowIndex="1">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <TextField fx:id="textNumber" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <Label prefHeight="76.0" prefWidth="193.0" text="Минут до автоблокировки" GridPane.rowIndex="2">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <TextField fx:id="textBlock" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <TextField fx:id="textName" GridPane.columnIndex="1" />
+            <Label prefHeight="62.0" prefWidth="193.0" text="Название">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+         </children>
+      </GridPane>
+      <Button fx:id="btnCancel" layoutX="317.0" layoutY="119.0" mnemonicParsing="false" text="Отменить" />
+      <Button fx:id="btnSave" layoutX="237.0" layoutY="119.0" mnemonicParsing="false" text="Добавить" />
+      <Button layoutX="171.0" layoutY="119.0" mnemonicParsing="false" onAction="#remove" text="Удалить" />
+   </children>
+</Pane>

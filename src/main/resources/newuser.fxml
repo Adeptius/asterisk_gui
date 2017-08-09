@@ -6,46 +6,46 @@
 <?import javafx.scene.layout.*?>
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="209.0" prefWidth="326.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
-   <children>
-      <GridPane layoutX="8.0" layoutY="7.0" prefHeight="164.0" prefWidth="312.0">
-        <columnConstraints>
-          <ColumnConstraints hgrow="SOMETIMES" maxWidth="150.0" minWidth="10.0" prefWidth="81.0" />
-          <ColumnConstraints hgrow="SOMETIMES" maxWidth="231.0" minWidth="10.0" prefWidth="231.0" />
-        </columnConstraints>
-        <rowConstraints>
-            <RowConstraints maxHeight="40.0" minHeight="10.0" prefHeight="10.0" vgrow="SOMETIMES" />
-          <RowConstraints maxHeight="40.0" minHeight="10.0" prefHeight="10.0" vgrow="SOMETIMES" />
-          <RowConstraints maxHeight="40.0" minHeight="10.0" prefHeight="10.0" vgrow="SOMETIMES" />
-            <RowConstraints maxHeight="40.0" minHeight="10.0" prefHeight="10.0" vgrow="SOMETIMES" />
-        </rowConstraints>
-         <children>
-            <Label prefHeight="43.0" prefWidth="193.0" text="Логин" wrapText="true">
-               <font>
-                  <Font size="14.0" />
-               </font>
-            </Label>
-            <Label prefHeight="60.0" prefWidth="193.0" text="Google ID" GridPane.rowIndex="2">
-               <font>
-                  <Font size="14.0" />
-               </font>
-            </Label>
-            <Label prefHeight="90.0" prefWidth="193.0" text="Email" GridPane.rowIndex="1">
-               <font>
-                  <Font size="14.0" />
-               </font>
-            </Label>
-            <TextField fx:id="textName" GridPane.columnIndex="1" />
-            <TextField fx:id="textEmail" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <TextField fx:id="textGoogleId" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-            <Label prefHeight="78.0" prefWidth="193.0" text="Пароль" GridPane.rowIndex="3">
-               <font>
-                  <Font size="14.0" />
-               </font>
-            </Label>
-            <TextField fx:id="textPassword" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-         </children>
-      </GridPane>
-      <Button fx:id="btnCancel" layoutX="242.0" layoutY="171.0" mnemonicParsing="false" text="Отменить" />
-      <Button fx:id="btnSave" layoutX="163.0" layoutY="171.0" mnemonicParsing="false" text="Добавить" />
-   </children>
+    <children>
+        <GridPane layoutX="8.0" layoutY="7.0" prefHeight="164.0" prefWidth="312.0">
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="150.0" minWidth="10.0" prefWidth="81.0" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="231.0" minWidth="10.0" prefWidth="231.0" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints maxHeight="40.0" minHeight="10.0" prefHeight="10.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="40.0" minHeight="10.0" prefHeight="10.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="40.0" minHeight="10.0" prefHeight="10.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="40.0" minHeight="10.0" prefHeight="10.0" vgrow="SOMETIMES" />
+            </rowConstraints>
+            <children>
+                <Label prefHeight="43.0" prefWidth="193.0" text="Логин" wrapText="true">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Label>
+                <Label prefHeight="60.0" prefWidth="193.0" text="Google ID" GridPane.rowIndex="2">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Label>
+                <Label prefHeight="90.0" prefWidth="193.0" text="Email" GridPane.rowIndex="1">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Label>
+                <TextField fx:id="textName" GridPane.columnIndex="1" />
+                <TextField fx:id="textEmail" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                <TextField fx:id="textGoogleId" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                <Label prefHeight="78.0" prefWidth="193.0" text="Пароль" GridPane.rowIndex="3">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Label>
+                <TextField fx:id="textPassword" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+            </children>
+        </GridPane>
+        <Button fx:id="btnCancel" layoutX="242.0" layoutY="171.0" mnemonicParsing="false" text="Отменить" />
+        <Button fx:id="btnSave" layoutX="163.0" layoutY="171.0" mnemonicParsing="false" text="Добавить" />
+    </children>
 </Pane>

@@ -55,16 +55,16 @@
                                     <ListView fx:id="siteList" layoutY="25.0" prefHeight="170.0" prefWidth="103.0" />
                                     <VBox layoutY="195.0" prefHeight="170.0" prefWidth="103.0" AnchorPane.bottomAnchor="69.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="195.0">
                                        <children>
-                                          <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#connectTracking" text="Управление">
+                                          <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#crudSite" text="Управление">
                                              <VBox.margin>
                                                 <Insets bottom="5.0" top="5.0" />
                                              </VBox.margin>
                                           </Button>
-                                          <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#changeTrackingCount" text="Номера">
-                                             <VBox.margin>
-                                                <Insets bottom="5.0" />
-                                             </VBox.margin>
-                                          </Button>
+                                          <!--<Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#changeTrackingCount" text="Номера">-->
+                                             <!--<VBox.margin>-->
+                                                <!--<Insets bottom="5.0" />-->
+                                             <!--</VBox.margin>-->
+                                          <!--</Button>-->
                                           <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showHistory" text="История">
                                              <VBox.margin>
                                                 <Insets bottom="5.0" />
@@ -147,12 +147,6 @@
                                  <children>
                                     <VBox layoutY="-2.0" prefHeight="253.0" prefWidth="90.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
                                        <children>
-                                          <Label fx:id="statusTelephony" alignment="CENTER" prefHeight="19.0" prefWidth="115.0" textAlignment="CENTER" />
-                                          <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#connectTelephony" text="Управление">
-                                             <VBox.margin>
-                                                <Insets bottom="5.0" top="5.0" />
-                                             </VBox.margin>
-                                          </Button>
                                           <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#changeTelephonyCount" text="Номера">
                                              <VBox.margin>
                                                 <Insets bottom="5.0" />

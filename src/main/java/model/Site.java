@@ -1,5 +1,6 @@
 package model;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,54 +20,10 @@ public class Site {
 
     private int timeToBlock;
 
-    private String blackIps = "";
+    private List<String> blackList = new ArrayList<>();
 
     private User user;
 
-    LinkedList<String> blackLinkedList;
-
-    public LinkedList<String> getBlackList() {
-        if (blackLinkedList == null) {
-            blackLinkedList = new LinkedList<>();
-            if (blackIps == null) {
-                blackIps = "";
-            }
-            String[] spl = blackIps.split(" ");
-            for (int i = 1; i < spl.length; i++) {
-                blackLinkedList.add(0, spl[i]);
-            }
-        }
-        return blackLinkedList;
-    }
-
-    public void addIpToBlackList(String ip) {
-        getBlackList().add(0, ip);
-        blackIps = (" " + ip) + blackIps;
-        checkBlackListSize();
-    }
-
-    public void removeIpFromBlackList(String ip) {
-        List<String> currentList = getBlackList();
-        currentList.removeIf(s -> s.equals(ip));
-        StringBuilder sb = new StringBuilder(200);
-        for (String s : currentList) {
-            sb.append(" ").append(s);
-        }
-        blackIps = sb.toString();
-    }
-
-    private void checkBlackListSize() {
-        if (blackLinkedList.size() > 99) {
-            for (int i = 0; i < 10; i++) {
-                blackLinkedList.removeLast();
-            }
-        }
-        StringBuilder sb = new StringBuilder(200);
-        for (String s : blackLinkedList) {
-            sb.append(" ").append(s);
-        }
-        blackIps = sb.toString();
-    }
 
     public List<OuterPhone> getOuterPhones(){
         return user.getOuterPhones().stream()
@@ -75,6 +32,14 @@ public class Site {
     }
     public int getId() {
         return id;
+    }
+
+    public List<String> getBlackList() {
+        return blackList;
+    }
+
+    public void setBlackList(List<String> blackList) {
+        this.blackList = blackList;
     }
 
     public void setId(int id) {
@@ -113,14 +78,6 @@ public class Site {
         this.timeToBlock = timeToBlock;
     }
 
-    public String getBlackIps() {
-        return blackIps;
-    }
-
-    public void setBlackIps(String blackIps) {
-        this.blackIps = blackIps;
-    }
-
     public User getUser() {
         return user;
     }
@@ -141,7 +98,7 @@ public class Site {
                 ", name='" + name + '\'' +
                 ", standardNumber='" + standardNumber + '\'' +
                 ", timeToBlock=" + timeToBlock +
-                ", blackIps='" + blackIps + '\'' +
+//                ", blackIps='" + blackIps + '\'' +
                 ", user=" + user.getLogin() +
                 '}';
     }
