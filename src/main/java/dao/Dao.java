@@ -18,8 +18,8 @@ import java.util.*;
 
 public class Dao {
 
-    public static final String IP = "https://cstat.nextel.com.ua:8443/tracking";
-//        public static final String IP = "http://localhost:8080/tracking";
+//    public static final String IP = "https://cstat.nextel.com.ua:8443/tracking";
+        public static final String IP = "http://localhost:8080/tracking";
     public static final String ADMIN_PASS = "csadmx84";
 //    public static final String IP = "https://adeptius.pp.ua:8443/tracking";
     //TODO вернуть адрес
@@ -51,16 +51,8 @@ public class Dao {
     public static User getUser(String userName) throws Exception {
         String response = sendPost("/user/get", null, false, hashes.get(userName));
         User user = new Gson().fromJson(response, User.class);
-        user.setLogin(userName);
         return user;
     }
-
-//    public static User getFullUser(String userName) throws Exception {
-//        String response = sendPost("/user/getFull", null, false, hashes.get(userName));
-//        User user = new Gson().fromJson(response, User.class);
-//        user.setLogin(userName);
-//        return user;
-//    }
 
     public static String removeUser(User user) throws Exception {
         return sendJsonObject("/user/remove", null, hashes.get(user.getLogin()));
@@ -69,14 +61,6 @@ public class Dao {
     /**
      * Tracking
      */
-
-    public static String addTracking(User user, JsonTracking tracking) throws Exception {
-        return sendJsonObject("/tracking/add", tracking, hashes.get(user.getLogin()));
-    }
-
-    public static String setTracking(User user, JsonTracking tracking) throws Exception {
-        return sendJsonObject("/tracking/set", tracking, hashes.get(user.getLogin()));
-    }
 
     public static List<Site> getSites(User user) throws Exception {
         Type listType = new TypeToken<List<Site>>() {
@@ -120,23 +104,13 @@ public class Dao {
      * Telephony
      */
 
-    public static String addTelephony(User user) throws Exception {
-        return sendJsonObject("/telephony/add", null, hashes.get(user.getLogin()));
-    }
-
     public static String setPhonesCount(User user, JsonPhoneCount jPhoneCount) throws Exception {
         return sendJsonObject("/phones/setNumberCount", jPhoneCount, hashes.get(user.getLogin()));
-    }
-
-    public static String removeTelephony(User user) throws Exception {
-        return sendPost("/telephony/remove", null, false, hashes.get(user.getLogin()));
     }
 
     /**
      * AMOcrm
      */
-
-
     public static String getAmoAccount(User user) throws Exception {
         return sendJsonObject("/amo/get", null, hashes.get(user.getLogin()));
     }
@@ -196,6 +170,9 @@ public class Dao {
             String result = sendPost("/blacklist/get", map, false, hashes.get(user.getLogin()));
             Type listType = new TypeToken<List<String>>() {
             }.getType();
+            if (result.equals("{\"status\":\"Error\",\"message\":\"User have no such site\"}")){
+                return new ArrayList<>();
+            }
             return new Gson().fromJson(result, listType);
         } catch (Exception e) {
             e.printStackTrace();
@@ -245,7 +222,7 @@ public class Dao {
     }
 
     public static List<Scenario> getScenarios(User user) throws Exception {
-        String responce = sendJsonObject("/scenario/get", null, hashes.get(user.getLogin()));
+        String responce = sendJsonObject("/scenario/getAll", null, hashes.get(user.getLogin()));
         Type listType = new TypeToken<List<Scenario>>() {
         }.getType();
         List<Scenario> list = new Gson().fromJson(responce, listType);
@@ -317,30 +294,6 @@ public class Dao {
             return "Ошибка";
         }
     }
-
-//    public static ArrayList<String> getLogs() {
-//        try {
-//            HashMap<String, String> map = new HashMap<>();
-//            map.put("adminPassword", ADMIN_PASS);
-//            String response = sendPost("/admin/logs", map);
-//            String[] logs = new Gson().fromJson(response, String[].class);
-//            if (Gui.onlyActiveSite) {
-//                ArrayList<String> filteredLogs = new ArrayList<>();
-//                for (int i = 0; i < logs.length; i++) {
-//                    if (logs[i].startsWith(Gui.selectedSiteString)) {
-//                        filteredLogs.add(logs[i]);
-//                    }
-//                }
-//                return filteredLogs;
-//            } else {
-//                return new ArrayList<>(Arrays.asList(logs));
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return null;
-//        }
-//    }
-
 
     public static ArrayList<Call> getHistory(User user, String from, String to, String direction) throws Exception {
         JsonHistoryQuery query = new JsonHistoryQuery(from, to, direction);

@@ -24,59 +24,29 @@ public class Site {
 
     private User user;
 
-
-    public List<OuterPhone> getOuterPhones(){
-        return user.getOuterPhones().stream()
-                .filter(outerPhone -> name.equals(outerPhone.getSitename()))
-                .collect(Collectors.toList());
-    }
     public int getId() {
         return id;
-    }
-
-    public List<String> getBlackList() {
-        return blackList;
-    }
-
-    public void setBlackList(List<String> blackList) {
-        this.blackList = blackList;
     }
 
     public void setId(int id) {
         this.id = id;
     }
 
-    public String getLogin() {
-        return login;
-    }
-
-    public void setLogin(String login) {
-        this.login = login;
-    }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public String getStandardNumber() {
         return standardNumber;
     }
 
-    public void setStandardNumber(String standardNumber) {
-        this.standardNumber = standardNumber;
-    }
 
     public int getTimeToBlock() {
         return timeToBlock;
     }
 
-    public void setTimeToBlock(int timeToBlock) {
-        this.timeToBlock = timeToBlock;
-    }
 
     public User getUser() {
         return user;

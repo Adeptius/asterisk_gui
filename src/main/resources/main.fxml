@@ -185,6 +185,30 @@
                                                 <Insets left="5.0" />
                                              </HBox.margin>
                                           </VBox>
+                                          <VBox fillWidth="false" prefHeight="200.0" prefWidth="180.0">
+                                             <children>
+                                                <TitledPane animated="false" collapsible="false" prefHeight="26.0" prefWidth="180.0" text="Сценарии" />
+                                                <ListView fx:id="scenariosList" prefHeight="568.0" prefWidth="180.0" VBox.vgrow="ALWAYS" />
+                                                <Button fx:id="scenarioAddButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefWidth="200.0" text="Добавить">
+                                                   <VBox.margin>
+                                                      <Insets top="5.0" />
+                                                   </VBox.margin>
+                                                </Button>
+                                                <Button fx:id="scenarioEditButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefWidth="200.0" text="Изменить">
+                                                   <VBox.margin>
+                                                      <Insets top="5.0" />
+                                                   </VBox.margin>
+                                                </Button>
+                                                <Button fx:id="scenarioDeleteButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefWidth="200.0" text="Удалить">
+                                                   <VBox.margin>
+                                                      <Insets top="5.0" />
+                                                   </VBox.margin>
+                                                </Button>
+                                             </children>
+                                             <HBox.margin>
+                                                <Insets left="5.0" />
+                                             </HBox.margin>
+                                          </VBox>
                                        </children>
                                     </HBox>
                                  </children>

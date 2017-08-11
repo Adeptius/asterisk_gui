@@ -14,6 +14,7 @@ import model.Site;
 import model.User;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class SiteController implements Initializable {
@@ -50,14 +51,21 @@ public class SiteController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         btnCancel.setOnAction(e -> cancel());
-        Site siteByName = user.getSiteByName(siteName);
+        Site siteByName = null;
+        try{
+            List<Site> sites = Dao.getSites(user);
+            siteByName = sites.stream().filter(site -> site.getName().equals(siteName)).findFirst().get();
+        }catch (Exception e){
+        }
+
         if (siteByName != null) {
             btnSave.setText("Изменить");
             textName.setText(siteName);
             textName.setEditable(false);
             textNumber.setText(siteByName.getStandardNumber());
             textBlock.setText(String.valueOf(siteByName.getTimeToBlock()));
-            btnSave.setOnAction(e -> edit(siteByName));
+            Site finalSiteByName = siteByName;
+            btnSave.setOnAction(e -> edit(finalSiteByName));
         } else {
             btnSave.setText("Добавить");
             btnSave.setOnAction(e -> createNew());
