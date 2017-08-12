@@ -70,11 +70,7 @@
                                                 <Insets bottom="5.0" />
                                              </VBox.margin>
                                           </Button>
-                                          <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showScenarios" text="Сценарии">
-                                             <VBox.margin>
-                                                <Insets bottom="5.0" />
-                                             </VBox.margin>
-                                          </Button>
+
                                           <Button fx:id="btnScript" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showScript" text="Скрипт">
                                              <VBox.margin>
                                                 <Insets bottom="5.0" />
@@ -153,11 +149,6 @@
                                              </VBox.margin>
                                           </Button>
                                           <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showHistory" text="История">
-                                             <VBox.margin>
-                                                <Insets bottom="5.0" />
-                                             </VBox.margin>
-                                          </Button>
-                                          <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showScenarios" text="Сценарии">
                                              <VBox.margin>
                                                 <Insets bottom="5.0" />
                                              </VBox.margin>

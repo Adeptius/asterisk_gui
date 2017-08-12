@@ -18,25 +18,28 @@ import model.*;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static model.DestinationType.SIP;
+import static model.ForwardType.TO_ALL;
+
+@SuppressWarnings("Duplicates")
 public class ScenarioController implements Initializable {
 
     private Stage stage;
     private GuiController guiController;
+    private String scenarioName;
     private User user;
 
 
-    public ScenarioController(GuiController guiController, Stage stage, User user) {
+    public ScenarioController(GuiController guiController, Stage stage, User user, String scenario) {
         this.user = user;
         this.stage = stage;
         this.guiController = guiController;
+        this.scenarioName = scenario;
     }
 
     @FXML
@@ -55,28 +58,35 @@ public class ScenarioController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         vBoxForRules.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
 
+
         try {
             innerPhones = Dao.getInnerAndOuterPhones(user).getInnerPhones();
+
         } catch (Exception e) {
             e.printStackTrace();
             return;
         }
 
         newRuleButton.setOnAction(event -> {
-            try {
-                Rule rule = new Rule();
-                rule.setDays(new boolean[]{false, false, false, false, false, false, false});
-                addScenarioEditorToScreen(rule);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            addNewScenarioToScreen();
         });
         refreshScreen();
+    }
 
+    private void addNewScenarioToScreen() {
+        try {
+            Rule rule = new Rule();
+            rule.setDays(new boolean[]{false, false, false, false, false, false, false});
+            rule.setForwardType(TO_ALL);
+            rule.setToList(new ArrayList<>());
+            rule.setDestinationType(SIP);
+            addScenarioEditorToScreen(rule);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void refreshScreen() {
-
         if (vBoxForRules.getChildren().size() > 0) {
             vBoxForRules.getChildren().clear();
             try {
@@ -89,13 +99,16 @@ public class ScenarioController implements Initializable {
         new Thread(() -> {
             Platform.runLater(() -> {
                 try {
-//                    List<Scenario> scenarios = Dao.getScenarios(user);
-//                    for (Scenario scenario : scenarios) {
-//                        System.out.println(scenario);
-//                    }
-//                    for (Scenario scenario : scenarios) {
-//                        addScenarioEditorToScreen(scenario);
-//                    }
+                    List<Scenario> scenarios = Dao.getScenarios(user);
+                    Optional<Scenario> first = scenarios.stream().filter(scenario1 -> scenario1.getName().equals(scenarioName)).findFirst();
+                    if (first.isPresent()){
+                        List<Rule> rules = first.get().getRules();
+                        for (Rule rule : rules) {
+                            addScenarioEditorToScreen(rule);
+                        }
+                    }else {
+                        addNewScenarioToScreen();
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -413,7 +426,7 @@ public class ScenarioController implements Initializable {
 
             s = forwardTypeChoice.getSelectionModel().getSelectedItem().toString();
             if (s.equals("Всем сразу")) {
-                jsonScenario.setForwardType(ForwardType.TO_ALL);
+                jsonScenario.setForwardType(TO_ALL);
             } else {
                 jsonScenario.setForwardType(ForwardType.QUEUE);
             }
@@ -442,7 +455,7 @@ public class ScenarioController implements Initializable {
                     cb7.isSelected()
             });
 
-//            jsonScenario.setStatus(scenario.getStatus());
+//            jsonScenario.setStatus(scenarioName.getStatus());
 
             System.out.println("Сохраняю: " + jsonScenario);
 

@@ -10,7 +10,7 @@
    <children>
       <HBox prefHeight="25.0" prefWidth="200.0">
          <children>
-            <Button fx:id="newScenarioButton" mnemonicParsing="false" text="Добавить сценарий">
+            <Button fx:id="newRuleButton" mnemonicParsing="false" text="Добавить сценарий">
                <opaqueInsets>
                   <Insets />
                </opaqueInsets>

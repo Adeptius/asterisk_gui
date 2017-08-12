@@ -44,6 +44,7 @@ public class GuiController implements Initializable {
 //        init
         initUserList();
         initTrackingTab();
+        initTelephonyTab();
         initSettingsTab();
 
 //        update
@@ -223,7 +224,7 @@ public class GuiController implements Initializable {
             Platform.runLater(() -> {
                 blackList.setItems(FXCollections.observableList(list));
             });
-        }else {
+        } else {
             Platform.runLater(() -> {
                 blackList.setItems(FXCollections.emptyObservableList());
             });
@@ -358,6 +359,35 @@ public class GuiController implements Initializable {
      * Метод ShowHistory, showScenarios, updateTrackingAndTelephonyPhones, общий с трекингом
      */
 
+    private void initTelephonyTab() {
+        scenarioEditButton.setOnAction(event -> {
+            String selectedSite = scenariosList.getSelectionModel().getSelectedItem();
+            if (selectedSite != null) {
+                try {
+                    showScenario(selectedSite);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        scenarioAddButton.setOnAction(event -> {
+            TextInputDialog dialog = new TextInputDialog();
+            dialog.setTitle("Добавление сценария");
+            dialog.setHeaderText(null);
+            dialog.setContentText("Название сценария");
+            Optional<String> result = dialog.showAndWait();
+            result.ifPresent(name -> {
+                try {
+                    showScenario(name);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            });
+        });
+    }
+
+
     private void updateTelephony(User user) {
         try {
             JsonInnerAndOuterPhones innerAndOuterPhones = Dao.getInnerAndOuterPhones(user);
@@ -367,20 +397,20 @@ public class GuiController implements Initializable {
             Platform.runLater(() -> {
                 outerNumbers.setItems(FXCollections.observableList(
                         innerAndOuterPhones.getOuterPhones().stream()
-                        .map(OuterPhone::getNumber)
-                        .sorted()
-                        .collect(Collectors.toList())));
+                                .map(OuterPhone::getNumber)
+                                .sorted()
+                                .collect(Collectors.toList())));
 
                 innerNumbers.setItems(FXCollections.observableList(
                         innerAndOuterPhones.getInnerPhones().stream()
-                        .map(InnerPhone::getNumber)
-                        .sorted()
-                        .collect(Collectors.toList())));
+                                .map(InnerPhone::getNumber)
+                                .sorted()
+                                .collect(Collectors.toList())));
 
                 scenariosList.setItems(FXCollections.observableList(
                         scenarios.stream()
-                        .map(Scenario::getName)
-                        .collect(Collectors.toList())));
+                                .map(Scenario::getName)
+                                .collect(Collectors.toList())));
             });
         } catch (Exception e) {
             e.printStackTrace();
@@ -401,13 +431,13 @@ public class GuiController implements Initializable {
         stage.show();
     }
 
-    public void showScenarios() throws Exception {
+    public void showScenario(String scenario) throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("scenarios.fxml"));
         Stage stage = new Stage();
-        loader.setController(new ScenarioController(this, stage, activeUser));
+        loader.setController(new ScenarioController(this, stage, activeUser, scenario));
         Parent root = loader.load();
         Scene scene = new Scene(root);
-        stage.setTitle("Редактор сценариев");
+        stage.setTitle("Редактирование сценария " + scenario);
         stage.initOwner(userList.getScene().getWindow()); // Указание кого оно перекрывает
         stage.setScene(scene);
         stage.show();
@@ -499,14 +529,14 @@ public class GuiController implements Initializable {
 
     private void updateAmo(User user) {
         AmoAccount amoAccount;
-            String response = "";
-            try {
-                response = Dao.getAmoAccount(user);
-                amoAccount = new Gson().fromJson(response, AmoAccount.class);
-            } catch (Exception e) {
-                e.printStackTrace();
-                return;
-            }
+        String response = "";
+        try {
+            response = Dao.getAmoAccount(user);
+            amoAccount = new Gson().fromJson(response, AmoAccount.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
 
         if (amoAccount == null) {
             textAmoDomain.setText("");
