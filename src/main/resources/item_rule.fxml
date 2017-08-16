@@ -34,78 +34,28 @@
             </HBox>
             <HBox VBox.vgrow="ALWAYS">
                <children>
-                  <VBox prefHeight="200.0" prefWidth="150.0">
-                     <children>
-                        <Label alignment="CENTER" maxWidth="1.7976931348623157E308" prefHeight="17.0" prefWidth="37.0" text="С номеров" textAlignment="CENTER">
-                           <font>
-                              <Font size="14.0" />
-                           </font>
-                        </Label>
-                        <ListView fx:id="fromListView" prefHeight="200.0" prefWidth="145.0" VBox.vgrow="ALWAYS">
-                           <VBox.margin>
-                              <Insets bottom="5.0" right="5.0" />
-                           </VBox.margin>
-                        </ListView>
-                        <ChoiceBox fx:id="listFromChoiseBox" prefWidth="150.0" VBox.vgrow="NEVER">
-                           <VBox.margin>
-                              <Insets bottom="5.0" right="5.0" />
-                           </VBox.margin>
-                        </ChoiceBox>
-                        <HBox prefHeight="28.0" prefWidth="150.0" VBox.vgrow="NEVER">
-                           <children>
-                              <Button fx:id="fromAddButton" mnemonicParsing="false" prefWidth="70.0" text="Добавить" HBox.hgrow="NEVER">
-                                 <HBox.margin>
-                                    <Insets right="5.0" />
-                                 </HBox.margin>
-                              </Button>
-                              <Button fx:id="fromDeleteButton" mnemonicParsing="false" prefWidth="70.0" text="Удалить" HBox.hgrow="NEVER">
-                                 <HBox.margin>
-                                    <Insets right="5.0" />
-                                 </HBox.margin>
-                              </Button>
-                           </children>
-                        </HBox>
-                     </children>
-                  </VBox>
-                  <VBox prefHeight="200.0" prefWidth="150.0" HBox.hgrow="ALWAYS">
+                  <VBox maxWidth="150.0" prefHeight="346.0" prefWidth="217.0" HBox.hgrow="ALWAYS">
                      <children>
                         <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="На номера" textAlignment="CENTER" VBox.vgrow="NEVER">
                            <font>
                               <Font size="14.0" />
                            </font>
                         </Label>
-                        <ListView fx:id="toListView" prefHeight="400.0" prefWidth="145.0" VBox.vgrow="ALWAYS">
+                        <ListView fx:id="toListView" prefHeight="400.0" prefWidth="100.0" VBox.vgrow="ALWAYS">
                            <VBox.margin>
                               <Insets bottom="5.0" right="5.0" />
                            </VBox.margin>
                         </ListView>
-                        <HBox fx:id="sipHbox" prefHeight="100.0" prefWidth="200.0" VBox.vgrow="NEVER">
+                        <HBox fx:id="sipHbox" prefHeight="100.0" prefWidth="100.0" VBox.vgrow="NEVER">
                            <children>
                               <TextField fx:id="sipField" HBox.hgrow="NEVER" />
-                              <ChoiceBox fx:id="sipList" prefHeight="25.0" prefWidth="41.0" HBox.hgrow="NEVER" />
+                              <ComboBox fx:id="sipList" maxWidth="10.0" prefHeight="25.0" prefWidth="10.0" HBox.hgrow="NEVER" />
                            </children>
                            <VBox.margin>
                               <Insets bottom="5.0" right="5.0" />
                            </VBox.margin>
                         </HBox>
-                        <HBox fx:id="gsmVbox" prefHeight="100.0" prefWidth="200.0" VBox.vgrow="NEVER">
-                           <children>
-                              <Label alignment="CENTER" prefHeight="25.0" prefWidth="29.0" text="380" textAlignment="CENTER" HBox.hgrow="NEVER">
-                                 <font>
-                                    <Font size="14.0" />
-                                 </font>
-                              </Label>
-                              <TextField fx:id="fieldTo" prefHeight="25.0" prefWidth="118.0" HBox.hgrow="NEVER">
-                                 <HBox.margin>
-                                    <Insets right="5.0" />
-                                 </HBox.margin>
-                              </TextField>
-                           </children>
-                           <VBox.margin>
-                              <Insets bottom="5.0" />
-                           </VBox.margin>
-                        </HBox>
-                        <HBox prefHeight="18.0" prefWidth="150.0" VBox.vgrow="NEVER">
+                        <HBox prefHeight="18.0" prefWidth="100.0" VBox.vgrow="NEVER">
                            <children>
                               <Button fx:id="toAddButton" mnemonicParsing="false" prefWidth="70.0" text="Добавить" HBox.hgrow="NEVER">
                                  <HBox.margin>
@@ -121,51 +71,65 @@
                         </HBox>
                      </children>
                   </VBox>
-                  <VBox prefHeight="102.0" prefWidth="200.0">
+                  <VBox alignment="TOP_RIGHT" prefHeight="326.0" prefWidth="349.0">
                      <children>
-                        <HBox>
+                        <HBox alignment="TOP_RIGHT">
+                           <children>
+                              <Label prefHeight="33.0" prefWidth="110.0" text="Тип правила">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Label>
+                              <ComboBox fx:id="ruleTypeChoice" prefWidth="100.0">
+                                 <HBox.margin>
+                                    <Insets top="5.0" />
+                                 </HBox.margin>
+                              </ComboBox>
+                           </children>
+                        </HBox>
+                        <HBox alignment="TOP_RIGHT">
                            <children>
                               <Label prefHeight="33.0" prefWidth="110.0" text="Переадресация">
                                  <font>
                                     <Font size="14.0" />
                                  </font>
                               </Label>
-                              <ChoiceBox fx:id="forwardTypeChoice" prefWidth="100.0">
+                              <ComboBox fx:id="forwardTypeChoice" prefWidth="100.0">
                                  <HBox.margin>
                                     <Insets top="5.0" />
                                  </HBox.margin>
-                              </ChoiceBox>
+                              </ComboBox>
                            </children>
                         </HBox>
-                        <HBox>
+                        <HBox alignment="TOP_RIGHT">
                            <children>
                               <Label prefHeight="33.0" prefWidth="110.0" text="Тип связи">
                                  <font>
                                     <Font size="14.0" />
                                  </font>
                               </Label>
-                              <ChoiceBox fx:id="destinationTypeChoice" prefWidth="100.0">
+                              <ComboBox fx:id="destinationTypeChoice" prefWidth="100.0">
                                  <HBox.margin>
                                     <Insets top="5.0" />
                                  </HBox.margin>
-                              </ChoiceBox>
+                              </ComboBox>
                            </children>
                         </HBox>
-                        <HBox>
+                        <HBox alignment="TOP_RIGHT">
                            <children>
                               <Label prefHeight="33.0" prefWidth="110.0" text="Мелодия">
                                  <font>
                                     <Font size="14.0" />
                                  </font>
                               </Label>
-                              <ChoiceBox fx:id="melodyChoice" prefWidth="100.0">
+                              <ComboBox fx:id="melodyChoice" prefWidth="100.0">
                                  <HBox.margin>
                                     <Insets top="5.0" />
                                  </HBox.margin>
-                              </ChoiceBox>
+                              </ComboBox>
                            </children>
                         </HBox>
-                        <HBox>
+                        <HBox alignment="TOP_RIGHT">
                            <children>
                               <Label prefHeight="33.0" prefWidth="110.0" text="Ожидание (сек)">
                                  <font>
@@ -179,7 +143,7 @@
                               </TextField>
                            </children>
                         </HBox>
-                        <Label alignment="CENTER" prefHeight="17.0" prefWidth="199.0" text="Дни работы">
+                        <Label alignment="CENTER" prefHeight="20.0" prefWidth="399.0" text="Дни работы">
                            <font>
                               <Font size="14.0" />
                            </font>
@@ -209,13 +173,6 @@
                                     <Insets right="15.0" />
                                  </HBox.margin>
                               </CheckBox>
-                           </children>
-                           <VBox.margin>
-                              <Insets bottom="5.0" />
-                           </VBox.margin>
-                        </HBox>
-                        <HBox>
-                           <children>
                               <CheckBox fx:id="CB5" mnemonicParsing="false" text="пт">
                                  <HBox.margin>
                                     <Insets right="15.0" />
@@ -232,8 +189,12 @@
                                  </HBox.margin>
                               </CheckBox>
                            </children>
+                           <VBox.margin>
+                              <Insets bottom="5.0" />
+                           </VBox.margin>
                         </HBox>
-                        <Label alignment="CENTER" prefHeight="17.0" prefWidth="200.0" text="Часы работы">
+                        <HBox />
+                        <Label alignment="CENTER" prefHeight="20.0" prefWidth="382.0" text="Часы работы">
                            <VBox.margin>
                               <Insets top="5.0" />
                            </VBox.margin>
@@ -241,14 +202,14 @@
                               <Font size="14.0" />
                            </font>
                         </Label>
-                        <HBox prefHeight="100.0" prefWidth="200.0">
+                        <HBox alignment="TOP_RIGHT" prefHeight="32.0" prefWidth="347.0">
                            <children>
                               <Label alignment="CENTER" prefHeight="25.0" prefWidth="15.0" text="C">
                                  <font>
                                     <Font size="14.0" />
                                  </font>
                               </Label>
-                              <ChoiceBox fx:id="CBfromHour" prefWidth="50.0" />
+                              <ComboBox fx:id="CBfromHour" prefWidth="50.0" />
                               <Label alignment="CENTER" prefHeight="25.0" prefWidth="25.0" text="До">
                                  <font>
                                     <Font size="14.0" />
@@ -257,7 +218,7 @@
                                     <Insets left="5.0" />
                                  </HBox.margin>
                               </Label>
-                              <ChoiceBox fx:id="CBtoHour" prefWidth="50.0" />
+                              <ComboBox fx:id="CBtoHour" prefWidth="50.0" />
                               <Label alignment="CENTER" prefHeight="25.0" text="Часов">
                                  <font>
                                     <Font size="14.0" />
@@ -270,14 +231,7 @@
                         </HBox>
                         <AnchorPane prefHeight="122.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
                            <children>
-                              <Button fx:id="removeRuleButton" layoutX="148.0" layoutY="40.0" mnemonicParsing="false" text="Удалить" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" />
-                              <Button fx:id="saveRuleButton" layoutY="14.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="88.0" text="Сохранить" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0">
-                                 <opaqueInsets>
-                                    <Insets />
-                                 </opaqueInsets>
-                              </Button>
-                              <Button fx:id="activateRuleButton" layoutX="142.0" layoutY="14.0" mnemonicParsing="false" text="Активировать" AnchorPane.bottomAnchor="31.0" AnchorPane.rightAnchor="0.0" />
-                              <Button fx:id="deactivateRuleButton" layoutX="1.0" layoutY="14.0" mnemonicParsing="false" text="Деактивировать" AnchorPane.bottomAnchor="31.0" AnchorPane.leftAnchor="0.0" />
+                              <Button fx:id="removeRuleButton" layoutX="273.0" layoutY="53.0" mnemonicParsing="false" text="Удалить" AnchorPane.bottomAnchor="31.0" AnchorPane.rightAnchor="14.0" />
                            </children>
                         </AnchorPane>
                      </children>

@@ -24,6 +24,8 @@ public class OuterPhone {
 
     private String utmRequest;
 
+    private String scenario;
+
     public String getUtmRequest() {
         if (utmRequest == null){
             return "";
@@ -121,6 +123,13 @@ public class OuterPhone {
         this.googleId = googleId;
     }
 
+    public String getScenario() {
+        return scenario;
+    }
+
+    public void setScenario(String scenario) {
+        this.scenario = scenario;
+    }
 
     public String getGoogleId() {
         return googleId;

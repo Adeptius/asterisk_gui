@@ -8,9 +8,9 @@ import model.ScenarioStatus;
 import java.util.Arrays;
 import java.util.List;
 
-public class JsonScenario {
+public class JsonRule {
 
-    public JsonScenario() {
+    public JsonRule() {
     }
 
     private int id;

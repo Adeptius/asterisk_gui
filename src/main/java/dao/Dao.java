@@ -18,8 +18,8 @@ import java.util.*;
 
 public class Dao {
 
-//    public static final String IP = "https://cstat.nextel.com.ua:8443/tracking";
-        public static final String IP = "http://localhost:8080/tracking";
+    //    public static final String IP = "https://cstat.nextel.com.ua:8443/tracking";
+    public static final String IP = "http://localhost:8080/tracking";
     public static final String ADMIN_PASS = "csadmx84";
 //    public static final String IP = "https://adeptius.pp.ua:8443/tracking";
     //TODO вернуть адрес
@@ -170,7 +170,7 @@ public class Dao {
             String result = sendPost("/blacklist/get", map, false, hashes.get(user.getLogin()));
             Type listType = new TypeToken<List<String>>() {
             }.getType();
-            if (result.equals("{\"status\":\"Error\",\"message\":\"User have no such site\"}")){
+            if (result.equals("{\"status\":\"Error\",\"message\":\"User have no such site\"}")) {
                 return new ArrayList<>();
             }
             return new Gson().fromJson(result, listType);
@@ -217,7 +217,7 @@ public class Dao {
      * Сценарии
      */
 
-    public static String setScenario(User user, JsonScenario scenario) throws Exception {
+    public static String setScenario(User user, Scenario scenario) throws Exception {
         return sendJsonObject("/scenario/set", scenario, hashes.get(user.getLogin()));
     }
 
@@ -229,22 +229,31 @@ public class Dao {
         return list;
     }
 
-    public static String activateScenario(User user, int scenarioId) throws Exception {
-        HashMap<String, String> map = new HashMap<>();
-        map.put("id", "" + scenarioId);
-        return sendPost("/scenario/activate", map, false, hashes.get(user.getLogin()));
-    }
-
-    public static String deactivateScenario(User user, int scenarioId) throws Exception {
-        HashMap<String, String> map = new HashMap<>();
-        map.put("id", "" + scenarioId);
-        return sendPost("/scenario/deactivate", map, false, hashes.get(user.getLogin()));
-    }
+//    public static String activateScenario(User user, int scenarioId) throws Exception {
+//        HashMap<String, String> map = new HashMap<>();
+//        map.put("id", "" + scenarioId);
+//        return sendPost("/scenario/activate", map, false, hashes.get(user.getLogin()));
+//    }
+//
+//    public static String deactivateScenario(User user, int scenarioId) throws Exception {
+//        HashMap<String, String> map = new HashMap<>();
+//        map.put("id", "" + scenarioId);
+//        return sendPost("/scenario/deactivate", map, false, hashes.get(user.getLogin()));
+//    }
 
     public static String removeScenario(User user, int scenarioId) throws Exception {
         HashMap<String, String> map = new HashMap<>();
-        map.put("id", "" + scenarioId);
+        map.put("id", ""+scenarioId);
         return sendPost("/scenario/remove", map, false, hashes.get(user.getLogin()));
+    }
+
+    public static JsonScenarioBindings getScenarioBindings(User user) throws Exception {
+        String response = sendPost("/scenario/getBindings", null, false, hashes.get(user.getLogin()));
+        return new Gson().fromJson(response, JsonScenarioBindings.class);
+    }
+
+    public static String setScenariosBindings(User user, HashMap<String, Integer> bindings) throws Exception {
+        return sendJsonObject("/scenario/setBindings", bindings, hashes.get(user.getLogin()));
     }
 
 
@@ -321,17 +330,11 @@ public class Dao {
         }
     }
 
-    public static List<String> getMelodies() {
-        try {
-            String response = sendPost("/rules/getMelodies", null);
-            Type listType = new TypeToken<ArrayList<String>>() {
-            }.getType();
-            return new Gson().fromJson(response, listType);
-        } catch (Exception e) {
-            ArrayList<String> list = new ArrayList<>();
-            list.add("none");
-            return list;
-        }
+    public static List<String> getMelodies() throws Exception {
+        String response = sendPost("/scenario/getMelodies", null);
+        Type listType = new TypeToken<ArrayList<String>>() {
+        }.getType();
+        return new Gson().fromJson(response, listType);
     }
 
     public static JsonNumbersCount getNumbersCount() throws Exception {

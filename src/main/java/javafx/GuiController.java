@@ -25,6 +25,9 @@ import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static javafx.scene.control.Alert.AlertType.ERROR;
+import static javafx.scene.control.Alert.AlertType.INFORMATION;
+
 @SuppressWarnings("ALL")
 public class GuiController implements Initializable {
 
@@ -355,9 +358,9 @@ public class GuiController implements Initializable {
     @FXML
     private Button scenarioDeleteButton;
 
-    /**
-     * Метод ShowHistory, showScenarios, updateTrackingAndTelephonyPhones, общий с трекингом
-     */
+    @FXML
+    private Button scenarioBindButton;
+
 
     private void initTelephonyTab() {
         scenarioEditButton.setOnAction(event -> {
@@ -380,10 +383,34 @@ public class GuiController implements Initializable {
             result.ifPresent(name -> {
                 try {
                     showScenario(name);
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             });
+        });
+
+        scenarioDeleteButton.setOnAction(event -> {
+            try {
+                String selectedScenario = scenariosList.getSelectionModel().getSelectedItem();
+                List<Scenario> scenarios = Dao.getScenarios(activeUser);
+                Scenario scenario = scenarios.stream().filter(sc -> sc.getName().equals(selectedScenario)).findFirst().orElse(null);
+                if (scenario != null) {
+                    int id = scenario.getId();
+                    String s = Dao.removeScenario(activeUser, id);
+                    showInformationAlert(s);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                showErrorAlert(e.toString());
+            }
+        });
+
+        scenarioBindButton.setOnAction(event -> {
+            try{
+                showScenarioBindings();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         });
     }
 
@@ -437,8 +464,8 @@ public class GuiController implements Initializable {
         loader.setController(new ScenarioController(this, stage, activeUser, scenario));
         Parent root = loader.load();
         Scene scene = new Scene(root);
-        stage.setTitle("Редактирование сценария " + scenario);
-        stage.initOwner(userList.getScene().getWindow()); // Указание кого оно перекрывает
+        stage.setTitle("Редактирование сценария: " + scenario);
+        stage.initOwner(userList.getScene().getWindow());
         stage.setScene(scene);
         stage.show();
     }
@@ -452,6 +479,18 @@ public class GuiController implements Initializable {
         stage.setTitle("Пароли");
         stage.setResizable(false);
         stage.initOwner(userList.getScene().getWindow()); // Указание кого оно перекрывает
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    public void showScenarioBindings() throws Exception {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("phonesAndScenarios.fxml"));
+        Stage stage = new Stage();
+        loader.setController(new PhonesAndScenariosController(this, stage, activeUser));
+        Parent root = loader.load();
+        Scene scene = new Scene(root);
+        stage.setTitle("Редактирование привязок сценариев");
+        stage.initOwner(userList.getScene().getWindow());
         stage.setScene(scene);
         stage.show();
     }
@@ -559,7 +598,7 @@ public class GuiController implements Initializable {
         jsonAmo.setAmoLogin(textAmoAccount.getText());
         jsonAmo.setApiKey(textAmoApiKey.getText());
         String result = Dao.setAmoAccount(activeUser, jsonAmo);
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        Alert alert = new Alert(INFORMATION);
         alert.setTitle("Information");
         alert.setHeaderText(null);
         alert.setContentText(result);
@@ -569,7 +608,7 @@ public class GuiController implements Initializable {
 
     public void onAmoTestButton() throws Exception {
         String result = Dao.testAmoAccount(activeUser);
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        Alert alert = new Alert(INFORMATION);
         alert.setTitle("Information");
         alert.setHeaderText(null);
         alert.setContentText(result);
@@ -579,7 +618,7 @@ public class GuiController implements Initializable {
 
     public void onAmoRemoveButton() throws Exception {
         String result = Dao.removeAmoAccount(activeUser);
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        Alert alert = new Alert(INFORMATION);
         alert.setTitle("Information");
         alert.setHeaderText(null);
         alert.setContentText(result);
@@ -639,7 +678,7 @@ public class GuiController implements Initializable {
         jsonRoistat.setApiKey(textRoistatApiKey.getText());
         jsonRoistat.setProjectNumber(textRoistatProjectNumber.getText());
         String result = Dao.setRoistatAccount(activeUser, jsonRoistat);
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        Alert alert = new Alert(INFORMATION);
         alert.setTitle("Information");
         alert.setHeaderText(null);
         alert.setContentText(result);
@@ -649,7 +688,7 @@ public class GuiController implements Initializable {
 
     public void onRoistatTestButton() throws Exception {
         String result = Dao.testRoistatAccount(activeUser);
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        Alert alert = new Alert(INFORMATION);
         alert.setTitle("Information");
         alert.setHeaderText(null);
         alert.setContentText(result);
@@ -659,7 +698,7 @@ public class GuiController implements Initializable {
 
     public void onRoistatRemoveButton() throws Exception {
         String result = Dao.removeRoistatAccount(activeUser);
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        Alert alert = new Alert(INFORMATION);
         alert.setTitle("Information");
         alert.setHeaderText(null);
         alert.setContentText(result);
@@ -692,5 +731,21 @@ public class GuiController implements Initializable {
 
     public void exit() {
         Platform.exit();
+    }
+
+    public static void showInformationAlert(String message){
+        Alert alert = new Alert(INFORMATION);
+        alert.setTitle("Результат");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    public static void showErrorAlert(String message){
+        Alert alert = new Alert(ERROR);
+        alert.setTitle("Результат");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }

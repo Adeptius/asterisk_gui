@@ -7,13 +7,14 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import dao.Dao;
-import json.JsonScenario;
+import json.JsonRule;
 import model.*;
 
 import java.io.UnsupportedEncodingException;
@@ -22,11 +23,15 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.zip.Deflater;
 
+import static javafx.GuiController.showErrorAlert;
 import static model.DestinationType.SIP;
 import static model.ForwardType.TO_ALL;
+import static model.RuleType.DEFAULT;
+import static model.RuleType.NORMAL;
+import static model.ScenarioStatus.DEACTIVATED;
 
-@SuppressWarnings("Duplicates")
 public class ScenarioController implements Initializable {
 
     private Stage stage;
@@ -46,40 +51,101 @@ public class ScenarioController implements Initializable {
     private Button newRuleButton;
 
     @FXML
+    private Button saveScenarioButton;
+
+    @FXML
     private VBox vBoxForRules;
 
     //Костыль что бы список доступных номеров менялся на всех правилах
-    private List<ChoiceBox<String>> choiseBoxes = new ArrayList<>();
-    private List<String> availableNumbers;
+//    private List<ComboBox<String>> choiseBoxes = new ArrayList<>();
+//    private List<String> availableNumbers;
 
     List<InnerPhone> innerPhones;
+    List<String> melodies;
+    int currentScenarioId;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         vBoxForRules.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
 
-
         try {
             innerPhones = Dao.getInnerAndOuterPhones(user).getInnerPhones();
-
+            melodies = Dao.getMelodies();
         } catch (Exception e) {
             e.printStackTrace();
+            showInformationAlert(e.toString());
             return;
         }
 
-        newRuleButton.setOnAction(event -> {
-            addNewScenarioToScreen();
+        newRuleButton.setOnAction(e -> addNewRuleToScreen());
+
+        saveScenarioButton.setOnAction(event -> {
+            ObservableList<Node> childrens = vBoxForRules.getChildren();
+            List<Rule> rules = new ArrayList<>();
+            for (Node childNode : childrens) {
+                Rule rule = new Rule();
+                rule.setName(((TextField) childNode.lookup("#nameTextField")).getText());
+
+                ListView listTo = (ListView) childNode.lookup("#toListView");
+                rule.setToList(new ArrayList<>(listTo.getItems()));
+
+                ComboBox ruleTypeChoice = (ComboBox) childNode.lookup("#ruleTypeChoice");
+                rule.setType(RuleType.valueOf(ruleTypeChoice.getSelectionModel().getSelectedItem().toString()));
+
+                ComboBox forwardTypeChoice = (ComboBox) childNode.lookup("#forwardTypeChoice");
+                rule.setForwardType(ForwardType.valueOf(forwardTypeChoice.getSelectionModel().getSelectedItem().toString()));
+
+                ComboBox destinationTypeChoice = (ComboBox) childNode.lookup("#destinationTypeChoice");
+                String s = destinationTypeChoice.getSelectionModel().getSelectedItem().toString();
+                rule.setDestinationType(DestinationType.valueOf(s));
+
+
+                rule.setMelody(((ComboBox) childNode.lookup("#melodyChoice")).getSelectionModel().getSelectedItem().toString());
+
+                rule.setAwaitingTime(Integer.parseInt(((TextField) childNode.lookup("#timeChoice")).getText()));
+
+                rule.setDays(new boolean[]{
+                        ((CheckBox) childNode.lookup("#CB1")).isSelected(),
+                        ((CheckBox) childNode.lookup("#CB2")).isSelected(),
+                        ((CheckBox) childNode.lookup("#CB3")).isSelected(),
+                        ((CheckBox) childNode.lookup("#CB4")).isSelected(),
+                        ((CheckBox) childNode.lookup("#CB5")).isSelected(),
+                        ((CheckBox) childNode.lookup("#CB6")).isSelected(),
+                        ((CheckBox) childNode.lookup("#CB7")).isSelected()
+                });
+
+                rule.setStartHour(((ComboBox) childNode.lookup("#CBfromHour")).getSelectionModel().getSelectedIndex());
+
+                rule.setEndHour(((ComboBox) childNode.lookup("#CBtoHour")).getSelectionModel().getSelectedIndex());
+
+                rules.add(rule);
+            }
+
+            Scenario scenario = new Scenario();
+            scenario.setId(currentScenarioId);
+            scenario.setName(scenarioName);
+            scenario.setRules(rules);
+            String result = null;
+            try {
+                result = Dao.setScenario(user, scenario);
+                showInformationAlert(result);
+            } catch (Exception e) {
+                e.printStackTrace();
+                showErrorAlert(result);
+            }
         });
         refreshScreen();
     }
 
-    private void addNewScenarioToScreen() {
+    private void addNewRuleToScreen() {
         try {
             Rule rule = new Rule();
             rule.setDays(new boolean[]{false, false, false, false, false, false, false});
             rule.setForwardType(TO_ALL);
             rule.setToList(new ArrayList<>());
             rule.setDestinationType(SIP);
+            rule.setStatus(DEACTIVATED);
+            rule.setType(NORMAL);
             addScenarioEditorToScreen(rule);
         } catch (Exception e) {
             e.printStackTrace();
@@ -96,24 +162,24 @@ public class ScenarioController implements Initializable {
             }
         }
 
-        new Thread(() -> {
-            Platform.runLater(() -> {
-                try {
-                    List<Scenario> scenarios = Dao.getScenarios(user);
-                    Optional<Scenario> first = scenarios.stream().filter(scenario1 -> scenario1.getName().equals(scenarioName)).findFirst();
-                    if (first.isPresent()){
-                        List<Rule> rules = first.get().getRules();
-                        for (Rule rule : rules) {
-                            addScenarioEditorToScreen(rule);
-                        }
-                    }else {
-                        addNewScenarioToScreen();
+        new Thread(() -> Platform.runLater(() -> {
+            try {
+                List<Scenario> scenarios = Dao.getScenarios(user);
+                Optional<Scenario> first = scenarios.stream().filter(scenario1 -> scenario1.getName().equals(scenarioName)).findFirst();
+                if (first.isPresent()) {
+                    Scenario scenario = first.get();
+                    currentScenarioId = scenario.getId();
+                    List<Rule> rules = scenario.getRules();
+                    for (Rule rule : rules) {
+                        addScenarioEditorToScreen(rule);
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
+                } else {
+                    addNewRuleToScreen();
                 }
-            });
-        }).start();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        })).start();
     }
 
     private void addScenarioEditorToScreen(Rule rule) throws Exception {
@@ -128,52 +194,32 @@ public class ScenarioController implements Initializable {
         TextField nameTextField = (TextField) rootNode.lookup("#nameTextField");
         nameTextField.setText(rule.getName());
 
-        Label statusLabel = (Label) rootNode.lookup("#statusLabel");
-        ScenarioStatus status = rule.getStatus();
-        if (status == ScenarioStatus.ACTIVATED) {
-            statusLabel.setText("Активен");
-            statusLabel.setStyle("-fx-background-color: lightgreen");
-
-        } else if (status == ScenarioStatus.DEACTIVATED) {
-            statusLabel.setText("Не активен");
-            statusLabel.setStyle("-fx-background-color: gray");
-
-        } else if (status == ScenarioStatus.DEFAULT) {
-            statusLabel.setText("По умолчанию");
-            statusLabel.setStyle("-fx-background-color: khaki");
-
+        if (rule.getType() == DEFAULT) {
+            rootNode.setBackground(new Background(new BackgroundFill(Color.GRAY, CornerRadii.EMPTY, Insets.EMPTY)));
         }
+//        Label statusLabel = (Label) rootNode.lookup("#statusLabel");
+//        ScenarioStatus status = rule.getStatus();
+//        if (status == ScenarioStatus.ACTIVATED) {
+//            statusLabel.setText("Активен");
+//            statusLabel.setStyle("-fx-background-color: lightgreen");
+//
+//        } else if (status == DEACTIVATED) {
+//            statusLabel.setText("Не активен");
+//            statusLabel.setStyle("-fx-background-color: gray");
+//
+//        } else if (status == ScenarioStatus.DEFAULT) {
+//            statusLabel.setText("По умолчанию");
+//            statusLabel.setStyle("-fx-background-color: khaki");
+//        }
 
-
-        // Список номеров с
-//        ListView listFrom = (ListView) rootNode.lookup("#fromListView");
-//        ObservableList<String> observableFrom = FXCollections.observableList(rule.getFromList());
-//        listFrom.setItems(observableFrom);
-
-        // Кнопка добавления номера с
-        Button fromAddButton = (Button) rootNode.lookup("#fromAddButton");
-        fromAddButton.setVisible(false);
 
         // Кнопка добавления номера на
         Button toAddButton = (Button) rootNode.lookup("#toAddButton");
         toAddButton.setVisible(false);
 
-        // Добавление номера на
-        TextField fieldTo = (TextField) rootNode.lookup("#fieldTo");
-        fieldTo.setOnKeyReleased(event -> {
-            String text = fieldTo.getText();
-            Matcher regexMatcher = Pattern.compile("^\\d{9}$").matcher(text);
-            if (regexMatcher.find()) {
-                toAddButton.setVisible(true);
-            } else {
-                toAddButton.setVisible(false);
-            }
-        });
-
-
         // Список сип номеров
-        HBox sipHbox = (HBox) rootNode.lookup("#sipHbox");
-        ChoiceBox<String> sipList = (ChoiceBox<String>) rootNode.lookup("#sipList");
+//        HBox sipHbox = (HBox) rootNode.lookup("#sipHbox");
+        ComboBox<String> sipList = (ComboBox<String>) rootNode.lookup("#sipList");
         TextField sipField = (TextField) rootNode.lookup("#sipField");
         sipList.setOnAction(event -> {
             String s = sipList.getSelectionModel().getSelectedItem();
@@ -183,47 +229,39 @@ public class ScenarioController implements Initializable {
             }
         });
 
-
         sipList.setItems(FXCollections.observableList(innerPhones.stream().map(InnerPhone::getNumber).collect(Collectors.toList())));
-
-        // Выбор номеров с
-        ChoiceBox<String> listFromChoiseBox = (ChoiceBox<String>) rootNode.lookup("#listFromChoiseBox");
-        choiseBoxes.add(listFromChoiseBox);
-        availableNumbers = Dao.getAvailableNumbers(user);
-        listFromChoiseBox.setItems(FXCollections.observableList(availableNumbers));
-        listFromChoiseBox.setOnAction(e -> {
-            if (listFromChoiseBox.getSelectionModel().getSelectedItem() != null) {
-                fromAddButton.setVisible(true);
-            }
-        });
-//        fromAddButton.setOnMouseClicked(e -> {
-//            String choised = listFromChoiseBox.getSelectionModel().getSelectedItem();
-//            if (choised != null) {
-//                observableFrom.add(choised);
-//                availableNumbers.remove(choised);
-//                for (ChoiceBox<String> choiseBox : choiseBoxes) {
-//                    choiseBox.setItems(FXCollections.observableList(new ArrayList<>()));
-//                    choiseBox.setItems(FXCollections.observableList(availableNumbers));
-//                }
-//            }
-//        });
-
 
         // Выбор времени
         TextField timeChoice = (TextField) rootNode.lookup("#timeChoice");
         timeChoice.setText(rule.getAwaitingTime() + "");
 
-        // Выбор типа переадресации
-        ChoiceBox forwardTypeChoice = (ChoiceBox) rootNode.lookup("#forwardTypeChoice");
-        forwardTypeChoice.setItems(FXCollections.observableArrayList("Всем сразу", "По очереди"));
-        forwardTypeChoice.setValue(rule.getForwardType().name);
 
-        if ("Всем сразу".equals(forwardTypeChoice.getSelectionModel().getSelectedItem().toString())) {
+        ComboBox<String> ruleTypeChoice = (ComboBox<String>) rootNode.lookup("#ruleTypeChoice");
+        ruleTypeChoice.setItems(FXCollections.observableArrayList("DEFAULT", "NORMAL"));
+        ruleTypeChoice.setValue(rule.getType().toString());
+        ruleTypeChoice.setOnAction(event -> {
+            String selectedItem = ruleTypeChoice.getSelectionModel().getSelectedItem();
+            if (selectedItem == null) {
+                return;
+            }
+            if (selectedItem.equals("DEFAULT")) {
+                rootNode.setBackground(new Background(new BackgroundFill(Color.GRAY, CornerRadii.EMPTY, Insets.EMPTY)));
+            } else if (selectedItem.equals("NORMAL")) {
+                rootNode.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
+            }
+        });
+
+        // Выбор типа переадресации
+        ComboBox<String> forwardTypeChoice = (ComboBox<String>) rootNode.lookup("#forwardTypeChoice");
+        forwardTypeChoice.setItems(FXCollections.observableArrayList("TO_ALL", "QUEUE"));
+        forwardTypeChoice.setValue(rule.getForwardType().toString());
+
+        if ("TO_ALL".equals(forwardTypeChoice.getSelectionModel().getSelectedItem())) {
             timeChoice.setDisable(true);
             timeChoice.setText(600 + "");
         }
         forwardTypeChoice.getSelectionModel().selectedItemProperty().addListener(observable -> {
-            if ("Всем сразу".equals(forwardTypeChoice.getSelectionModel().getSelectedItem().toString())) {
+            if ("TO_ALL".equals(forwardTypeChoice.getSelectionModel().getSelectedItem())) {
                 timeChoice.setDisable(true);
                 timeChoice.setText(600 + "");
             } else {
@@ -236,60 +274,19 @@ public class ScenarioController implements Initializable {
         ObservableList<String> observableTo = FXCollections.observableList(rule.getToList());
 
         // Выбор типа связи
-        ChoiceBox destinationTypeChoice = (ChoiceBox) rootNode.lookup("#destinationTypeChoice");
+        ComboBox destinationTypeChoice = (ComboBox) rootNode.lookup("#destinationTypeChoice");
         destinationTypeChoice.setItems(FXCollections.observableArrayList("GSM", "SIP"));
         destinationTypeChoice.setValue(rule.getDestinationType().toString());
-        HBox gsmVbox = (HBox) rootNode.lookup("#gsmVbox");
-        destinationTypeChoice.setOnAction(event -> {
-            if (destinationTypeChoice.getSelectionModel().getSelectedIndex() == 0) { // если GSM
-                toAddButton.setVisible(false);
-                gsmVbox.setVisible(true);
-                sipHbox.setVisible(false);
-                observableTo.clear();
-            } else {
-                toAddButton.setVisible(false);
-                gsmVbox.setVisible(false);
-                sipHbox.setVisible(true);
-                observableTo.clear();
-            }
-        });
-        if (DestinationType.valueOf(destinationTypeChoice.getSelectionModel().getSelectedItem().toString()) == DestinationType.GSM) {
-            gsmVbox.setVisible(true);
-            sipHbox.setVisible(false);
-        } else {
-            gsmVbox.setVisible(false);
-            sipHbox.setVisible(true);
-        }
 
         // Список номеров на
         ListView listTo = (ListView) rootNode.lookup("#toListView");
         listTo.setItems(observableTo);
         toAddButton.setOnMouseClicked(e -> {
-            if (DestinationType.valueOf(destinationTypeChoice.getSelectionModel().getSelectedItem().toString()) == DestinationType.GSM) {
-                String text = "0" + fieldTo.getText();
-                observableTo.add(text);
-                fieldTo.setText("");
-                toAddButton.setVisible(false);
-            } else {
-                if (sipField.getText() != null && !sipField.getText().equals("")) {
-                    observableTo.add(sipField.getText());
-                    sipField.setText("");
-                    toAddButton.setVisible(false);
-                }
-            }
-        });
-
-        sipField.setOnKeyTyped(event -> {
-            if (sipField.getText() != null && !sipField.getText().equals("")) {
-                toAddButton.setVisible(true);
-            } else {
-                toAddButton.setVisible(false);
-            }
+            observableTo.add(sipField.getText());
         });
 
         // Выбор мелодии
-        ChoiceBox melodyChoice = (ChoiceBox) rootNode.lookup("#melodyChoice");
-        List<String> melodies = Dao.getMelodies();
+        ComboBox melodyChoice = (ComboBox) rootNode.lookup("#melodyChoice");
         melodyChoice.setItems(FXCollections.observableArrayList(melodies));
         melodyChoice.getSelectionModel().select(0);
         if (rule.getMelody() == null) {
@@ -297,20 +294,6 @@ public class ScenarioController implements Initializable {
         } else {
             melodyChoice.setValue(rule.getMelody());
         }
-
-//        // Удаление номера с
-//        Button fromDeleteButton = (Button) rootNode.lookup("#fromDeleteButton");
-//        fromDeleteButton.setOnAction(event -> observableFrom.remove(listFrom.getSelectionModel().getSelectedItem().toString()));
-//        fromDeleteButton.setVisible(false);
-//
-//        // Скрытие кнопки "удалить"
-//        listFrom.getSelectionModel().selectedItemProperty().addListener(observable -> {
-//            if (listFrom.getSelectionModel().getSelectedItem() == null) {
-//                fromDeleteButton.setVisible(false);
-//            } else {
-//                fromDeleteButton.setVisible(true);
-//            }
-//        });
 
         // Удаление номера на
         Button toDeleteButton = (Button) rootNode.lookup("#toDeleteButton");
@@ -328,145 +311,29 @@ public class ScenarioController implements Initializable {
         });
 
 //        Дни работы
-        CheckBox cb1 = (CheckBox) rootNode.lookup("#CB1");
-        CheckBox cb2 = (CheckBox) rootNode.lookup("#CB2");
-        CheckBox cb3 = (CheckBox) rootNode.lookup("#CB3");
-        CheckBox cb4 = (CheckBox) rootNode.lookup("#CB4");
-        CheckBox cb5 = (CheckBox) rootNode.lookup("#CB5");
-        CheckBox cb6 = (CheckBox) rootNode.lookup("#CB6");
-        CheckBox cb7 = (CheckBox) rootNode.lookup("#CB7");
         boolean[] days = rule.getDays();
-        cb1.setSelected(days[0]);
-        cb2.setSelected(days[1]);
-        cb3.setSelected(days[2]);
-        cb4.setSelected(days[3]);
-        cb5.setSelected(days[4]);
-        cb6.setSelected(days[5]);
-        cb7.setSelected(days[6]);
+        ((CheckBox) rootNode.lookup("#CB1")).setSelected(days[0]);
+        ((CheckBox) rootNode.lookup("#CB2")).setSelected(days[1]);
+        ((CheckBox) rootNode.lookup("#CB3")).setSelected(days[2]);
+        ((CheckBox) rootNode.lookup("#CB4")).setSelected(days[3]);
+        ((CheckBox) rootNode.lookup("#CB5")).setSelected(days[4]);
+        ((CheckBox) rootNode.lookup("#CB6")).setSelected(days[5]);
+        ((CheckBox) rootNode.lookup("#CB7")).setSelected(days[6]);
 
         ObservableList<String> hours = FXCollections.observableArrayList(Arrays.asList("0", "1", "2", "3", "4",
                 "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24"));
 
-        ChoiceBox fromHour = (ChoiceBox) rootNode.lookup("#CBfromHour");
+        ComboBox fromHour = (ComboBox) rootNode.lookup("#CBfromHour");
         fromHour.setItems(hours);
         fromHour.getSelectionModel().select(rule.getStartHour());
-        ChoiceBox toHour = (ChoiceBox) rootNode.lookup("#CBtoHour");
+        ComboBox toHour = (ComboBox) rootNode.lookup("#CBtoHour");
         toHour.setItems(hours);
         toHour.getSelectionModel().select(rule.getEndHour());
 
         //Удаление правила
         Button removeRuleButton = (Button) rootNode.lookup("#removeRuleButton");
         removeRuleButton.setOnAction(event -> {
-            try {
-                String result = Dao.removeScenario(user, rule.getId());
-                showInformationAlert(result);
-            } catch (Exception e) {
-                e.printStackTrace();
-                showInformationAlert(e.getMessage());
-            }
-            refreshScreen();
-        });
-
-//        Активация сценария
-        Button activateRuleButton = (Button) rootNode.lookup("#activateRuleButton");
-        activateRuleButton.setOnAction(event -> {
-            try {
-                String result = Dao.activateScenario(user, rule.getId());
-                showInformationAlert(result);
-            } catch (Exception e) {
-                showInformationAlert(e.getMessage());
-                e.printStackTrace();
-            }
-            refreshScreen();
-        });
-
-        Button deactivateRuleButton = (Button) rootNode.lookup("#deactivateRuleButton");
-        deactivateRuleButton.setOnAction(event -> {
-            try {
-                String result = Dao.deactivateScenario(user, rule.getId());
-                showInformationAlert(result);
-            } catch (Exception e) {
-                showInformationAlert(e.getMessage());
-                e.printStackTrace();
-            }
-            refreshScreen();
-        });
-
-
-        //Сохранение правила
-        Button saveScenarioButton = (Button) rootNode.lookup("#saveRuleButton");
-        saveScenarioButton.setOnAction(event -> {
-
-            JsonScenario jsonScenario = new JsonScenario();
-
-
-            jsonScenario.setId(rule.getId());
-            try {
-                String melody = melodyChoice.getSelectionModel().getSelectedItem().toString();
-                jsonScenario.setMelody(melody);
-            } catch (NullPointerException e) {
-                jsonScenario.setMelody("default");
-            }
-            String text = nameTextField.getText();
-            try {
-                text = new String(text.getBytes(), "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-            jsonScenario.setName(text);
-
-            try {
-                jsonScenario.setAwaitingTime(Integer.parseInt(timeChoice.getText()));
-            } catch (Exception e) {
-                jsonScenario.setAwaitingTime(600);
-            }
-
-            String s = destinationTypeChoice.getSelectionModel().getSelectedItem().toString();
-            jsonScenario.setDestinationType(DestinationType.valueOf(s));
-
-            s = forwardTypeChoice.getSelectionModel().getSelectedItem().toString();
-            if (s.equals("Всем сразу")) {
-                jsonScenario.setForwardType(TO_ALL);
-            } else {
-                jsonScenario.setForwardType(ForwardType.QUEUE);
-            }
-
-            ArrayList<String> list = new ArrayList<>();
-            for (Object o : listTo.getItems().toArray()) {
-                list.add((String) o);
-            }
-            jsonScenario.setToNumbers(list);
-
-//            list = new ArrayList<>();
-//            for (Object o : listFrom.getItems().toArray()) {
-//                list.add((String) o);
-//            }
-//            jsonScenario.setFromNumbers(list);
-
-            jsonScenario.setStartHour(fromHour.getSelectionModel().getSelectedIndex());
-            jsonScenario.setEndHour(toHour.getSelectionModel().getSelectedIndex());
-            jsonScenario.setDays(new boolean[]{
-                    cb1.isSelected(),
-                    cb2.isSelected(),
-                    cb3.isSelected(),
-                    cb4.isSelected(),
-                    cb5.isSelected(),
-                    cb6.isSelected(),
-                    cb7.isSelected()
-            });
-
-//            jsonScenario.setStatus(scenarioName.getStatus());
-
-            System.out.println("Сохраняю: " + jsonScenario);
-
-            try {
-                String response = Dao.setScenario(user, jsonScenario);
-                showInformationAlert(response);
-            } catch (Exception e) {
-                e.printStackTrace();
-                showInformationAlert(e.getMessage());
-            }
-            refreshScreen();
+            vBoxForRules.getChildren().remove(mainNode);
         });
 
         vBoxForRules.getChildren().add(mainNode);

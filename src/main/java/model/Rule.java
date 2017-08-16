@@ -7,19 +7,18 @@ import java.util.List;
 public class Rule {
 
     private int id;
-    private String login;
     private String name;
     private String scenario;
     private List<String> toList;
     private ForwardType forwardType;
     private DestinationType destinationType;
+    private RuleType type;
     private ScenarioStatus status;
     private int awaitingTime;
     private String melody;
-    private Integer startHour;
-    private Integer endHour;
+    private int startHour;
+    private int endHour;
     private boolean[] days;
-    private User user;
 
     public int getId() {
         return id;
@@ -27,14 +26,6 @@ public class Rule {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public String getLogin() {
-        return login;
-    }
-
-    public void setLogin(String login) {
-        this.login = login;
     }
 
     public String getName() {
@@ -101,7 +92,7 @@ public class Rule {
         this.melody = melody;
     }
 
-    public Integer getStartHour() {
+    public int getStartHour() {
         return startHour;
     }
 
@@ -109,7 +100,7 @@ public class Rule {
         this.startHour = startHour;
     }
 
-    public Integer getEndHour() {
+    public int getEndHour() {
         return endHour;
     }
 
@@ -117,21 +108,18 @@ public class Rule {
         this.endHour = endHour;
     }
 
-
-
-    public User getUser() {
-        return user;
+    public RuleType getType() {
+        return type;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setType(RuleType type) {
+        this.type = type;
     }
 
     @Override
     public String toString() {
         return "Rule{" +
                 "id=" + id +
-                ", login='" + login + '\'' +
                 ", name='" + name + '\'' +
                 ", scenario='" + scenario + '\'' +
                 ", toList=" + toList +
@@ -143,7 +131,6 @@ public class Rule {
                 ", startHour=" + startHour +
                 ", endHour=" + endHour +
                 ", days=" + Arrays.toString(days) +
-                ", user=" + user +
                 '}';
     }
 

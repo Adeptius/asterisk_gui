@@ -1,19 +1,14 @@
 package model;
 
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 public class Scenario {
 
     private int id;
-    private String login;
     private String name;
-    private User user;
-    public List<Rule> rules;
+    private List<Rule> rules;
 
 
     public int getId() {
@@ -24,28 +19,12 @@ public class Scenario {
         this.id = id;
     }
 
-    public String getLogin() {
-        return login;
-    }
-
-    public void setLogin(String login) {
-        this.login = login;
-    }
-
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 
     public List<Rule> getRules() {
@@ -60,9 +39,7 @@ public class Scenario {
     public String toString() {
         return "Scenario{" +
                 "id=" + id +
-                ", login='" + login + '\'' +
                 ", name='" + name + '\'' +
-                ", user=" + user +
                 ", rules=" + rules +
                 '}';
     }
