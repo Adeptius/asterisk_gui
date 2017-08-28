@@ -8,7 +8,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
-import model.JsonSipAndPass;
+import json.JsonSipAndPass;
 import model.User;
 
 import java.net.URL;

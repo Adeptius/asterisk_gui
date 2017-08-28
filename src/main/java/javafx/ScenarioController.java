@@ -1,5 +1,8 @@
 package javafx;
 
+import enums.DestinationType;
+import enums.ForwardType;
+import enums.RuleType;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -14,23 +17,18 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import dao.Dao;
+import json.JsonChainElement;
 import json.JsonRule;
 import model.*;
 
-import java.io.UnsupportedEncodingException;
+import java.io.IOException;
 import java.net.URL;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.zip.Deflater;
 
+import static enums.DestinationType.GSM;
+import static enums.RuleType.DEFAULT;
 import static javafx.GuiController.showErrorAlert;
-import static model.DestinationType.SIP;
-import static model.ForwardType.TO_ALL;
-import static model.RuleType.DEFAULT;
-import static model.RuleType.NORMAL;
-import static model.ScenarioStatus.DEACTIVATED;
 
 public class ScenarioController implements Initializable {
 
@@ -81,28 +79,13 @@ public class ScenarioController implements Initializable {
 
         saveScenarioButton.setOnAction(event -> {
             ObservableList<Node> childrens = vBoxForRules.getChildren();
-            List<Rule> rules = new ArrayList<>();
+            List<JsonRule> rules = new ArrayList<>();
             for (Node childNode : childrens) {
-                Rule rule = new Rule();
+                JsonRule rule = new JsonRule();
                 rule.setName(((TextField) childNode.lookup("#nameTextField")).getText());
-
-                ListView listTo = (ListView) childNode.lookup("#toListView");
-                rule.setToList(new ArrayList<>(listTo.getItems()));
 
                 ComboBox ruleTypeChoice = (ComboBox) childNode.lookup("#ruleTypeChoice");
                 rule.setType(RuleType.valueOf(ruleTypeChoice.getSelectionModel().getSelectedItem().toString()));
-
-                ComboBox forwardTypeChoice = (ComboBox) childNode.lookup("#forwardTypeChoice");
-                rule.setForwardType(ForwardType.valueOf(forwardTypeChoice.getSelectionModel().getSelectedItem().toString()));
-
-                ComboBox destinationTypeChoice = (ComboBox) childNode.lookup("#destinationTypeChoice");
-                String s = destinationTypeChoice.getSelectionModel().getSelectedItem().toString();
-                rule.setDestinationType(DestinationType.valueOf(s));
-
-
-                rule.setMelody(((ComboBox) childNode.lookup("#melodyChoice")).getSelectionModel().getSelectedItem().toString());
-
-                rule.setAwaitingTime(Integer.parseInt(((TextField) childNode.lookup("#timeChoice")).getText()));
 
                 rule.setDays(new boolean[]{
                         ((CheckBox) childNode.lookup("#CB1")).isSelected(),
@@ -118,6 +101,42 @@ public class ScenarioController implements Initializable {
 
                 rule.setEndHour(((ComboBox) childNode.lookup("#CBtoHour")).getSelectionModel().getSelectedIndex());
 
+
+                VBox vBoxForChain = (VBox) childNode.lookup("#vBoxForChain");
+                ObservableList<Node> chainChildrens = vBoxForChain.getChildren();
+
+                HashMap<Integer, JsonChainElement> jsonChainElements = new HashMap<>();
+                for (int i = 0; i < chainChildrens.size(); i++) {
+                    Node chainChildren = chainChildrens.get(i);
+                    JsonChainElement element = new JsonChainElement();
+
+//                    Label labelChainNumber = (Label) chainChildren.lookup("#labelChainNumber");
+//                    System.out.println(labelChainNumber);
+//                    int number = Integer.parseInt(labelChainNumber.getText().substring(13));
+                    element.setPosition(i);
+
+                    // создать элемент
+                    ListView listTo = (ListView) chainChildren.lookup("#toListView");
+                    element.setToList(new ArrayList<>(listTo.getItems()));
+
+                    ComboBox forwardTypeChoice = (ComboBox) chainChildren.lookup("#forwardTypeChoice");
+                    String name1 = forwardTypeChoice.getSelectionModel().getSelectedItem().toString();
+                    ForwardType forwardType = ForwardType.valueOf(name1);
+                    element.setForwardType(forwardType);
+
+                    ComboBox destinationTypeChoice = (ComboBox) chainChildren.lookup("#destinationTypeChoice");
+                    String name = destinationTypeChoice.getSelectionModel().getSelectedItem().toString();
+                    DestinationType destinationType = DestinationType.valueOf(name);
+                    element.setDestinationType(destinationType);
+
+                    element.setMelody(((ComboBox) chainChildren.lookup("#melodyChoice")).getSelectionModel().getSelectedItem().toString());
+
+                    element.setAwaitingTime(Integer.parseInt(((TextField) chainChildren.lookup("#timeChoice")).getText()));
+
+                    jsonChainElements.put(i, element);
+                }
+
+                rule.setChain(jsonChainElements);
                 rules.add(rule);
             }
 
@@ -139,13 +158,10 @@ public class ScenarioController implements Initializable {
 
     private void addNewRuleToScreen() {
         try {
-            Rule rule = new Rule();
+            JsonRule rule = new JsonRule();
             rule.setDays(new boolean[]{false, false, false, false, false, false, false});
-            rule.setForwardType(TO_ALL);
-            rule.setToList(new ArrayList<>());
-            rule.setDestinationType(SIP);
-            rule.setStatus(DEACTIVATED);
-            rule.setType(NORMAL);
+            rule.setType(DEFAULT);
+            rule.setChain(new HashMap<>());
             addScenarioEditorToScreen(rule);
         } catch (Exception e) {
             e.printStackTrace();
@@ -169,8 +185,8 @@ public class ScenarioController implements Initializable {
                 if (first.isPresent()) {
                     Scenario scenario = first.get();
                     currentScenarioId = scenario.getId();
-                    List<Rule> rules = scenario.getRules();
-                    for (Rule rule : rules) {
+                    List<JsonRule> rules = scenario.getRules();
+                    for (JsonRule rule : rules) {
                         addScenarioEditorToScreen(rule);
                     }
                 } else {
@@ -182,7 +198,7 @@ public class ScenarioController implements Initializable {
         })).start();
     }
 
-    private void addScenarioEditorToScreen(Rule rule) throws Exception {
+    private void addScenarioEditorToScreen(JsonRule rule) throws Exception {
         FXMLLoader fxmlLoader = new FXMLLoader();
         fxmlLoader.setLocation(getClass().getResource("item_rule.fxml"));
         Parent root = fxmlLoader.load();
@@ -191,51 +207,15 @@ public class ScenarioController implements Initializable {
         rootNode.setStyle("-fx-border-color: #0072ff");
         rootNode.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
 
+        // Имя правила
         TextField nameTextField = (TextField) rootNode.lookup("#nameTextField");
         nameTextField.setText(rule.getName());
 
         if (rule.getType() == DEFAULT) {
             rootNode.setBackground(new Background(new BackgroundFill(Color.GRAY, CornerRadii.EMPTY, Insets.EMPTY)));
         }
-//        Label statusLabel = (Label) rootNode.lookup("#statusLabel");
-//        ScenarioStatus status = rule.getStatus();
-//        if (status == ScenarioStatus.ACTIVATED) {
-//            statusLabel.setText("Активен");
-//            statusLabel.setStyle("-fx-background-color: lightgreen");
-//
-//        } else if (status == DEACTIVATED) {
-//            statusLabel.setText("Не активен");
-//            statusLabel.setStyle("-fx-background-color: gray");
-//
-//        } else if (status == ScenarioStatus.DEFAULT) {
-//            statusLabel.setText("По умолчанию");
-//            statusLabel.setStyle("-fx-background-color: khaki");
-//        }
 
-
-        // Кнопка добавления номера на
-        Button toAddButton = (Button) rootNode.lookup("#toAddButton");
-        toAddButton.setVisible(false);
-
-        // Список сип номеров
-//        HBox sipHbox = (HBox) rootNode.lookup("#sipHbox");
-        ComboBox<String> sipList = (ComboBox<String>) rootNode.lookup("#sipList");
-        TextField sipField = (TextField) rootNode.lookup("#sipField");
-        sipList.setOnAction(event -> {
-            String s = sipList.getSelectionModel().getSelectedItem();
-            if (s != null) {
-                sipField.setText(s);
-                toAddButton.setVisible(true);
-            }
-        });
-
-        sipList.setItems(FXCollections.observableList(innerPhones.stream().map(InnerPhone::getNumber).collect(Collectors.toList())));
-
-        // Выбор времени
-        TextField timeChoice = (TextField) rootNode.lookup("#timeChoice");
-        timeChoice.setText(rule.getAwaitingTime() + "");
-
-
+        // Тип правила
         ComboBox<String> ruleTypeChoice = (ComboBox<String>) rootNode.lookup("#ruleTypeChoice");
         ruleTypeChoice.setItems(FXCollections.observableArrayList("DEFAULT", "NORMAL"));
         ruleTypeChoice.setValue(rule.getType().toString());
@@ -251,10 +231,102 @@ public class ScenarioController implements Initializable {
             }
         });
 
-        // Выбор типа переадресации
-        ComboBox<String> forwardTypeChoice = (ComboBox<String>) rootNode.lookup("#forwardTypeChoice");
-        forwardTypeChoice.setItems(FXCollections.observableArrayList("TO_ALL", "QUEUE"));
-        forwardTypeChoice.setValue(rule.getForwardType().toString());
+
+        // Дни работы
+        boolean[] days = rule.getDays();
+        ((CheckBox) rootNode.lookup("#CB1")).setSelected(days[0]);
+        ((CheckBox) rootNode.lookup("#CB2")).setSelected(days[1]);
+        ((CheckBox) rootNode.lookup("#CB3")).setSelected(days[2]);
+        ((CheckBox) rootNode.lookup("#CB4")).setSelected(days[3]);
+        ((CheckBox) rootNode.lookup("#CB5")).setSelected(days[4]);
+        ((CheckBox) rootNode.lookup("#CB6")).setSelected(days[5]);
+        ((CheckBox) rootNode.lookup("#CB7")).setSelected(days[6]);
+
+        ObservableList<String> hours = FXCollections.observableArrayList(Arrays.asList("0", "1", "2", "3", "4",
+                "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24"));
+
+        // Часы работы
+        ComboBox fromHour = (ComboBox) rootNode.lookup("#CBfromHour");
+        fromHour.setItems(hours);
+        fromHour.getSelectionModel().select(rule.getStartHour());
+        ComboBox toHour = (ComboBox) rootNode.lookup("#CBtoHour");
+        toHour.setItems(hours);
+        toHour.getSelectionModel().select(rule.getEndHour());
+
+        //Удаление правила
+        Button removeRuleButton = (Button) rootNode.lookup("#removeRuleButton");
+        removeRuleButton.setOnAction(e -> vBoxForRules.getChildren().remove(mainNode));
+
+
+        VBox vBoxForChain = (VBox) rootNode.lookup("#vBoxForChain"); // сюда вставлять цепочку
+
+
+        //Добавить шаг
+        Button addStepButton = (Button) rootNode.lookup("#addStepButton");
+        addStepButton.setOnAction(e -> {
+            JsonChainElement element = new JsonChainElement();
+            element.setForwardType(ForwardType.TO_ALL);
+            element.setToList(new ArrayList<>());
+            element.setAwaitingTime(600);
+            element.setDestinationType(GSM);
+            element.setMelody("none");
+            addStepToChain(vBoxForChain, element);
+        });
+
+        //Удалить шаг
+        Button removeStepButton = (Button) rootNode.lookup("#removeStepButton");
+        removeStepButton.setOnAction(e -> {
+            ObservableList<Node> childrenChainElements = vBoxForChain.getChildren();
+            int size = childrenChainElements.size();
+            if (size > 0){
+                childrenChainElements.remove(size-1);
+            }
+        });
+
+
+        HashMap<Integer, JsonChainElement> chain = rule.getChain();
+        for (int i = 0; i < chain.size(); i++) {
+            addStepToChain(vBoxForChain, chain.get(i));
+        }
+        vBoxForRules.getChildren().add(mainNode);
+    }
+
+    private void addStepToChain(VBox vBoxForChain, JsonChainElement element) {
+        Parent chainRoot = null;
+        try {
+            chainRoot = new FXMLLoader(getClass().getResource("item_chain_element.fxml")).load();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
+
+//        Label labelChainNumber = (Label) chainRoot.lookup("#labelChainNumber");
+//        labelChainNumber.setText("Цепочка. Шаг " + (i));
+
+//      Кнопка добавления номера на
+        Button toAddButton = (Button) chainRoot.lookup("#toAddButton");
+
+//      Список сип номеров
+        ComboBox<String> sipList = (ComboBox<String>) chainRoot.lookup("#sipList");
+        TextField sipField = (TextField) chainRoot.lookup("#sipField");
+        sipList.setOnAction(event -> {
+            String s = sipList.getSelectionModel().getSelectedItem();
+            if (s != null) {
+                sipField.setText(s);
+            }
+        });
+
+        sipList.setItems(FXCollections.observableList(innerPhones.stream().map(InnerPhone::getNumber).collect(Collectors.toList())));
+
+//      Выбор времени
+        TextField timeChoice = (TextField) chainRoot.lookup("#timeChoice");
+        timeChoice.setText(element.getAwaitingTime() + "");
+
+
+//      Выбор типа переадресации
+        ComboBox<String> forwardTypeChoice = (ComboBox<String>) chainRoot.lookup("#forwardTypeChoice");
+        forwardTypeChoice.setItems(FXCollections.observableArrayList("TO_ALL", "QUEUE", "RANDOM"));
+        forwardTypeChoice.setValue(element.getForwardType().toString());
 
         if ("TO_ALL".equals(forwardTypeChoice.getSelectionModel().getSelectedItem())) {
             timeChoice.setDisable(true);
@@ -270,38 +342,38 @@ public class ScenarioController implements Initializable {
             }
         });
 
-        // Список номеров на
-        ObservableList<String> observableTo = FXCollections.observableList(rule.getToList());
+//      Список номеров на
+        ObservableList<String> observableTo = FXCollections.observableList(element.getToList());
 
-        // Выбор типа связи
-        ComboBox destinationTypeChoice = (ComboBox) rootNode.lookup("#destinationTypeChoice");
+//             Выбор типа связи
+        ComboBox destinationTypeChoice = (ComboBox) chainRoot.lookup("#destinationTypeChoice");
         destinationTypeChoice.setItems(FXCollections.observableArrayList("GSM", "SIP"));
-        destinationTypeChoice.setValue(rule.getDestinationType().toString());
+        destinationTypeChoice.setValue(element.getDestinationType().toString());
 
-        // Список номеров на
-        ListView listTo = (ListView) rootNode.lookup("#toListView");
+//             Список номеров на
+        ListView listTo = (ListView) chainRoot.lookup("#toListView");
         listTo.setItems(observableTo);
         toAddButton.setOnMouseClicked(e -> {
             observableTo.add(sipField.getText());
         });
 
         // Выбор мелодии
-        ComboBox melodyChoice = (ComboBox) rootNode.lookup("#melodyChoice");
+        ComboBox melodyChoice = (ComboBox) chainRoot.lookup("#melodyChoice");
         melodyChoice.setItems(FXCollections.observableArrayList(melodies));
         melodyChoice.getSelectionModel().select(0);
-        if (rule.getMelody() == null) {
+        if (element.getMelody() == null) {
             melodyChoice.setValue("none");
         } else {
-            melodyChoice.setValue(rule.getMelody());
+            melodyChoice.setValue(element.getMelody());
         }
 
-        // Удаление номера на
-        Button toDeleteButton = (Button) rootNode.lookup("#toDeleteButton");
+//             Удаление номера на
+        Button toDeleteButton = (Button) chainRoot.lookup("#toDeleteButton");
         toDeleteButton.setOnAction(event -> observableTo.remove(listTo.getSelectionModel().getSelectedItem().toString()));
         toDeleteButton.setVisible(false);
 
 
-        // Скрытие кнопки "удалить"
+//             Скрытие кнопки "удалить"
         listTo.getSelectionModel().selectedItemProperty().addListener(observable -> {
             if (listTo.getSelectionModel().getSelectedItem() == null) {
                 toDeleteButton.setVisible(false);
@@ -310,34 +382,9 @@ public class ScenarioController implements Initializable {
             }
         });
 
-//        Дни работы
-        boolean[] days = rule.getDays();
-        ((CheckBox) rootNode.lookup("#CB1")).setSelected(days[0]);
-        ((CheckBox) rootNode.lookup("#CB2")).setSelected(days[1]);
-        ((CheckBox) rootNode.lookup("#CB3")).setSelected(days[2]);
-        ((CheckBox) rootNode.lookup("#CB4")).setSelected(days[3]);
-        ((CheckBox) rootNode.lookup("#CB5")).setSelected(days[4]);
-        ((CheckBox) rootNode.lookup("#CB6")).setSelected(days[5]);
-        ((CheckBox) rootNode.lookup("#CB7")).setSelected(days[6]);
-
-        ObservableList<String> hours = FXCollections.observableArrayList(Arrays.asList("0", "1", "2", "3", "4",
-                "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24"));
-
-        ComboBox fromHour = (ComboBox) rootNode.lookup("#CBfromHour");
-        fromHour.setItems(hours);
-        fromHour.getSelectionModel().select(rule.getStartHour());
-        ComboBox toHour = (ComboBox) rootNode.lookup("#CBtoHour");
-        toHour.setItems(hours);
-        toHour.getSelectionModel().select(rule.getEndHour());
-
-        //Удаление правила
-        Button removeRuleButton = (Button) rootNode.lookup("#removeRuleButton");
-        removeRuleButton.setOnAction(event -> {
-            vBoxForRules.getChildren().remove(mainNode);
-        });
-
-        vBoxForRules.getChildren().add(mainNode);
+        vBoxForChain.getChildren().add(chainRoot);
     }
+
 
     public static void showInformationAlert(String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);

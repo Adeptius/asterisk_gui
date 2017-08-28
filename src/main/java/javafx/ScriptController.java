@@ -1,7 +1,6 @@
 package javafx;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
@@ -9,9 +8,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 import dao.Dao;
-import json.Message;
+import json.JsonMessage;
 import model.User;
-import org.json.JSONObject;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -43,10 +41,10 @@ public class ScriptController implements Initializable {
         try{
             result = Dao.getScriptForUser(user, sitename);
 
-            Message message = new Gson().fromJson(result, Message.class);
-            System.out.println(message.getMessage());
+            JsonMessage jsonMessage = new Gson().fromJson(result, JsonMessage.class);
+            System.out.println(jsonMessage.getMessage());
 //            JSONObject object = new JSONObject(result);
-            textForScript.setText(message.getMessage());
+            textForScript.setText(jsonMessage.getMessage());
 
 //            Alert alert = new Alert(Alert.AlertType.INFORMATION);
 //            alert.setTitle("Information");

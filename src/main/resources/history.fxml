@@ -27,5 +27,10 @@
       <TextField fx:id="textFrom" layoutX="23.0" layoutY="14.0" />
       <TextField fx:id="textTo" layoutX="198.0" layoutY="14.0" />
       <Button fx:id="btnDownload" layoutX="667.0" layoutY="14.0" mnemonicParsing="false" text="Скачать запись" />
+      <TextField fx:id="limitText" layoutX="825.0" layoutY="14.0" prefHeight="25.0" prefWidth="71.0" />
+      <TextField fx:id="offsetText" layoutX="948.0" layoutY="14.0" prefHeight="25.0" prefWidth="71.0" />
+      <Label fx:id="countLabel" layoutX="1121.0" layoutY="18.0" prefHeight="17.0" prefWidth="184.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="18.0" />
+      <Label layoutX="784.0" layoutY="18.0" prefHeight="17.0" prefWidth="41.0" text="Лимит" />
+      <Label layoutX="910.0" layoutY="18.0" text="Сдвиг" />
    </children>
 </AnchorPane>

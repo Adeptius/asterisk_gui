@@ -18,9 +18,11 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import json.JsonAmoForController;
 import json.JsonInnerAndOuterPhones;
+import json.JsonNumbersCount;
 import json.JsonRoistatForController;
 import model.*;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -202,6 +204,9 @@ public class GuiController implements Initializable {
     @FXML
     private TextField blackIPText;
 
+    @FXML
+    private Button phonesBindButton;
+
     public static String choicedSitename;
 
     private void initTrackingTab() {
@@ -218,6 +223,10 @@ public class GuiController implements Initializable {
         phoneIp.setCellValueFactory(new PropertyValueFactory<>("ip"));
         phoneTime.setCellValueFactory(new PropertyValueFactory<>("busyTimeText"));
         phoneUtm.setCellValueFactory(new PropertyValueFactory<>("utmRequest"));
+
+        phonesBindButton.setOnAction(event -> {
+            showPhoneBindings();
+        });
     }
 
     public void updateBlackList(User user) {
@@ -255,7 +264,7 @@ public class GuiController implements Initializable {
         Parent root = loader.load();
         Scene scene = new Scene(root);
         stage.setTitle("Телефония");
-        stage.setResizable(false);
+        stage.setResizable(true);
         stage.initModality(Modality.WINDOW_MODAL); // Перекрывающее окно
         stage.initOwner(userList.getScene().getWindow()); // Указание кого оно перекрывает
         stage.setScene(scene);
@@ -274,6 +283,23 @@ public class GuiController implements Initializable {
         stage.initOwner(userList.getScene().getWindow()); // Указание кого оно перекрывает
         stage.setScene(scene);
         stage.show();
+    }
+
+    public void showPhoneBindings(){
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("phonesAndSites.fxml"));
+            Stage stage = new Stage();
+            loader.setController(new PhonesAndSitesController(this, stage, activeUser));
+            Parent root = loader.load();
+            Scene scene = new Scene(root);
+            stage.setTitle("Редактирование привязок телефонов и сайтов");
+            stage.initOwner(userList.getScene().getWindow());
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            showErrorAlert(e.getMessage());
+        }
+
     }
 
 

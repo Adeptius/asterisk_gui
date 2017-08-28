@@ -1,10 +1,10 @@
-package model;
+package enums;
 
 
 public enum ForwardType {
     TO_ALL("Всем сразу"),
-    QUEUE("По очереди");
-
+    QUEUE("По очереди"),
+    RANDOM("Случайно");
     public String name;
 
     ForwardType(String name) {

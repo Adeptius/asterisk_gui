@@ -60,6 +60,11 @@
                                                 <Insets bottom="5.0" top="5.0" />
                                              </VBox.margin>
                                           </Button>
+                                          <Button fx:id="phonesBindButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#crudSite" text="Назначить">
+                                             <VBox.margin>
+                                                <Insets bottom="5.0" />
+                                             </VBox.margin>
+                                          </Button>
                                           <!--<Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#changeTrackingCount" text="Номера">-->
                                              <!--<VBox.margin>-->
                                                 <!--<Insets bottom="5.0" />-->

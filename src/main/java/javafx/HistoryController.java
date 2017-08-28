@@ -1,14 +1,17 @@
 package javafx;
 
+import com.google.gson.Gson;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import dao.Dao;
+import json.JsonHistoryResponse;
 import model.Call;
 import model.User;
 
@@ -84,6 +87,17 @@ public class HistoryController implements Initializable {
     @FXML
     private Button btnDownload;
 
+    @FXML
+    private Label countLabel;
+
+    @FXML
+    private TextField limitText;
+
+    @FXML
+    private TextField offsetText;
+
+
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         toColumn.setCellValueFactory(new PropertyValueFactory<>("calledTo"));
@@ -114,11 +128,25 @@ public class HistoryController implements Initializable {
                 btnDownload.setVisible(true);
             }
         });
+        limitText.setText("100");
+        offsetText.setText("0");
     }
 
     private void showHistory(String from, String to, String direction) {
         try {
-            List<Call> histories = Dao.getHistory(user, from, to, direction);
+            int limit = Integer.parseInt(limitText.getText());
+            int offset = Integer.parseInt(offsetText.getText());
+            String response = Dao.getHistory(user, from, to, direction, limit, offset);
+            if (response.substring(0,30).contains("\"status\":\"Error\"")){
+                GuiController.showErrorAlert(response);
+                return;
+            }
+            JsonHistoryResponse history = new Gson().fromJson(response, JsonHistoryResponse.class);
+
+            int count = history.getCount();
+            countLabel.setText("Всего записей: " + count);
+
+            List<Call> histories = history.getCalls();
             Collections.reverse(histories);
             table.setItems(FXCollections.observableArrayList(histories));
             btnDownload.setVisible(false);

@@ -1,37 +1,31 @@
 package json;
 
 
-import model.DestinationType;
-import model.ForwardType;
-import model.ScenarioStatus;
+import enums.RuleType;
 
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashMap;
 
 public class JsonRule {
 
     public JsonRule() {
     }
 
-    private int id;
+//    private int id;
     private String name;
-    private List<String> fromNumbers;
-    private List<String> toNumbers;
-    private ForwardType forwardType;
-    private DestinationType destinationType;
-    private int awaitingTime;
-    private String melody;
     private int startHour;
     private int endHour;
     private boolean[] days;
+    private RuleType type;
+    HashMap<Integer, JsonChainElement> chain;
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
+//    public int getId() {
+//        return id;
+//    }
+//
+//    public void setId(int id) {
+//        this.id = id;
+//    }
 
     public String getName() {
         return name;
@@ -39,38 +33,6 @@ public class JsonRule {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public ForwardType getForwardType() {
-        return forwardType;
-    }
-
-    public void setForwardType(ForwardType forwardType) {
-        this.forwardType = forwardType;
-    }
-
-    public DestinationType getDestinationType() {
-        return destinationType;
-    }
-
-    public void setDestinationType(DestinationType destinationType) {
-        this.destinationType = destinationType;
-    }
-
-    public int getAwaitingTime() {
-        return awaitingTime;
-    }
-
-    public void setAwaitingTime(int awaitingTime) {
-        this.awaitingTime = awaitingTime;
-    }
-
-    public String getMelody() {
-        return melody;
-    }
-
-    public void setMelody(String melody) {
-        this.melody = melody;
     }
 
     public int getStartHour() {
@@ -89,22 +51,6 @@ public class JsonRule {
         this.endHour = endHour;
     }
 
-    public List<String> getFromNumbers() {
-        return fromNumbers;
-    }
-
-    public void setFromNumbers(List<String> fromNumbers) {
-        this.fromNumbers = fromNumbers;
-    }
-
-    public List<String> getToNumbers() {
-        return toNumbers;
-    }
-
-    public void setToNumbers(List<String> toNumbers) {
-        this.toNumbers = toNumbers;
-    }
-
     public boolean[] getDays() {
         return days;
     }
@@ -113,17 +59,29 @@ public class JsonRule {
         this.days = days;
     }
 
+    public RuleType getType() {
+        return type;
+    }
+
+
+
+    public void setType(RuleType type) {
+        this.type = type;
+    }
+
+    public HashMap<Integer, JsonChainElement> getChain() {
+        return chain;
+    }
+
+    public void setChain(HashMap<Integer, JsonChainElement> chain) {
+        this.chain = chain;
+    }
+
     @Override
     public String toString() {
         return "JsonScenario{" +
-                "id=" + id +
+//                "id=" + id +
                 ", name='" + name + '\'' +
-                ", fromNumbers=" + fromNumbers +
-                ", toNumbers=" + toNumbers +
-                ", forwardType=" + forwardType +
-                ", destinationType=" + destinationType +
-                ", awaitingTime=" + awaitingTime +
-                ", melody='" + melody + '\'' +
                 ", startHour=" + startHour +
                 ", endHour=" + endHour +
                 ", days=" + Arrays.toString(days) +

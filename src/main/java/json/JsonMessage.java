@@ -1,9 +1,9 @@
 package json;
 
 
-public class Message {
+public class JsonMessage {
 
-    public Message(Status status, String message) {
+    public JsonMessage(Status status, String message) {
         this.status = status;
         this.message = message;
     }

@@ -1,4 +1,4 @@
-package model;
+package json;
 
 
 public class JsonNumbersCount {

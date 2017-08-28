@@ -6,19 +6,11 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="850.0" prefWidth="565.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="850.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <HBox prefHeight="25.0" prefWidth="200.0">
          <children>
-            <Button fx:id="newRuleButton" mnemonicParsing="false" text="Добавить правило">
-               <opaqueInsets>
-                  <Insets />
-               </opaqueInsets>
-               <HBox.margin>
-                  <Insets left="5.0" />
-               </HBox.margin>
-            </Button>
-            <Button fx:id="saveScenarioButton" mnemonicParsing="false" text="Сохранить сценарий">
+            <Button fx:id="saveButton" mnemonicParsing="false" text="Сохранить">
                <opaqueInsets>
                   <Insets />
                </opaqueInsets>

@@ -1,14 +1,15 @@
 package model;
 
 
-import java.util.List;
+import json.JsonRule;
 
+import java.util.List;
 
 public class Scenario {
 
     private int id;
     private String name;
-    private List<Rule> rules;
+    private List<JsonRule> rules;
 
 
     public int getId() {
@@ -27,11 +28,11 @@ public class Scenario {
         this.name = name;
     }
 
-    public List<Rule> getRules() {
+    public List<JsonRule> getRules() {
         return rules;
     }
 
-    public void setRules(List<Rule> rules) {
+    public void setRules(List<JsonRule> rules) {
         this.rules = rules;
     }
 

@@ -6,244 +6,108 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane fx:id="mainNode" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="391.0" prefWidth="514.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane fx:id="mainNode" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="550.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <VBox fx:id="ruleHbox" prefHeight="200.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
+      <VBox fx:id="ruleHbox" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
          <children>
             <HBox>
                <children>
-                  <Label alignment="CENTER" prefHeight="24.0" prefWidth="90.0" text="Сценарий">
+                  <ComboBox fx:id="ruleTypeChoice" prefWidth="100.0">
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                  </ComboBox>
+                  <Label alignment="CENTER" prefHeight="25.0" prefWidth="90.0" text="правило">
                      <font>
                         <Font size="14.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="nameTextField" prefHeight="25.0" prefWidth="277.0" />
-                  <AnchorPane HBox.hgrow="ALWAYS">
-                     <children>
-                        <Label fx:id="statusLabel" alignment="CENTER" prefHeight="25.0" prefWidth="100.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                           <font>
-                              <Font size="14.0" />
-                           </font>
-                        </Label>
-                     </children>
-                  </AnchorPane>
+                  <TextField fx:id="nameTextField" prefHeight="25.0" prefWidth="277.0">
+                     <HBox.margin>
+                        <Insets left="5.0" right="5.0" />
+                     </HBox.margin></TextField>
+                  <Button fx:id="removeRuleButton" mnemonicParsing="false" prefWidth="90.0" text="Удалить" />
+                  <AnchorPane HBox.hgrow="ALWAYS" />
                </children>
                <VBox.margin>
-                  <Insets />
+                  <Insets left="5.0" right="5.0" top="5.0" />
                </VBox.margin>
             </HBox>
-            <HBox VBox.vgrow="ALWAYS">
+            <HBox alignment="CENTER" VBox.vgrow="NEVER">
                <children>
-                  <VBox maxWidth="150.0" prefHeight="346.0" prefWidth="217.0" HBox.hgrow="ALWAYS">
-                     <children>
-                        <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="На номера" textAlignment="CENTER" VBox.vgrow="NEVER">
-                           <font>
-                              <Font size="14.0" />
-                           </font>
-                        </Label>
-                        <ListView fx:id="toListView" prefHeight="400.0" prefWidth="100.0" VBox.vgrow="ALWAYS">
-                           <VBox.margin>
-                              <Insets bottom="5.0" right="5.0" />
-                           </VBox.margin>
-                        </ListView>
-                        <HBox fx:id="sipHbox" prefHeight="100.0" prefWidth="100.0" VBox.vgrow="NEVER">
-                           <children>
-                              <TextField fx:id="sipField" HBox.hgrow="NEVER" />
-                              <ComboBox fx:id="sipList" maxWidth="10.0" prefHeight="25.0" prefWidth="10.0" HBox.hgrow="NEVER" />
-                           </children>
-                           <VBox.margin>
-                              <Insets bottom="5.0" right="5.0" />
-                           </VBox.margin>
-                        </HBox>
-                        <HBox prefHeight="18.0" prefWidth="100.0" VBox.vgrow="NEVER">
-                           <children>
-                              <Button fx:id="toAddButton" mnemonicParsing="false" prefWidth="70.0" text="Добавить" HBox.hgrow="NEVER">
-                                 <HBox.margin>
-                                    <Insets right="5.0" />
-                                 </HBox.margin>
-                              </Button>
-                              <Button fx:id="toDeleteButton" mnemonicParsing="false" prefWidth="70.0" text="Удалить" HBox.hgrow="NEVER">
-                                 <HBox.margin>
-                                    <Insets right="5.0" />
-                                 </HBox.margin>
-                              </Button>
-                           </children>
-                        </HBox>
-                     </children>
-                  </VBox>
-                  <VBox alignment="TOP_RIGHT" prefHeight="326.0" prefWidth="349.0">
-                     <children>
-                        <HBox alignment="TOP_RIGHT">
-                           <children>
-                              <Label prefHeight="33.0" prefWidth="110.0" text="Тип правила">
-                                 <font>
-                                    <Font size="14.0" />
-                                 </font>
-                              </Label>
-                              <ComboBox fx:id="ruleTypeChoice" prefWidth="100.0">
-                                 <HBox.margin>
-                                    <Insets top="5.0" />
-                                 </HBox.margin>
-                              </ComboBox>
-                           </children>
-                        </HBox>
-                        <HBox alignment="TOP_RIGHT">
-                           <children>
-                              <Label prefHeight="33.0" prefWidth="110.0" text="Переадресация">
-                                 <font>
-                                    <Font size="14.0" />
-                                 </font>
-                              </Label>
-                              <ComboBox fx:id="forwardTypeChoice" prefWidth="100.0">
-                                 <HBox.margin>
-                                    <Insets top="5.0" />
-                                 </HBox.margin>
-                              </ComboBox>
-                           </children>
-                        </HBox>
-                        <HBox alignment="TOP_RIGHT">
-                           <children>
-                              <Label prefHeight="33.0" prefWidth="110.0" text="Тип связи">
-                                 <font>
-                                    <Font size="14.0" />
-                                 </font>
-                              </Label>
-                              <ComboBox fx:id="destinationTypeChoice" prefWidth="100.0">
-                                 <HBox.margin>
-                                    <Insets top="5.0" />
-                                 </HBox.margin>
-                              </ComboBox>
-                           </children>
-                        </HBox>
-                        <HBox alignment="TOP_RIGHT">
-                           <children>
-                              <Label prefHeight="33.0" prefWidth="110.0" text="Мелодия">
-                                 <font>
-                                    <Font size="14.0" />
-                                 </font>
-                              </Label>
-                              <ComboBox fx:id="melodyChoice" prefWidth="100.0">
-                                 <HBox.margin>
-                                    <Insets top="5.0" />
-                                 </HBox.margin>
-                              </ComboBox>
-                           </children>
-                        </HBox>
-                        <HBox alignment="TOP_RIGHT">
-                           <children>
-                              <Label prefHeight="33.0" prefWidth="110.0" text="Ожидание (сек)">
-                                 <font>
-                                    <Font size="14.0" />
-                                 </font>
-                              </Label>
-                              <TextField fx:id="timeChoice" prefWidth="100.0">
-                                 <HBox.margin>
-                                    <Insets top="5.0" />
-                                 </HBox.margin>
-                              </TextField>
-                           </children>
-                        </HBox>
-                        <Label alignment="CENTER" prefHeight="20.0" prefWidth="399.0" text="Дни работы">
-                           <font>
-                              <Font size="14.0" />
-                           </font>
-                           <VBox.margin>
-                              <Insets top="5.0" />
-                           </VBox.margin>
-                        </Label>
-                        <HBox VBox.vgrow="NEVER">
-                           <children>
-                              <CheckBox fx:id="CB1" mnemonicParsing="false" text="пн">
-                                 <HBox.margin>
-                                    <Insets right="15.0" />
-                                 </HBox.margin>
-                              </CheckBox>
-                              <CheckBox fx:id="CB2" mnemonicParsing="false" text="вт">
-                                 <HBox.margin>
-                                    <Insets right="15.0" />
-                                 </HBox.margin>
-                              </CheckBox>
-                              <CheckBox fx:id="CB3" mnemonicParsing="false" text="ср">
-                                 <HBox.margin>
-                                    <Insets right="15.0" />
-                                 </HBox.margin>
-                              </CheckBox>
-                              <CheckBox fx:id="CB4" mnemonicParsing="false" text="чт">
-                                 <HBox.margin>
-                                    <Insets right="15.0" />
-                                 </HBox.margin>
-                              </CheckBox>
-                              <CheckBox fx:id="CB5" mnemonicParsing="false" text="пт">
-                                 <HBox.margin>
-                                    <Insets right="15.0" />
-                                 </HBox.margin>
-                              </CheckBox>
-                              <CheckBox fx:id="CB6" mnemonicParsing="false" text="сб">
-                                 <HBox.margin>
-                                    <Insets right="15.0" />
-                                 </HBox.margin>
-                              </CheckBox>
-                              <CheckBox fx:id="CB7" mnemonicParsing="false" text="вс">
-                                 <HBox.margin>
-                                    <Insets right="15.0" />
-                                 </HBox.margin>
-                              </CheckBox>
-                           </children>
-                           <VBox.margin>
-                              <Insets bottom="5.0" />
-                           </VBox.margin>
-                        </HBox>
-                        <HBox />
-                        <Label alignment="CENTER" prefHeight="20.0" prefWidth="382.0" text="Часы работы">
-                           <VBox.margin>
-                              <Insets top="5.0" />
-                           </VBox.margin>
-                           <font>
-                              <Font size="14.0" />
-                           </font>
-                        </Label>
-                        <HBox alignment="TOP_RIGHT" prefHeight="32.0" prefWidth="347.0">
-                           <children>
-                              <Label alignment="CENTER" prefHeight="25.0" prefWidth="15.0" text="C">
-                                 <font>
-                                    <Font size="14.0" />
-                                 </font>
-                              </Label>
-                              <ComboBox fx:id="CBfromHour" prefWidth="50.0" />
-                              <Label alignment="CENTER" prefHeight="25.0" prefWidth="25.0" text="До">
-                                 <font>
-                                    <Font size="14.0" />
-                                 </font>
-                                 <HBox.margin>
-                                    <Insets left="5.0" />
-                                 </HBox.margin>
-                              </Label>
-                              <ComboBox fx:id="CBtoHour" prefWidth="50.0" />
-                              <Label alignment="CENTER" prefHeight="25.0" text="Часов">
-                                 <font>
-                                    <Font size="14.0" />
-                                 </font>
-                                 <HBox.margin>
-                                    <Insets left="10.0" />
-                                 </HBox.margin>
-                              </Label>
-                           </children>
-                        </HBox>
-                        <AnchorPane prefHeight="122.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
-                           <children>
-                              <Button fx:id="removeRuleButton" layoutX="273.0" layoutY="53.0" mnemonicParsing="false" text="Удалить" AnchorPane.bottomAnchor="31.0" AnchorPane.rightAnchor="14.0" />
-                           </children>
-                        </AnchorPane>
-                     </children>
+                  <CheckBox fx:id="CB1" mnemonicParsing="false" text="пн">
                      <HBox.margin>
-                        <Insets top="20.0" />
+                        <Insets right="15.0" />
                      </HBox.margin>
-                  </VBox>
+                  </CheckBox>
+                  <CheckBox fx:id="CB2" mnemonicParsing="false" text="вт">
+                     <HBox.margin>
+                        <Insets right="15.0" />
+                     </HBox.margin>
+                  </CheckBox>
+                  <CheckBox fx:id="CB3" mnemonicParsing="false" text="ср">
+                     <HBox.margin>
+                        <Insets right="15.0" />
+                     </HBox.margin>
+                  </CheckBox>
+                  <CheckBox fx:id="CB4" mnemonicParsing="false" text="чт">
+                     <HBox.margin>
+                        <Insets right="15.0" />
+                     </HBox.margin>
+                  </CheckBox>
+                  <CheckBox fx:id="CB5" mnemonicParsing="false" text="пт">
+                     <HBox.margin>
+                        <Insets right="15.0" />
+                     </HBox.margin>
+                  </CheckBox>
+                  <CheckBox fx:id="CB6" mnemonicParsing="false" text="сб">
+                     <HBox.margin>
+                        <Insets right="15.0" />
+                     </HBox.margin>
+                  </CheckBox>
+                  <CheckBox fx:id="CB7" mnemonicParsing="false" text="вс">
+                     <HBox.margin>
+                        <Insets right="15.0" />
+                     </HBox.margin>
+                  </CheckBox>
+                  <Label alignment="CENTER" prefHeight="25.0" prefWidth="15.0" text="C">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+                  <ComboBox fx:id="CBfromHour" prefWidth="70.0" />
+                  <Label alignment="CENTER" prefHeight="25.0" prefWidth="25.0" text="До">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                     <HBox.margin>
+                        <Insets left="5.0" />
+                     </HBox.margin>
+                  </Label>
+                  <ComboBox fx:id="CBtoHour" prefWidth="70.0" />
                </children>
-               <padding>
-                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-               </padding>
+               <VBox.margin>
+                  <Insets bottom="5.0" top="5.0" />
+               </VBox.margin>
             </HBox>
+            <HBox>
+               <children>
+                  <Button fx:id="addStepButton" mnemonicParsing="false" text="Добавить шаг">
+                     <HBox.margin>
+                        <Insets right="5.0" />
+                     </HBox.margin>
+                  </Button>
+                  <Button fx:id="removeStepButton" mnemonicParsing="false" text="Удалить шаг">
+                     <HBox.margin>
+                        <Insets right="5.0" />
+                     </HBox.margin>
+                  </Button>
+               </children>
+               <VBox.margin>
+                  <Insets left="5.0" right="5.0" />
+               </VBox.margin>
+            </HBox>
+            <VBox fx:id="vBoxForChain" />
          </children>
       </VBox>
    </children>

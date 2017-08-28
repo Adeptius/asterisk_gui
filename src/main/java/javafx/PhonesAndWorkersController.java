@@ -52,7 +52,8 @@ public class PhonesAndWorkersController implements Initializable {
                 }
             }
             try {
-                Dao.setAmoBindings(user, hashMapToSave);
+                String s = Dao.setAmoBindings(user, hashMapToSave);
+                GuiController.showInformationAlert(s);
             } catch (Exception e) {
                 e.printStackTrace();
             }

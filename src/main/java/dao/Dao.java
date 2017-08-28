@@ -18,7 +18,7 @@ import java.util.*;
 
 public class Dao {
 
-    //    public static final String IP = "https://cstat.nextel.com.ua:8443/tracking";
+//        public static final String IP = "https://cstat.nextel.com.ua:8443/tracking";
     public static final String IP = "http://localhost:8080/tracking";
     public static final String ADMIN_PASS = "csadmx84";
 //    public static final String IP = "https://adeptius.pp.ua:8443/tracking";
@@ -99,6 +99,9 @@ public class Dao {
         return new Gson().fromJson(result, JsonInnerAndOuterPhones.class);
     }
 
+    public static String setSitesBindings(User user, HashMap<String, String> bindings) throws Exception {
+        return sendJsonObject("/phones/setBindings", bindings, hashes.get(user.getLogin()));
+    }
 
     /**
      * Telephony
@@ -229,18 +232,6 @@ public class Dao {
         return list;
     }
 
-//    public static String activateScenario(User user, int scenarioId) throws Exception {
-//        HashMap<String, String> map = new HashMap<>();
-//        map.put("id", "" + scenarioId);
-//        return sendPost("/scenario/activate", map, false, hashes.get(user.getLogin()));
-//    }
-//
-//    public static String deactivateScenario(User user, int scenarioId) throws Exception {
-//        HashMap<String, String> map = new HashMap<>();
-//        map.put("id", "" + scenarioId);
-//        return sendPost("/scenario/deactivate", map, false, hashes.get(user.getLogin()));
-//    }
-
     public static String removeScenario(User user, int scenarioId) throws Exception {
         HashMap<String, String> map = new HashMap<>();
         map.put("id", ""+scenarioId);
@@ -304,12 +295,9 @@ public class Dao {
         }
     }
 
-    public static ArrayList<Call> getHistory(User user, String from, String to, String direction) throws Exception {
-        JsonHistoryQuery query = new JsonHistoryQuery(from, to, direction);
-        Type listType = new TypeToken<ArrayList<Call>>() {
-        }.getType();
-        String response = sendJsonObject("/history/get", query, hashes.get(user.getLogin()));
-        return new Gson().fromJson(response, listType);
+    public static String getHistory(User user, String from, String to, String direction, int limit, int offset) throws Exception {
+        JsonHistoryQuery query = new JsonHistoryQuery(from, to, direction, limit, offset);
+        return sendJsonObject("/history/get", query, hashes.get(user.getLogin()));
     }
 
     public static String getScriptForUser(User user, String sitename) throws Exception {
