@@ -73,6 +73,9 @@ public class HistoryController implements Initializable {
     private Button buttonShowIn;
 
     @FXML
+    private Button buttonShowBoth;
+
+    @FXML
     private TextField dateFrom;
 
     @FXML
@@ -100,17 +103,18 @@ public class HistoryController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        toColumn.setCellValueFactory(new PropertyValueFactory<>("calledTo"));
+        toColumn.setCellValueFactory(new PropertyValueFactory<>("calledToOnePhone"));
         fromColumn.setCellValueFactory(new PropertyValueFactory<>("calledFrom"));
         statusColumn.setCellValueFactory(new PropertyValueFactory<>("callState"));
         dateColumn.setCellValueFactory(new PropertyValueFactory<>("calledDate"));
+        timeToAnswerColumn.setCellValueFactory(new PropertyValueFactory<>("secondsFullTime"));
         talkingTimeColumn.setCellValueFactory(new PropertyValueFactory<>("secondsTalk"));
-        timeToAnswerColumn.setCellValueFactory(new PropertyValueFactory<>("secondsToAnswer"));
         googleIDColumn.setCellValueFactory(new PropertyValueFactory<>("googleId"));
         callIDColumn.setCellValueFactory(new PropertyValueFactory<>("asteriskId"));
         utmColumn.setCellValueFactory(new PropertyValueFactory<>("utm"));
         buttonShowIn.setOnAction(e -> showHistory(textFrom.getText(), textTo.getText(), "IN"));
         buttonShowOut.setOnAction(e -> showHistory(textFrom.getText(), textTo.getText(), "OUT"));
+        buttonShowBoth.setOnAction(e -> showHistory(textFrom.getText(), textTo.getText(), "BOTH"));
         btnDownload.setOnAction(e -> openInBrowser());
 
         Calendar calendar = new GregorianCalendar();

@@ -1,5 +1,6 @@
 package utils;
 
+import java.security.MessageDigest;
 import java.util.ArrayList;
 
 public class StringUtils {
@@ -54,5 +55,20 @@ public class StringUtils {
         String s = String.valueOf(i);
         if (s.length() == 1) s = "0" + s;
         return s;
+    }
+
+
+
+    public static String createMd5(String st) {
+        try{MessageDigest md = MessageDigest.getInstance("MD5");
+            md.update(st.getBytes());
+            byte[] digest = md.digest();
+            StringBuffer sb = new StringBuffer();
+            for (byte b : digest) {
+                sb.append(String.format("%02x", b & 0xff));
+            }
+            return sb.toString();
+        }catch (Exception e){}
+        return null;
     }
 }

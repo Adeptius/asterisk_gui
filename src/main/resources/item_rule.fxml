@@ -12,7 +12,7 @@
          <children>
             <HBox>
                <children>
-                  <ComboBox fx:id="ruleTypeChoice" prefWidth="100.0">
+                  <ComboBox fx:id="ruleTypeChoice" prefWidth="120.0">
                      <HBox.margin>
                         <Insets />
                      </HBox.margin>
@@ -90,7 +90,7 @@
                   <Insets bottom="5.0" top="5.0" />
                </VBox.margin>
             </HBox>
-            <HBox>
+            <HBox alignment="CENTER_LEFT">
                <children>
                   <Button fx:id="addStepButton" mnemonicParsing="false" text="Добавить шаг">
                      <HBox.margin>
@@ -102,9 +102,67 @@
                         <Insets right="5.0" />
                      </HBox.margin>
                   </Button>
+                  <Label prefHeight="25.0" text="Мелодия">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                     <HBox.margin>
+                        <Insets right="5.0" />
+                     </HBox.margin>
+                  </Label>
+                  <ComboBox fx:id="melodyChoice" prefWidth="100.0">
+                     <HBox.margin>
+                        <Insets top="5.0" />
+                     </HBox.margin>
+                  </ComboBox>
                </children>
                <VBox.margin>
                   <Insets left="5.0" right="5.0" />
+               </VBox.margin>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" layoutX="15.0" layoutY="75.0">
+               <children>
+                  <Label prefHeight="25.0" text="Приветствие">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                     <HBox.margin>
+                        <Insets right="5.0" />
+                     </HBox.margin>
+                  </Label>
+                  <ComboBox fx:id="greetingComboBox" prefWidth="150.0" />
+                  <Label prefHeight="25.0" text="Сообщение">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                     <HBox.margin>
+                        <Insets left="5.0" />
+                     </HBox.margin>
+                  </Label>
+                  <ComboBox fx:id="messageComboBox" prefWidth="150.0">
+                     <HBox.margin>
+                        <Insets left="5.0" />
+                     </HBox.margin>
+                  </ComboBox>
+               </children>
+               <VBox.margin>
+                  <Insets left="5.0" right="5.0" top="5.0" />
+               </VBox.margin>
+            </HBox>
+            <HBox alignment="CENTER_LEFT">
+               <children>
+                  <Label prefHeight="25.0" text="Ответственный за пропущенные">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                     <HBox.margin>
+                        <Insets right="5.0" />
+                     </HBox.margin>
+                  </Label>
+                  <ComboBox fx:id="amoResponsibleComboBox" prefWidth="150.0" />
+               </children>
+               <VBox.margin>
+                  <Insets top="5.0" />
                </VBox.margin>
             </HBox>
             <VBox fx:id="vBoxForChain" />

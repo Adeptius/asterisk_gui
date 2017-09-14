@@ -13,18 +13,22 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import json.JsonAmoForController;
-import json.JsonInnerAndOuterPhones;
-import json.JsonNumbersCount;
-import json.JsonRoistatForController;
+import json.*;
 import model.*;
 
+import java.awt.*;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static javafx.scene.control.Alert.AlertType.ERROR;
@@ -285,7 +289,7 @@ public class GuiController implements Initializable {
         stage.show();
     }
 
-    public void showPhoneBindings(){
+    public void showPhoneBindings() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("phonesAndSites.fxml"));
             Stage stage = new Stage();
@@ -376,6 +380,9 @@ public class GuiController implements Initializable {
     private ListView<String> scenariosList;
 
     @FXML
+    private ListView<String> melodiesList;
+
+    @FXML
     private Button scenarioAddButton;
 
     @FXML
@@ -386,6 +393,15 @@ public class GuiController implements Initializable {
 
     @FXML
     private Button scenarioBindButton;
+
+    @FXML
+    private Button melodyAddButton;
+
+    @FXML
+    private Button melodyListenButton;
+
+    @FXML
+    private Button melodyDeleteButton;
 
 
     private void initTelephonyTab() {
@@ -432,12 +448,74 @@ public class GuiController implements Initializable {
         });
 
         scenarioBindButton.setOnAction(event -> {
-            try{
+            try {
                 showScenarioBindings();
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         });
+
+        melodyAddButton.setOnAction(event -> {
+            TextInputDialog dialog = new TextInputDialog();
+            dialog.setTitle("Добавление мелодии");
+            dialog.setHeaderText(null);
+            dialog.setContentText("Название мелодии или сообщения");
+            Optional<String> result = dialog.showAndWait();
+            result.ifPresent(name -> {
+                try {
+                    Stage stage = new Stage();
+                    FileChooser fileChooser = new FileChooser();
+                    fileChooser.setTitle("Open Resource File");
+                    String filePath = fileChooser.showOpenDialog(stage).getAbsolutePath();
+                    String response = Dao.sendMelodyFile(filePath, name, activeUser);
+                    showInformationAlert(response);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+        });
+
+        melodyListenButton.setOnAction(event -> {
+            try {
+                String selectedItem = melodiesList.getSelectionModel().getSelectedItem();
+                List<JsonUserAudio> userMelodies = Dao.getUserAudio(activeUser);
+                if (selectedItem == null) {
+                    return;
+                }
+                Optional<JsonUserAudio> first = userMelodies.stream().filter(melody -> melody.getName().equals(selectedItem)).findFirst();
+                if (first.isPresent()) {
+                    int melodyId = first.get().getId();
+                    System.out.println(melodyId);
+                    String url = Dao.IP + "/audio/getFile/" + activeUser.getLogin() + "/" + melodyId;
+                    Desktop.getDesktop().browse(new URI(url));
+                }
+
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+
+        melodyDeleteButton.setOnAction(event -> {
+            try {
+                String selectedItem = melodiesList.getSelectionModel().getSelectedItem();
+                List<JsonUserAudio> userMelodies = Dao.getUserAudio(activeUser);
+                if (selectedItem == null) {
+                    return;
+                }
+                Optional<JsonUserAudio> first = userMelodies.stream().filter(melody -> melody.getName().equals(selectedItem)).findFirst();
+                if (first.isPresent()) {
+                    int melodyId = first.get().getId();
+                    String result = Dao.removeAudio(melodyId, activeUser);
+                    showInformationAlert(result);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+
+
     }
 
 
@@ -445,7 +523,7 @@ public class GuiController implements Initializable {
         try {
             JsonInnerAndOuterPhones innerAndOuterPhones = Dao.getInnerAndOuterPhones(user);
             List<Scenario> scenarios = Dao.getScenarios(user);
-
+            List<JsonUserAudio> userMelodies = Dao.getUserAudio(user);
 
             Platform.runLater(() -> {
                 outerNumbers.setItems(FXCollections.observableList(
@@ -464,6 +542,12 @@ public class GuiController implements Initializable {
                         scenarios.stream()
                                 .map(Scenario::getName)
                                 .collect(Collectors.toList())));
+
+                melodiesList.setItems(FXCollections.observableList(
+                        userMelodies.stream()
+                                .map(JsonUserAudio::getName)
+                                .collect(Collectors.toList())
+                ));
             });
         } catch (Exception e) {
             e.printStackTrace();
@@ -592,26 +676,43 @@ public class GuiController implements Initializable {
     @FXML
     private TextField textAmoApiKey;
 
+    @FXML
+    private ToggleButton clingToggleButton;
+
     private void updateAmo(User user) {
-        AmoAccount amoAccount;
+        JsonAmoForController jsonAmo;
         String response = "";
         try {
             response = Dao.getAmoAccount(user);
-            amoAccount = new Gson().fromJson(response, AmoAccount.class);
+            jsonAmo = new Gson().fromJson(response, JsonAmoForController.class);
         } catch (Exception e) {
             e.printStackTrace();
             return;
         }
 
-        if (amoAccount == null) {
+        if (jsonAmo == null) {
             textAmoDomain.setText("");
             textAmoAccount.setText("");
             textAmoApiKey.setText("");
+            clingToggleButton.setSelected(false);
             return;
         }
-        textAmoDomain.setText(amoAccount.getDomain());
-        textAmoAccount.setText(amoAccount.getAmoLogin());
-        textAmoApiKey.setText(amoAccount.getApiKey());
+        textAmoDomain.setText(jsonAmo.getDomain());
+        textAmoAccount.setText(jsonAmo.getAmoLogin());
+        textAmoApiKey.setText(jsonAmo.getApiKey());
+        clingToggleButton.setSelected(jsonAmo.isCling());
+        if (jsonAmo.isCling()){
+            clingToggleButton.setText("Включено");
+        }else {
+            clingToggleButton.setText("Отключено");
+        }
+        clingToggleButton.setOnAction(event -> {
+            if (clingToggleButton.isSelected()){
+                clingToggleButton.setText("Включено");
+            }else {
+                clingToggleButton.setText("Отключено");
+            }
+        });
     }
 
     public void gotoAmoApiPage(ActionEvent actionEvent) {
@@ -623,6 +724,7 @@ public class GuiController implements Initializable {
         jsonAmo.setDomain(textAmoDomain.getText());
         jsonAmo.setAmoLogin(textAmoAccount.getText());
         jsonAmo.setApiKey(textAmoApiKey.getText());
+        jsonAmo.setCling(clingToggleButton.isSelected());
         String result = Dao.setAmoAccount(activeUser, jsonAmo);
         Alert alert = new Alert(INFORMATION);
         alert.setTitle("Information");
@@ -759,7 +861,7 @@ public class GuiController implements Initializable {
         Platform.exit();
     }
 
-    public static void showInformationAlert(String message){
+    public static void showInformationAlert(String message) {
         Alert alert = new Alert(INFORMATION);
         alert.setTitle("Результат");
         alert.setHeaderText(null);
@@ -767,7 +869,7 @@ public class GuiController implements Initializable {
         alert.showAndWait();
     }
 
-    public static void showErrorAlert(String message){
+    public static void showErrorAlert(String message) {
         Alert alert = new Alert(ERROR);
         alert.setTitle("Результат");
         alert.setHeaderText(null);

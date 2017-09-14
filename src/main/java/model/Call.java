@@ -3,7 +3,7 @@ package model;
 
 public class Call {
     private String calledFrom;
-    private String calledTo;
+    private String calledToOnePhone;
     private String callState;
     private String direction;
     private String asteriskId;
@@ -12,11 +12,12 @@ public class Call {
     private String calledDate;
     private long calledMillis;
     private int secondsFullTime;
-    private int secondsToAnswer;
+//    private int secondsToAnswer;
     private int secondsTalk;
 
     public Call() {
     }
+
 
 
     public String getCalledFrom() {
@@ -27,12 +28,12 @@ public class Call {
         this.calledFrom = calledFrom;
     }
 
-    public String getCalledTo() {
-        return calledTo;
+    public String getCalledToOnePhone() {
+        return calledToOnePhone;
     }
 
-    public void setCalledTo(String calledTo) {
-        this.calledTo = calledTo;
+    public void setCalledToOnePhone(String calledToOnePhone) {
+        this.calledToOnePhone = calledToOnePhone;
     }
 
     public String getCallState() {
@@ -99,13 +100,13 @@ public class Call {
         this.secondsFullTime = secondsFullTime;
     }
 
-    public int getSecondsToAnswer() {
-        return secondsToAnswer;
-    }
+//    public int getSecondsToAnswer() {
+//        return secondsToAnswer;
+//    }
 
-    public void setSecondsToAnswer(int secondsToAnswer) {
-        this.secondsToAnswer = secondsToAnswer;
-    }
+//    public void setSecondsToAnswer(int secondsToAnswer) {
+//        this.secondsToAnswer = secondsToAnswer;
+//    }
 
     public int getSecondsTalk() {
         return secondsTalk;

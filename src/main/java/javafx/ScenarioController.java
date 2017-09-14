@@ -19,6 +19,7 @@ import javafx.stage.Stage;
 import dao.Dao;
 import json.JsonChainElement;
 import json.JsonRule;
+import json.JsonUserAudio;
 import model.*;
 
 import java.io.IOException;
@@ -61,6 +62,8 @@ public class ScenarioController implements Initializable {
     List<InnerPhone> innerPhones;
     List<String> melodies;
     int currentScenarioId;
+    List<JsonUserAudio> userMelodies;
+    HashMap<String, String> amoUsers;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -69,11 +72,17 @@ public class ScenarioController implements Initializable {
         try {
             innerPhones = Dao.getInnerAndOuterPhones(user).getInnerPhones();
             melodies = Dao.getMelodies();
+            userMelodies = Dao.getUserAudio(user);
         } catch (Exception e) {
             e.printStackTrace();
             showInformationAlert(e.toString());
             return;
         }
+        try {
+            amoUsers = Dao.getAmoUsers(user);
+        } catch (Exception e) {
+        }
+
 
         newRuleButton.setOnAction(e -> addNewRuleToScreen());
 
@@ -101,6 +110,36 @@ public class ScenarioController implements Initializable {
 
                 rule.setEndHour(((ComboBox) childNode.lookup("#CBtoHour")).getSelectionModel().getSelectedIndex());
 
+                rule.setMelody(((ComboBox) childNode.lookup("#melodyChoice")).getSelectionModel().getSelectedItem().toString());
+
+                String greeting = ((ComboBox<String>) childNode.lookup("#greetingComboBox")).getSelectionModel().getSelectedItem();
+
+                String message = ((ComboBox<String>) childNode.lookup("#messageComboBox")).getSelectionModel().getSelectedItem();
+
+                String responsibleUserName = ((ComboBox<String>) childNode.lookup("#amoResponsibleComboBox")).getSelectionModel().getSelectedItem();
+
+                if (amoUsers != null){
+                    String responsibleId = amoUsers.get(responsibleUserName);
+                    if (responsibleUserName.equals("")){
+                        rule.setAmoResponsibleId(null);
+                    }else {
+                        rule.setAmoResponsibleId(responsibleId);
+                    }
+                }
+
+                if (!org.apache.commons.lang3.StringUtils.isBlank(greeting)) {
+                    int id = userMelodies.stream()
+                            .filter(userMel -> userMel.getName().equals(greeting))
+                            .findFirst().get().getId();
+                    rule.setGreeting(id);
+                }
+
+                if (!org.apache.commons.lang3.StringUtils.isBlank(message)) {
+                    int id = userMelodies.stream()
+                            .filter(userMel -> userMel.getName().equals(message))
+                            .findFirst().get().getId();
+                    rule.setMessage(id);
+                }
 
                 VBox vBoxForChain = (VBox) childNode.lookup("#vBoxForChain");
                 ObservableList<Node> chainChildrens = vBoxForChain.getChildren();
@@ -128,8 +167,6 @@ public class ScenarioController implements Initializable {
                     String name = destinationTypeChoice.getSelectionModel().getSelectedItem().toString();
                     DestinationType destinationType = DestinationType.valueOf(name);
                     element.setDestinationType(destinationType);
-
-                    element.setMelody(((ComboBox) chainChildren.lookup("#melodyChoice")).getSelectionModel().getSelectedItem().toString());
 
                     element.setAwaitingTime(Integer.parseInt(((TextField) chainChildren.lookup("#timeChoice")).getText()));
 
@@ -162,7 +199,8 @@ public class ScenarioController implements Initializable {
             rule.setDays(new boolean[]{false, false, false, false, false, false, false});
             rule.setType(DEFAULT);
             rule.setChain(new HashMap<>());
-            addScenarioEditorToScreen(rule);
+            rule.setMelody("slow");
+            addRuleEditorToScreen(rule);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -187,7 +225,7 @@ public class ScenarioController implements Initializable {
                     currentScenarioId = scenario.getId();
                     List<JsonRule> rules = scenario.getRules();
                     for (JsonRule rule : rules) {
-                        addScenarioEditorToScreen(rule);
+                        addRuleEditorToScreen(rule);
                     }
                 } else {
                     addNewRuleToScreen();
@@ -198,7 +236,7 @@ public class ScenarioController implements Initializable {
         })).start();
     }
 
-    private void addScenarioEditorToScreen(JsonRule rule) throws Exception {
+    private void addRuleEditorToScreen(JsonRule rule) throws Exception {
         FXMLLoader fxmlLoader = new FXMLLoader();
         fxmlLoader.setLocation(getClass().getResource("item_rule.fxml"));
         Parent root = fxmlLoader.load();
@@ -257,8 +295,8 @@ public class ScenarioController implements Initializable {
         Button removeRuleButton = (Button) rootNode.lookup("#removeRuleButton");
         removeRuleButton.setOnAction(e -> vBoxForRules.getChildren().remove(mainNode));
 
-
         VBox vBoxForChain = (VBox) rootNode.lookup("#vBoxForChain"); // сюда вставлять цепочку
+
 
 
         //Добавить шаг
@@ -269,7 +307,6 @@ public class ScenarioController implements Initializable {
             element.setToList(new ArrayList<>());
             element.setAwaitingTime(600);
             element.setDestinationType(GSM);
-            element.setMelody("none");
             addStepToChain(vBoxForChain, element);
         });
 
@@ -278,11 +315,53 @@ public class ScenarioController implements Initializable {
         removeStepButton.setOnAction(e -> {
             ObservableList<Node> childrenChainElements = vBoxForChain.getChildren();
             int size = childrenChainElements.size();
-            if (size > 0){
-                childrenChainElements.remove(size-1);
+            if (size > 0) {
+                childrenChainElements.remove(size - 1);
             }
         });
 
+        // Выбор мелодии
+        ComboBox melodyChoice = (ComboBox) rootNode.lookup("#melodyChoice");
+        melodyChoice.setItems(FXCollections.observableArrayList(melodies));
+        melodyChoice.getSelectionModel().select(0);
+        if (rule.getMelody() == null) {
+            melodyChoice.setValue("none");
+        } else {
+            melodyChoice.setValue(rule.getMelody());
+        }
+
+        List<String> userMelodiesNames = userMelodies.stream().map(JsonUserAudio::getName).collect(Collectors.toList());
+        userMelodiesNames.add("");
+
+        HashMap<Integer, String> userMelodyIdAndName = new HashMap<>();
+        userMelodies.forEach(melody -> userMelodyIdAndName.put(melody.getId(), melody.getName()));
+
+
+        ObservableList<String> fxMelodies = FXCollections.observableList(userMelodiesNames);
+
+        ComboBox<String> greetingComboBox = (ComboBox<String>) rootNode.lookup("#greetingComboBox");
+        greetingComboBox.setItems(fxMelodies);
+        greetingComboBox.setValue(userMelodyIdAndName.get(rule.getGreeting()));
+
+        ComboBox<String> messageComboBox = (ComboBox<String>) rootNode.lookup("#messageComboBox");
+        messageComboBox.setItems(fxMelodies);
+        messageComboBox.setValue(userMelodyIdAndName.get(rule.getMessage()));
+
+        if (amoUsers != null){
+            String amoResponsibleId = rule.getAmoResponsibleId();
+            String currentAmoResponsibleName = "";
+            for (Map.Entry<String, String> entry : amoUsers.entrySet()) {
+                if (entry.getValue().equals(amoResponsibleId)){
+                    currentAmoResponsibleName = entry.getKey();
+                }
+            }
+
+            ComboBox<String> amoResponsibleComboBox = (ComboBox<String>) rootNode.lookup("#amoResponsibleComboBox");
+            ObservableList<String> observableList = FXCollections.observableArrayList(new ArrayList<>(amoUsers.keySet()));
+            observableList.add("");
+            amoResponsibleComboBox.setItems(observableList);
+            amoResponsibleComboBox.setValue(currentAmoResponsibleName);
+        }
 
         HashMap<Integer, JsonChainElement> chain = rule.getChain();
         for (int i = 0; i < chain.size(); i++) {
@@ -322,25 +401,10 @@ public class ScenarioController implements Initializable {
         TextField timeChoice = (TextField) chainRoot.lookup("#timeChoice");
         timeChoice.setText(element.getAwaitingTime() + "");
 
-
 //      Выбор типа переадресации
         ComboBox<String> forwardTypeChoice = (ComboBox<String>) chainRoot.lookup("#forwardTypeChoice");
         forwardTypeChoice.setItems(FXCollections.observableArrayList("TO_ALL", "QUEUE", "RANDOM"));
         forwardTypeChoice.setValue(element.getForwardType().toString());
-
-        if ("TO_ALL".equals(forwardTypeChoice.getSelectionModel().getSelectedItem())) {
-            timeChoice.setDisable(true);
-            timeChoice.setText(600 + "");
-        }
-        forwardTypeChoice.getSelectionModel().selectedItemProperty().addListener(observable -> {
-            if ("TO_ALL".equals(forwardTypeChoice.getSelectionModel().getSelectedItem())) {
-                timeChoice.setDisable(true);
-                timeChoice.setText(600 + "");
-            } else {
-                timeChoice.setDisable(false);
-                timeChoice.setText(10 + "");
-            }
-        });
 
 //      Список номеров на
         ObservableList<String> observableTo = FXCollections.observableList(element.getToList());
@@ -357,21 +421,10 @@ public class ScenarioController implements Initializable {
             observableTo.add(sipField.getText());
         });
 
-        // Выбор мелодии
-        ComboBox melodyChoice = (ComboBox) chainRoot.lookup("#melodyChoice");
-        melodyChoice.setItems(FXCollections.observableArrayList(melodies));
-        melodyChoice.getSelectionModel().select(0);
-        if (element.getMelody() == null) {
-            melodyChoice.setValue("none");
-        } else {
-            melodyChoice.setValue(element.getMelody());
-        }
-
 //             Удаление номера на
         Button toDeleteButton = (Button) chainRoot.lookup("#toDeleteButton");
         toDeleteButton.setOnAction(event -> observableTo.remove(listTo.getSelectionModel().getSelectedItem().toString()));
         toDeleteButton.setVisible(false);
-
 
 //             Скрытие кнопки "удалить"
         listTo.getSelectionModel().selectedItemProperty().addListener(observable -> {

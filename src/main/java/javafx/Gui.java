@@ -1,5 +1,6 @@
 package javafx;
 
+import dao.Dao;
 import javafx.application.Application;
 import javafx.application.HostServices;
 import javafx.application.Platform;
@@ -22,7 +23,16 @@ public class Gui extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader();
         fxmlLoader.setLocation(getClass().getResource("main.fxml"));
         Parent root = fxmlLoader.load();
-        primaryStage.setTitle("Астериск монитор");
+        if (Dao.IP.contains("cstat.nextel.com.ua")){
+            primaryStage.setTitle("Астериск монитор. Удалённый сервер");
+
+        } else if (Dao.IP.contains("localhost")){
+            primaryStage.setTitle("Астериск монитор. Локальный");
+
+        } else {
+            primaryStage.setTitle("Неизвесный адрес сервера");
+
+        }
         primaryStage.setScene(new Scene(root, 1270, 450));
         primaryStage.setResizable(false);
         primaryStage.setOnCloseRequest(e -> Platform.exit());

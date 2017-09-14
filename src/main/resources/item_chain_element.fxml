@@ -86,23 +86,6 @@
                         </HBox>
                         <HBox alignment="CENTER_RIGHT">
                            <children>
-                              <Label text="Мелодия">
-                                 <font>
-                                    <Font size="14.0" />
-                                 </font>
-                                 <HBox.margin>
-                                    <Insets right="5.0" />
-                                 </HBox.margin>
-                              </Label>
-                              <ComboBox fx:id="melodyChoice" prefWidth="100.0">
-                                 <HBox.margin>
-                                    <Insets top="5.0" />
-                                 </HBox.margin>
-                              </ComboBox>
-                           </children>
-                        </HBox>
-                        <HBox alignment="CENTER_RIGHT">
-                           <children>
                               <Label text="Ожидание">
                                  <font>
                                     <Font size="14.0" />

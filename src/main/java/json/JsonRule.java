@@ -17,15 +17,43 @@ public class JsonRule {
     private int endHour;
     private boolean[] days;
     private RuleType type;
-    HashMap<Integer, JsonChainElement> chain;
+    private HashMap<Integer, JsonChainElement> chain;
+    private Integer greeting;
+    private Integer message;
+    private String melody;
+    private String amoResponsibleId;
 
-//    public int getId() {
-//        return id;
-//    }
-//
-//    public void setId(int id) {
-//        this.id = id;
-//    }
+    public String getAmoResponsibleId() {
+        return amoResponsibleId;
+    }
+
+    public void setAmoResponsibleId(String amoResponsibleId) {
+        this.amoResponsibleId = amoResponsibleId;
+    }
+
+    public String getMelody() {
+        return melody;
+    }
+
+    public void setMelody(String melody) {
+        this.melody = melody;
+    }
+
+    public Integer getGreeting() {
+        return greeting;
+    }
+
+    public void setGreeting(Integer greeting) {
+        this.greeting = greeting;
+    }
+
+    public Integer getMessage() {
+        return message;
+    }
+
+    public void setMessage(Integer message) {
+        this.message = message;
+    }
 
     public String getName() {
         return name;

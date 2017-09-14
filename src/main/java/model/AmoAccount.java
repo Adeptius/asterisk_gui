@@ -11,6 +11,15 @@ public class AmoAccount {
     private String phoneEnumId;
     private int leadId;
     private User user;
+    private boolean cling;
+
+    public boolean isCling() {
+        return cling;
+    }
+
+    public void setCling(boolean cling) {
+        this.cling = cling;
+    }
 
     public int getLeadId() {
         return leadId;

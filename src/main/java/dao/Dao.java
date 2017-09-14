@@ -10,6 +10,7 @@ import model.*;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
@@ -130,7 +131,12 @@ public class Dao {
         return sendJsonObject("/amo/remove", "", hashes.get(user.getLogin()));
     }
 
-    public static HashMap<String, String> getAmoBindings(User user) throws Exception {
+    public static HashMap<String, String> getAmoUsers(User user) throws Exception {
+        String response = sendPost("/amo/getUsers", null, false, hashes.get(user.getLogin()));
+        return new Gson().fromJson(response, new TypeToken<HashMap<String, String>>() {
+        }.getType());
+    }
+ public static HashMap<String, String> getAmoBindings(User user) throws Exception {
         String response = sendPost("/amo/getBindings", null, false, hashes.get(user.getLogin()));
         return new Gson().fromJson(response, new TypeToken<HashMap<String, String>>() {
         }.getType());
@@ -159,6 +165,21 @@ public class Dao {
 
     public static String removeRoistatAccount(User user) throws Exception {
         return sendJsonObject("/roistat/remove", "", hashes.get(user.getLogin()));
+    }
+
+    /**
+     * Melodies
+     */
+    public static List<JsonUserAudio> getUserAudio(User user) throws Exception {
+        Type listType = new TypeToken<List<JsonUserAudio>>() {
+        }.getType();
+        return new Gson().fromJson(sendJsonObject("/audio/getList", "", hashes.get(user.getLogin())), listType);
+    }
+
+    public static String removeAudio(int id, User user) throws Exception {
+        HashMap<String, String> map = new HashMap<>();
+        map.put("id", "" + id);
+        return sendPost("/audio/remove", map, false, hashes.get(user.getLogin()));
     }
 
 
@@ -378,6 +399,17 @@ public class Dao {
 //        System.out.println("Ответ: " + result);
 //        return result;
 //    }
+
+
+    public static String sendMelodyFile(String filePath,String name, User user) throws Exception{
+                HttpResponse<String> stringHttpResponse = Unirest.post(IP + "/audio/add")
+                .header("Authorization", hashes.get(user.getLogin()))
+                .field("file", new File(filePath))
+                .field("name", name)
+                .asString();
+        return stringHttpResponse.getBody();
+    }
+
 
     static String sendJsonObject(String relativeUrl, Object object, String authorization) throws Exception {
         String url = IP + relativeUrl;

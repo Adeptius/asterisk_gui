@@ -213,6 +213,30 @@
                                                 <Insets left="5.0" />
                                              </HBox.margin>
                                           </VBox>
+                                          <VBox fillWidth="false" prefHeight="380.0" prefWidth="452.0">
+                                             <children>
+                                                <TitledPane animated="false" collapsible="false" prefWidth="500.0" text="Аудио файлы" />
+                                                <ListView fx:id="melodiesList" prefWidth="500.0" VBox.vgrow="ALWAYS" />
+                                                <Button fx:id="melodyAddButton" mnemonicParsing="false" prefWidth="500.0" text="Добавить">
+                                                   <VBox.margin>
+                                                      <Insets top="5.0" />
+                                                   </VBox.margin>
+                                                </Button>
+                                                <Button fx:id="melodyListenButton" mnemonicParsing="false" prefWidth="500.0" text="Прослушать">
+                                                   <VBox.margin>
+                                                      <Insets top="5.0" />
+                                                   </VBox.margin>
+                                                </Button>
+                                                <Button fx:id="melodyDeleteButton" mnemonicParsing="false" prefWidth="500.0" text="Удалить">
+                                                   <VBox.margin>
+                                                      <Insets top="5.0" />
+                                                   </VBox.margin>
+                                                </Button>
+                                             </children>
+                                             <HBox.margin>
+                                                <Insets left="5.0" />
+                                             </HBox.margin>
+                                          </VBox>
                                        </children>
                                     </HBox>
                                  </children>
@@ -318,12 +342,19 @@
                                                       </Label>
                                                    </children>
                                                 </HBox>
+                                                <ToggleButton fx:id="clingToggleButton" mnemonicParsing="false" text="ToggleButton" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                                <Label prefHeight="59.0" prefWidth="191.0" text="Липучка" wrapText="true" GridPane.rowIndex="3">
+                                                   <font>
+                                                      <Font size="16.0" />
+                                                   </font>
+                                                </Label>
                                              </children>
                                              <columnConstraints>
                                                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="248.0" minWidth="10.0" prefWidth="136.0" />
                                                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="305.0" minWidth="10.0" prefWidth="301.0" />
                                              </columnConstraints>
                                              <rowConstraints>
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />

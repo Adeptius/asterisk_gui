@@ -6,16 +6,16 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="1319.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Button fx:id="buttonShowIn" layoutX="376.0" layoutY="14.0" mnemonicParsing="false" text="Показать входящие" />
-      <Button fx:id="buttonShowOut" layoutX="516.0" layoutY="14.0" mnemonicParsing="false" text="Показать исходящие" />
+      <Button fx:id="buttonShowIn" layoutX="376.0" layoutY="14.0" mnemonicParsing="false" text="Входящие" />
+      <Button fx:id="buttonShowOut" layoutX="455.0" layoutY="14.0" mnemonicParsing="false" text="Исходящие" />
       <TableView fx:id="table" layoutX="14.0" layoutY="51.0" prefHeight="334.0" prefWidth="951.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="56.0">
         <columns>
             <TableColumn fx:id="dateColumn" maxWidth="200.0" minWidth="120.0" prefWidth="120.0" text="Дата" />
           <TableColumn fx:id="fromColumn" maxWidth="200.0" minWidth="100.0" prefWidth="100.0" text="От" />
           <TableColumn fx:id="toColumn" maxWidth="200.0" minWidth="100.0" prefWidth="100.0" text="Кому" />
             <TableColumn fx:id="statusColumn" maxWidth="200.0" minWidth="100.0" prefWidth="100.0" text="Состояние" />
-            <TableColumn fx:id="timeToAnswerColumn" maxWidth="70.0" minWidth="70.0" prefWidth="70.0" text="До ответа" />
-            <TableColumn fx:id="talkingTimeColumn" maxWidth="90.0" minWidth="90.0" prefWidth="90.0" text="Длительность" />
+            <TableColumn fx:id="timeToAnswerColumn" maxWidth="100.0" minWidth="100.0" prefWidth="100.0" text="Длительность" />
+            <TableColumn fx:id="talkingTimeColumn" maxWidth="90.0" minWidth="90.0" prefWidth="90.0" text="Разговор" />
             <TableColumn fx:id="googleIDColumn" maxWidth="200.0" minWidth="150.0" prefWidth="200.0" text="GoogleId" />
             <TableColumn fx:id="callIDColumn" maxWidth="200.0" minWidth="100.0" prefWidth="200.0" text="ID звонка" />
             <TableColumn fx:id="utmColumn" prefWidth="182.0" text="UTM" />
@@ -32,5 +32,6 @@
       <Label fx:id="countLabel" layoutX="1121.0" layoutY="18.0" prefHeight="17.0" prefWidth="184.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="18.0" />
       <Label layoutX="784.0" layoutY="18.0" prefHeight="17.0" prefWidth="41.0" text="Лимит" />
       <Label layoutX="910.0" layoutY="18.0" text="Сдвиг" />
+      <Button fx:id="buttonShowBoth" layoutX="543.0" layoutY="14.0" mnemonicParsing="false" text="Исходящие" />
    </children>
 </AnchorPane>
