@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.request.HttpRequestWithBody;
 import javafx.Gui;
 import json.*;
 import model.*;
@@ -19,8 +20,10 @@ import java.util.*;
 
 public class Dao {
 
-//        public static final String IP = "https://cstat.nextel.com.ua:8443/tracking";
-    public static final String IP = "http://localhost:8080/tracking";
+    public static final String IP = "https://cstat.nextel.com.ua:8443/tracking";
+//    public static final String IP = "http://localhost:8080/tracking";
+//    public static final String IP = "https://adeptius.pp.ua:8443/tracking";
+
     public static final String ADMIN_PASS = "csadmx84";
 //    public static final String IP = "https://adeptius.pp.ua:8443/tracking";
     //TODO вернуть адрес
@@ -30,9 +33,9 @@ public class Dao {
     public static HashMap<String, String> hashes = new HashMap<>();
 
     public static void updateHashes() throws Exception {
-        HashMap<String, String> map = new HashMap<>();
+        HashMap<String, Object> map = new HashMap<>();
         map.put("adminPassword", ADMIN_PASS);
-        String response = sendPost("/admin/getTokens", map, false, "");
+        String response = sendPost("/admin/getTokens", map);
         Type listType = new TypeToken<HashMap<String, String>>() {
         }.getType();
         hashes = new Gson().fromJson(response, listType);
@@ -45,12 +48,33 @@ public class Dao {
         return sendJsonObject("/user/add", user, "");
     }
 
+    public static String registerNewUser(String login, String password, String email, String phone) throws Exception {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("login", login);
+        map.put("password", password);
+        map.put("email", email);
+        map.put("phone", phone);
+        return sendPost("/registration/register", map);
+    }
+
     public static String editUser(JsonUser user) throws Exception {
         return sendJsonObject("/user/set", user, hashes.get(user.getLogin()));
     }
 
+    public static String changePassword(String userName, String password) throws Exception {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("password", password);
+        return sendPost("/user/setPassword", map, hashes.get(userName));
+    }
+
+    public static String recoverPassword(String userName) throws Exception {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("userName", userName);
+        return sendPost("/user/recoverPassword", map, hashes.get(userName));
+    }
+
     public static User getUser(String userName) throws Exception {
-        String response = sendPost("/user/get", null, false, hashes.get(userName));
+        String response = sendPost("/user/get", null, hashes.get(userName));
         User user = new Gson().fromJson(response, User.class);
         return user;
     }
@@ -63,31 +87,27 @@ public class Dao {
      * Tracking
      */
 
-    public static List<Site> getSites(User user) throws Exception {
-        Type listType = new TypeToken<List<Site>>() {
+    public static List<JsonSite> getSites(User user) throws Exception {
+        Type listType = new TypeToken<List<JsonSite>>() {
         }.getType();
         String s = sendJsonObject("/sites/get", null, hashes.get(user.getLogin()));
         return new Gson().fromJson(s, listType);
     }
 
-    public static String addSite(User user, JsonSite jsonSite) throws Exception {
-        return sendJsonObject("/sites/add", jsonSite, hashes.get(user.getLogin()));
-    }
-
-    public static String editSite(User user, JsonSite jsonSite) throws Exception {
-        return sendJsonObject("/sites/edit", jsonSite, hashes.get(user.getLogin()));
+    public static String setSite(User user, JsonSite jsonSite) throws Exception {
+        return sendJsonObject("/sites/set", jsonSite, hashes.get(user.getLogin()));
     }
 
     public static String removeSite(User user, String siteName) throws Exception {
-        HashMap<String, String> map = new HashMap<>();
+        HashMap<String, Object> map = new HashMap<>();
         map.put("siteName", siteName);
-        return sendPost("/sites/remove", map, false, hashes.get(user.getLogin()));
+        return sendPost("/sites/remove", map, hashes.get(user.getLogin()));
     }
 
     public static List<OuterPhone> getOuterPhones(User user, String site) throws Exception {
-        HashMap<String, String> map = new HashMap<>();
+        HashMap<String, Object> map = new HashMap<>();
         map.put("siteName", site);
-        String result = sendPost("/phones/getSiteOuter", map, false, hashes.get(user.getLogin()));
+        String result = sendPost("/phones/getSiteOuter", map, hashes.get(user.getLogin()));
         Type listType = new TypeToken<List<OuterPhone>>() {
         }.getType();
         List<OuterPhone> phones = new Gson().fromJson(result, listType);
@@ -96,12 +116,8 @@ public class Dao {
 
 
     public static JsonInnerAndOuterPhones getInnerAndOuterPhones(User user) throws Exception {
-        String result = sendPost("/phones/getAllPhones", null, false, hashes.get(user.getLogin()));
+        String result = sendPost("/phones/getAllPhones", null, hashes.get(user.getLogin()));
         return new Gson().fromJson(result, JsonInnerAndOuterPhones.class);
-    }
-
-    public static String setSitesBindings(User user, HashMap<String, String> bindings) throws Exception {
-        return sendJsonObject("/phones/setBindings", bindings, hashes.get(user.getLogin()));
     }
 
     /**
@@ -115,8 +131,12 @@ public class Dao {
     /**
      * AMOcrm
      */
-    public static String getAmoAccount(User user) throws Exception {
-        return sendJsonObject("/amo/get", null, hashes.get(user.getLogin()));
+    public static JsonAmoForController getAmoAccount(User user) throws Exception {
+        String result = sendJsonObject("/amo/get", null, hashes.get(user.getLogin()));
+        if (result.contains("User have not connected amo account")){
+            throw new Exception("No amo acc");
+        }
+        return new Gson().fromJson(result, JsonAmoForController.class);
     }
 
     public static String setAmoAccount(User user, JsonAmoForController amoAccount) throws Exception {
@@ -129,17 +149,6 @@ public class Dao {
 
     public static String removeAmoAccount(User user) throws Exception {
         return sendJsonObject("/amo/remove", "", hashes.get(user.getLogin()));
-    }
-
-    public static HashMap<String, String> getAmoUsers(User user) throws Exception {
-        String response = sendPost("/amo/getUsers", null, false, hashes.get(user.getLogin()));
-        return new Gson().fromJson(response, new TypeToken<HashMap<String, String>>() {
-        }.getType());
-    }
- public static HashMap<String, String> getAmoBindings(User user) throws Exception {
-        String response = sendPost("/amo/getBindings", null, false, hashes.get(user.getLogin()));
-        return new Gson().fromJson(response, new TypeToken<HashMap<String, String>>() {
-        }.getType());
     }
 
     public static String setAmoBindings(User user, HashMap<String, String> map) throws Exception {
@@ -177,53 +186,9 @@ public class Dao {
     }
 
     public static String removeAudio(int id, User user) throws Exception {
-        HashMap<String, String> map = new HashMap<>();
+        HashMap<String, Object> map = new HashMap<>();
         map.put("id", "" + id);
-        return sendPost("/audio/remove", map, false, hashes.get(user.getLogin()));
-    }
-
-
-    /**
-     * BlackList Tracking
-     */
-
-    public static List<String> getBlackList(User user, String siteName) {
-        try {
-            HashMap<String, String> map = new HashMap<>();
-            map.put("siteName", siteName);
-            String result = sendPost("/blacklist/get", map, false, hashes.get(user.getLogin()));
-            Type listType = new TypeToken<List<String>>() {
-            }.getType();
-            if (result.equals("{\"status\":\"Error\",\"message\":\"User have no such site\"}")) {
-                return new ArrayList<>();
-            }
-            return new Gson().fromJson(result, listType);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ArrayList<>();
-        }
-    }
-
-    public static void addIpToBlackList(String ip, User user, String siteName) {
-        try {
-            HashMap<String, String> map = new HashMap<>();
-            map.put("ip", ip);
-            map.put("siteName", siteName);
-            sendPost("/blacklist/add", map, false, hashes.get(user.getLogin()));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void removeIpFromBlackList(String ip, User user, String siteName) {
-        try {
-            HashMap<String, String> map = new HashMap<>();
-            map.put("ip", ip);
-            map.put("siteName", siteName);
-            sendPost("/blacklist/remove", map, false, hashes.get(user.getLogin()));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        return sendPost("/audio/remove", map, hashes.get(user.getLogin()));
     }
 
     public static ArrayList<JsonSipAndPass> getPasswords(User user) throws Exception {
@@ -254,13 +219,13 @@ public class Dao {
     }
 
     public static String removeScenario(User user, int scenarioId) throws Exception {
-        HashMap<String, String> map = new HashMap<>();
-        map.put("id", ""+scenarioId);
-        return sendPost("/scenario/remove", map, false, hashes.get(user.getLogin()));
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("id", "" + scenarioId);
+        return sendPost("/scenario/remove", map, hashes.get(user.getLogin()));
     }
 
     public static JsonScenarioBindings getScenarioBindings(User user) throws Exception {
-        String response = sendPost("/scenario/getBindings", null, false, hashes.get(user.getLogin()));
+        String response = sendPost("/scenario/getBindings", null, hashes.get(user.getLogin()));
         return new Gson().fromJson(response, JsonScenarioBindings.class);
     }
 
@@ -276,7 +241,7 @@ public class Dao {
     public static ArrayList<String> getListOfCustomers() {
         try {
             String url = "/admin/getAllUsers";
-            HashMap<String, String> map = new HashMap<>();
+            HashMap<String, Object> map = new HashMap<>();
             map.put("adminPassword", ADMIN_PASS);
             String response = sendPost(url, map);
 
@@ -291,7 +256,7 @@ public class Dao {
 
 
     public static void loadSettings() throws Exception {
-        HashMap<String, String> map = new HashMap<>();
+        HashMap<String, Object> map = new HashMap<>();
         map.put("adminPassword", ADMIN_PASS);
         String result = sendPost("/admin/getAllSettings", map);
         Type listType = new TypeToken<HashMap<String, String>>() {
@@ -305,7 +270,7 @@ public class Dao {
             return "";
         }
         try {
-            HashMap<String, String> map = new HashMap<>();
+            HashMap<String, Object> map = new HashMap<>();
             map.put("name", name);
             map.put("value", value);
             map.put("adminPassword", ADMIN_PASS);
@@ -321,24 +286,6 @@ public class Dao {
         return sendJsonObject("/history/get", query, hashes.get(user.getLogin()));
     }
 
-    public static String getScriptForUser(User user, String sitename) throws Exception {
-        HashMap<String, String> map = new HashMap<>();
-        map.put("siteName", sitename);
-        return sendPost("/script/get", map, false, hashes.get(user.getLogin()));
-    }
-
-
-    public static List<String> getAvailableNumbers(User user) {
-        try {
-            String result = sendPost("/rules/getAvailableNumbers", null, false, hashes.get(user.getLogin()));
-            Type listType = new TypeToken<List<String>>() {
-            }.getType();
-            return new Gson().fromJson(result, listType);
-        } catch (Exception e) {
-            return new LinkedList<>();
-        }
-    }
-
     public static List<String> getMelodies() throws Exception {
         String response = sendPost("/scenario/getMelodies", null);
         Type listType = new TypeToken<ArrayList<String>>() {
@@ -347,62 +294,15 @@ public class Dao {
     }
 
     public static JsonNumbersCount getNumbersCount() throws Exception {
-        HashMap<String, String> map = new HashMap<>();
+        HashMap<String, Object> map = new HashMap<>();
         map.put("adminPassword", ADMIN_PASS);
         String response = sendPost("/admin/getNumbersCount", map);
         return new Gson().fromJson(response, JsonNumbersCount.class);
     }
 
 
-    public static String sendPost(String relativeUrl, HashMap<String, String> jSonQuery) throws Exception {
-        String url = IP + relativeUrl;
-        URL obj = new URL(url);
-        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-        con.setRequestMethod("POST");
-        String urlParameters = "";
-        if (jSonQuery != null) {
-            Object[] keys = jSonQuery.keySet().toArray();
-            for (int i = 0; i < keys.length; i++) {
-                String key = (String) keys[i];
-                urlParameters += key + "=" + jSonQuery.get(key);
-                if (!(i == keys.length - 1)) urlParameters += "&";
-            }
-            con.setDoOutput(true);
-            DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-//            System.out.println("Передаю параметры: " + urlParameters);
-            wr.writeBytes(urlParameters);
-            wr.flush();
-            wr.close();
-        }
-        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-        String result = in.readLine();
-//        result = org.apache.commons.lang3.StringEscapeUtils.unescapeJava(result);
-        byte[] bytes = result.getBytes();
-        result = new String(bytes, "UTF-8");
-//        System.out.println("Ответ: " + result);
-        stdout(relativeUrl, result);
-        in.close();
-        return result;
-    }
-
-
-//    static String sendPostParams(String url, String authorization, String... params) throws Exception {
-//        HttpRequestWithBody request = Unirest.post(url).header("authorization", authorization);
-//
-//        for (int i = 0; i < 0; i=i+2) {
-//            request.field(params[i], params[i+1]);
-//        }
-//
-//        HttpResponse<String> stringHttpResponse = request.asString();
-//
-//        String result = stringHttpResponse.getBody();
-//        System.out.println("Ответ: " + result);
-//        return result;
-//    }
-
-
-    public static String sendMelodyFile(String filePath,String name, User user) throws Exception{
-                HttpResponse<String> stringHttpResponse = Unirest.post(IP + "/audio/add")
+    public static String sendMelodyFile(String filePath, String name, User user) throws Exception {
+        HttpResponse<String> stringHttpResponse = Unirest.post(IP + "/audio/add")
                 .header("Authorization", hashes.get(user.getLogin()))
                 .field("file", new File(filePath))
                 .field("name", name)
@@ -414,77 +314,32 @@ public class Dao {
     static String sendJsonObject(String relativeUrl, Object object, String authorization) throws Exception {
         String url = IP + relativeUrl;
         String body = new Gson().toJson(object);
-//        System.out.println("Отправляю: " + body);
         HttpResponse<String> response = Unirest
                 .post(url)
                 .header("content-type", "application/json")
                 .header("authorization", authorization)
                 .body(body)
                 .asString();
-
         String result = response.getBody();
-//        System.out.println("Ответ: " + result);
         stdout(relativeUrl, result);
         return result;
     }
 
-    static String sendJsonObjectAccept(String relativeUrl, Object object, String authorization) throws Exception {
-        String url = IP + relativeUrl;
-        String body = new Gson().toJson(object);
-//        System.out.println("Отправляю: " + body);
-        HttpResponse<String> response = Unirest
-                .post(url)
-                .header("content-type", "application/json")
-                .header("authorization", authorization)
-                .body(body)
-                .asString();
 
-        String result = response.getBody();
-//        System.out.println("Ответ: " + result);
-        stdout(relativeUrl, result);
-        return result;
+    static String sendPost(String relativeUrl, HashMap<String, Object> query) throws Exception {
+        return sendPost(relativeUrl, query, "");
     }
 
-    static String sendPost(String relativeUrl, HashMap<String, String> jSonQuery, boolean itsJson, String authorization) throws Exception {
+    static String sendPost(String relativeUrl, HashMap<String, Object> query, String authorization) throws Exception {
         String url = IP + relativeUrl;
-        URL obj = new URL(url);
-        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-        con.setRequestMethod("POST");
-        con.setRequestProperty("Authorization", authorization);
-        if (jSonQuery != null) {
-            String urlParameters = "";
-            if (itsJson) {
-                con.setRequestProperty("Content-Type", "application/json");
-                urlParameters = new Gson().toJson(jSonQuery);
-            } else {
-                Object[] keys = jSonQuery.keySet().toArray();
-                for (int i = 0; i < keys.length; i++) {
-                    String key = (String) keys[i];
-                    urlParameters += key + "=" + jSonQuery.get(key);
-                    if (!(i == keys.length - 1)) urlParameters += "&";
-                }
-            }
-            con.setDoOutput(true);
-            DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-            wr.writeBytes(urlParameters);
-            wr.flush();
-            wr.close();
+
+        HttpRequestWithBody post = Unirest.post(url).header("Authorization", authorization);
+        if (query != null) {
+            post.fields(query);
         }
-//        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-//        String result = in.readLine();
 
-        BufferedReader rd = new BufferedReader(new InputStreamReader(con.getInputStream()));
-        StringBuffer sb = new StringBuffer();
-        String line;
-        while ((line = rd.readLine()) != null) {
-            sb.append(line);
-        }
-        String result = sb.toString();
-
-
-//        result = org.apache.commons.lang3.StringEscapeUtils.unescapeJava(result);
+        String result = post.asString().getBody();
         stdout(relativeUrl, result);
-        rd.close();
         return result;
     }
 

@@ -35,10 +35,19 @@ public class NewUserController implements Initializable {
     private TextField textEmail;
 
     @FXML
-    private TextField textGoogleId;
+    private TextField textPassword;
 
     @FXML
-    private TextField textPassword;
+    private TextField textPhone;
+
+    @FXML
+    private TextField textFirstName;
+
+    @FXML
+    private TextField textLastName;
+
+    @FXML
+    private TextField textMiddleName;
 
     @FXML
     private Button btnCancel;
@@ -46,21 +55,37 @@ public class NewUserController implements Initializable {
     @FXML
     private Button btnSave;
 
+    @FXML
+    private Button btnChangePassword;
+
+    @FXML
+    private Button btnRegister;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         try {
-            if (user != null) {// если мы меняем сайт
+            if (user != null) {// если мы меняем пользователя
                 btnSave.setText("Изменить");
                 textName.setEditable(false);
 
                 textName.setText(user.getLogin());
                 textName.setEditable(false);
                 textEmail.setText(user.getEmail());
-                textGoogleId.setText(user.getTrackingId());
-                textPassword.setText(user.getPassword());
+                btnSave.setOnAction(e -> updateUser());
+
+                textPhone.setText(user.getUserPhoneNumber());
+                textFirstName.setText(user.getFirstName());
+                textLastName.setText(user.getLastName());
+                textMiddleName.setText(user.getMiddleName());
+
+            } else {
+                btnChangePassword.setDisable(true);
+                btnSave.setOnAction(e -> saveNewUser());
+                btnRegister.setOnAction(event -> registerNewUser());
             }
             btnCancel.setOnAction(e -> cancel());
-            btnSave.setOnAction(e -> save());
+
+            btnChangePassword.setOnAction(event -> changePassword());
         } catch (Exception e) {
             e.printStackTrace();
             cancel();
@@ -71,35 +96,13 @@ public class NewUserController implements Initializable {
         stage.hide();
     }
 
-    private void save() {
+    private void changePassword() {
         String login = textName.getText().trim();
-//        if (!Validator.isValidLogin(login)) {
-//            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-//            alert.setTitle("Ошибка");
-//            alert.setHeaderText(null);
-//            alert.setContentText("Логин должен состоять только из английских букв");
-//            alert.showAndWait();
-//            return;
-//        }
-
-        String email = textEmail.getText();
-        String googleId = textGoogleId.getText();
         String password = textPassword.getText();
-
-        JsonUser newUser = new JsonUser();
-        newUser.setLogin(login);
-        newUser.setEmail(email);
-        newUser.setPassword(password);
-        newUser.setTrackingId(googleId);
 
         String result;
         try {
-            if (user != null){
-                result = Dao.editUser(newUser);
-            }else {
-                result = Dao.createNewUser(newUser);
-            }
-            stage.hide();
+            result = Dao.changePassword(login, password);
             Dao.updateHashes();
             guiController.updateUserList();
             guiController.updateAllUserInfo();
@@ -108,20 +111,96 @@ public class NewUserController implements Initializable {
             e.printStackTrace();
             result = "Ошибка: " + e.getMessage();
         }
-        System.out.println(result);
 
-        Alert alert = null;
-        alert = new Alert(Alert.AlertType.INFORMATION);
-
-        alert.setTitle("Information");
-        alert.setHeaderText(null);
-        alert.setContentText(result);
-        alert.showAndWait();
+        GuiController.showInformationAlert(result);
         guiController.updateStatus();
         try {
             Dao.updateHashes();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private void updateUser() {
+        String login = textName.getText().trim();
+        String email = textEmail.getText();
+        String phone = textPhone.getText();
+        String firstName = textFirstName.getText();
+        String lastName = textLastName.getText();
+        String middleName = textMiddleName.getText();
+
+        JsonUser newUser = new JsonUser();
+        newUser.setLogin(login);
+        newUser.setEmail(email);
+        newUser.setFirstName(firstName);
+        newUser.setUserPhoneNumber(phone);
+        newUser.setLastName(lastName);
+        newUser.setMiddleName(middleName);
+
+        String result;
+        try {
+            result = Dao.editUser(newUser);
+            Dao.updateHashes();
+            guiController.updateUserList();
+            guiController.updateAllUserInfo();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            result = "Ошибка: " + e.getMessage();
+        }
+
+        GuiController.showInformationAlert(result);
+        guiController.updateStatus();
+        try {
+            Dao.updateHashes();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void saveNewUser() {
+        String login = textName.getText().trim();
+        String email = textEmail.getText();
+        String password = textPassword.getText();
+
+        JsonUser newUser = new JsonUser();
+        newUser.setLogin(login);
+        newUser.setEmail(email);
+        newUser.setPassword(password);
+
+        String result;
+        try {
+            result = Dao.createNewUser(newUser);
+            Dao.updateHashes();
+            guiController.updateUserList();
+            guiController.updateAllUserInfo();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            result = "Ошибка: " + e.getMessage();
+        }
+        GuiController.showInformationAlert(result);
+        guiController.updateStatus();
+        try {
+            Dao.updateHashes();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void registerNewUser() {
+        String login = textName.getText().trim();
+        String email = textEmail.getText();
+        String password = textPassword.getText();
+        String phone = textPhone.getText();
+
+        try {
+            String result = Dao.registerNewUser(login, password, email, phone);
+            GuiController.showInformationAlert(result);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            GuiController.showErrorAlert(e);
         }
     }
 }

@@ -59,11 +59,10 @@ public class ScenarioController implements Initializable {
 //    private List<ComboBox<String>> choiseBoxes = new ArrayList<>();
 //    private List<String> availableNumbers;
 
-    List<InnerPhone> innerPhones;
-    List<String> melodies;
-    int currentScenarioId;
-    List<JsonUserAudio> userMelodies;
-    HashMap<String, String> amoUsers;
+    private List<InnerPhone> innerPhones;
+    private List<String> melodies;
+    private int currentScenarioId;
+    private List<JsonUserAudio> userMelodies;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -78,11 +77,6 @@ public class ScenarioController implements Initializable {
             showInformationAlert(e.toString());
             return;
         }
-        try {
-            amoUsers = Dao.getAmoUsers(user);
-        } catch (Exception e) {
-        }
-
 
         newRuleButton.setOnAction(e -> addNewRuleToScreen());
 
@@ -116,16 +110,15 @@ public class ScenarioController implements Initializable {
 
                 String message = ((ComboBox<String>) childNode.lookup("#messageComboBox")).getSelectionModel().getSelectedItem();
 
-                String responsibleUserName = ((ComboBox<String>) childNode.lookup("#amoResponsibleComboBox")).getSelectionModel().getSelectedItem();
-
-                if (amoUsers != null){
-                    String responsibleId = amoUsers.get(responsibleUserName);
-                    if (responsibleUserName.equals("")){
-                        rule.setAmoResponsibleId(null);
-                    }else {
-                        rule.setAmoResponsibleId(responsibleId);
-                    }
-                }
+//                String responsibleUserName = ((ComboBox<String>) childNode.lookup("#amoResponsibleComboBox")).getSelectionModel().getSelectedItem();
+//                if (amoUsers != null){
+//                    String responsibleId = amoUsers.get(responsibleUserName);
+//                    if (responsibleUserName.equals("")){
+//                        rule.setAmoResponsibleId(null);
+//                    }else {
+//                        rule.setAmoResponsibleId(responsibleId);
+//                    }
+//                }
 
                 if (!org.apache.commons.lang3.StringUtils.isBlank(greeting)) {
                     int id = userMelodies.stream()
@@ -347,21 +340,21 @@ public class ScenarioController implements Initializable {
         messageComboBox.setItems(fxMelodies);
         messageComboBox.setValue(userMelodyIdAndName.get(rule.getMessage()));
 
-        if (amoUsers != null){
-            String amoResponsibleId = rule.getAmoResponsibleId();
-            String currentAmoResponsibleName = "";
-            for (Map.Entry<String, String> entry : amoUsers.entrySet()) {
-                if (entry.getValue().equals(amoResponsibleId)){
-                    currentAmoResponsibleName = entry.getKey();
-                }
-            }
-
-            ComboBox<String> amoResponsibleComboBox = (ComboBox<String>) rootNode.lookup("#amoResponsibleComboBox");
-            ObservableList<String> observableList = FXCollections.observableArrayList(new ArrayList<>(amoUsers.keySet()));
-            observableList.add("");
-            amoResponsibleComboBox.setItems(observableList);
-            amoResponsibleComboBox.setValue(currentAmoResponsibleName);
-        }
+//        if (amoUsers != null){
+//            String amoResponsibleId = rule.getAmoResponsibleId();
+//            String currentAmoResponsibleName = "";
+//            for (Map.Entry<String, String> entry : amoUsers.entrySet()) {
+//                if (entry.getValue().equals(amoResponsibleId)){
+//                    currentAmoResponsibleName = entry.getKey();
+//                }
+//            }
+//
+//            ComboBox<String> amoResponsibleComboBox = (ComboBox<String>) rootNode.lookup("#amoResponsibleComboBox");
+//            ObservableList<String> observableList = FXCollections.observableArrayList(new ArrayList<>(amoUsers.keySet()));
+//            observableList.add("");
+//            amoResponsibleComboBox.setItems(observableList);
+//            amoResponsibleComboBox.setValue(currentAmoResponsibleName);
+//        }
 
         HashMap<Integer, JsonChainElement> chain = rule.getChain();
         for (int i = 0; i < chain.size(); i++) {

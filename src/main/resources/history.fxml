@@ -32,6 +32,6 @@
       <Label fx:id="countLabel" layoutX="1121.0" layoutY="18.0" prefHeight="17.0" prefWidth="184.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="18.0" />
       <Label layoutX="784.0" layoutY="18.0" prefHeight="17.0" prefWidth="41.0" text="Лимит" />
       <Label layoutX="910.0" layoutY="18.0" text="Сдвиг" />
-      <Button fx:id="buttonShowBoth" layoutX="543.0" layoutY="14.0" mnemonicParsing="false" text="Исходящие" />
+      <Button fx:id="buttonShowBoth" layoutX="543.0" layoutY="14.0" mnemonicParsing="false" text="Все" />
    </children>
 </AnchorPane>

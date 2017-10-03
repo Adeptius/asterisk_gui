@@ -6,22 +6,29 @@ import com.google.gson.JsonSyntaxException;
 import dao.Dao;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import json.*;
 import model.*;
+import org.apache.commons.lang3.StringUtils;
 
 import java.awt.*;
 import java.io.IOException;
@@ -65,7 +72,6 @@ public class GuiController implements Initializable {
                 try {
                     Thread.sleep(4000);
                     try {
-//                        updateLogs();
                         String selectedUser = userList.getSelectionModel().getSelectedItem();
                         if (selectedUser != null) {
                             User user = Dao.getUser(selectedUser);
@@ -73,8 +79,6 @@ public class GuiController implements Initializable {
                             Gui.selectedSiteString = selectedUser;
                             updateTelephony(user);
                             updateTracking(user);
-//                            updateAmo(user);
-                            updateBlackList(user);
                         }
                     } catch (Exception e) {
                         System.out.println("Нет связи скорее всего");
@@ -97,7 +101,6 @@ public class GuiController implements Initializable {
             updateTelephony(user);
             updateTracking(user);
             updateAmo(user);
-            updateBlackList(user);
         }
     }
 
@@ -110,6 +113,15 @@ public class GuiController implements Initializable {
 
     public void showAddUser() throws Exception {
         showAddOrEditUser(null);
+    }
+
+    public void recoverPassword() {
+        try {
+            showInformationAlert(Dao.recoverPassword(activeUser.getLogin()));
+        } catch (Exception e) {
+            e.printStackTrace();
+            showErrorAlert(e);
+        }
     }
 
     public void showAddOrEditUser(User user) throws Exception {
@@ -162,7 +174,6 @@ public class GuiController implements Initializable {
                     updateTracking(user);
                     updateAmo(user);
                     updateRoistat(user);
-                    updateBlackList(user);
                     choicedSitename = null;
                 }
             } catch (Exception e) {
@@ -205,8 +216,8 @@ public class GuiController implements Initializable {
     @FXML
     private ListView<String> blackList;
 
-    @FXML
-    private TextField blackIPText;
+//    @FXML
+//    private TextField blackIPText;
 
     @FXML
     private Button phonesBindButton;
@@ -214,37 +225,12 @@ public class GuiController implements Initializable {
     public static String choicedSitename;
 
     private void initTrackingTab() {
-        phoneTable.setOnMouseClicked(event -> {
-            OuterPhone selectedPhone = phoneTable.getSelectionModel().getSelectedItem();
-            if (selectedPhone != null) {
-                String ip = selectedPhone.getIp();
-                blackIPText.setText(ip);
-            }
-        });
 
         phoneNumber.setCellValueFactory(new PropertyValueFactory<>("number"));
         phoneGoogleId.setCellValueFactory(new PropertyValueFactory<>("googleId"));
         phoneIp.setCellValueFactory(new PropertyValueFactory<>("ip"));
         phoneTime.setCellValueFactory(new PropertyValueFactory<>("busyTimeText"));
         phoneUtm.setCellValueFactory(new PropertyValueFactory<>("utmRequest"));
-
-        phonesBindButton.setOnAction(event -> {
-            showPhoneBindings();
-        });
-    }
-
-    public void updateBlackList(User user) {
-        if (choicedSitename != null) {
-            List<String> list = Dao.getBlackList(user, choicedSitename);
-
-            Platform.runLater(() -> {
-                blackList.setItems(FXCollections.observableList(list));
-            });
-        } else {
-            Platform.runLater(() -> {
-                blackList.setItems(FXCollections.emptyObservableList());
-            });
-        }
     }
 
     public void crudSite() throws Exception {
@@ -275,50 +261,10 @@ public class GuiController implements Initializable {
         stage.show();
     }
 
-    public void showScript() throws Exception {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("script.fxml"));
-        Stage stage = new Stage();
-        loader.setController(new ScriptController(activeUser, stage, choicedSitename));
-        Parent root = loader.load();
-        Scene scene = new Scene(root);
-        stage.setTitle("Генератор скрипта");
-        stage.setResizable(false);
-        stage.initModality(Modality.WINDOW_MODAL); // Перекрывающее окно
-        stage.initOwner(userList.getScene().getWindow()); // Указание кого оно перекрывает
-        stage.setScene(scene);
-        stage.show();
-    }
-
-    public void showPhoneBindings() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("phonesAndSites.fxml"));
-            Stage stage = new Stage();
-            loader.setController(new PhonesAndSitesController(this, stage, activeUser));
-            Parent root = loader.load();
-            Scene scene = new Scene(root);
-            stage.setTitle("Редактирование привязок телефонов и сайтов");
-            stage.initOwner(userList.getScene().getWindow());
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            showErrorAlert(e.getMessage());
-        }
-
-    }
-
-
-    public void addToBlackList() {
-        Dao.addIpToBlackList(blackIPText.getText(), activeUser, choicedSitename);
-        blackIPText.setText("");
-    }
-
-    public void removeFromBlackList() {
-        Dao.removeIpFromBlackList(blackList.getSelectionModel().getSelectedItem().trim(), activeUser, choicedSitename);
-    }
 
     public void updateTracking(User user) {
         try {
-            List<Site> sites = Dao.getSites(user);
+            List<JsonSite> sites = Dao.getSites(user);
             if (sites != null) {
                 Platform.runLater(() -> {
                     siteList.setItems(FXCollections.observableArrayList(
@@ -338,14 +284,14 @@ public class GuiController implements Initializable {
                 choicedSitename = selectedItem.toString();
                 if (choicedSitename != null) {
                     List<OuterPhone> phones;
-                    Site siteByName = sites.stream().filter(site -> site.getName().equals(choicedSitename)).findFirst().get();
+                    JsonSite siteByName = sites.stream().filter(site -> site.getName().equals(choicedSitename)).findFirst().get();
 
                     phones = Dao.getOuterPhones(user, choicedSitename);
 
                     if (siteByName == null) {
                         return;
                     }
-                    siteByName.setUser(user);
+//                    siteByName.setUser(user);
                     Platform.runLater(() -> {
                         phoneTable.setItems(FXCollections.observableArrayList(phones));
                     });
@@ -679,40 +625,170 @@ public class GuiController implements Initializable {
     @FXML
     private ToggleButton clingToggleButton;
 
-    private void updateAmo(User user) {
-        JsonAmoForController jsonAmo;
-        String response = "";
-        try {
-            response = Dao.getAmoAccount(user);
-            jsonAmo = new Gson().fromJson(response, JsonAmoForController.class);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
-        }
+    @FXML
+    private VBox vBoxWithResponsibles;
 
-        if (jsonAmo == null) {
-            textAmoDomain.setText("");
-            textAmoAccount.setText("");
-            textAmoApiKey.setText("");
-            clingToggleButton.setSelected(false);
-            return;
-        }
-        textAmoDomain.setText(jsonAmo.getDomain());
-        textAmoAccount.setText(jsonAmo.getAmoLogin());
-        textAmoApiKey.setText(jsonAmo.getApiKey());
-        clingToggleButton.setSelected(jsonAmo.isCling());
-        if (jsonAmo.isCling()){
-            clingToggleButton.setText("Включено");
-        }else {
-            clingToggleButton.setText("Отключено");
-        }
-        clingToggleButton.setOnAction(event -> {
-            if (clingToggleButton.isSelected()){
+    @FXML
+    private ChoiceBox<String> cbPipeline;
+
+    @FXML
+    private ChoiceBox<String> cbStage;
+
+    @FXML
+    private VBox amoWorkersVBox;
+
+    private void updateAmo(User user) {
+        try {
+
+            JsonAmoForController jsonAmo;
+            String response = "";
+            jsonAmo = Dao.getAmoAccount(user);
+
+
+            if (jsonAmo == null) {
+                textAmoDomain.setText("");
+                textAmoAccount.setText("");
+                textAmoApiKey.setText("");
+                clingToggleButton.setSelected(false);
+                return;
+            }
+            textAmoDomain.setText(jsonAmo.getDomain());
+            textAmoAccount.setText(jsonAmo.getAmoLogin());
+            textAmoApiKey.setText(jsonAmo.getApiKey());
+            clingToggleButton.setSelected(jsonAmo.isCling());
+            if (jsonAmo.isCling()) {
                 clingToggleButton.setText("Включено");
-            }else {
+            } else {
                 clingToggleButton.setText("Отключено");
             }
-        });
+            clingToggleButton.setOnAction(event -> {
+                if (clingToggleButton.isSelected()) {
+                    clingToggleButton.setText("Включено");
+                } else {
+                    clingToggleButton.setText("Отключено");
+                }
+            });
+
+
+            HashMap<String, String> amoUsers = jsonAmo.getUsersIdAndName();
+            ObservableList<String> userNames = FXCollections.observableList(amoUsers.values().stream().collect(Collectors.toList()));
+            userNames.add("");
+
+            for (int i = 0; i < 7; i++) {
+                ComboBox<String> choiceBox = (ComboBox<String>) vBoxWithResponsibles.lookup("#responsibleCB" + i);
+                choiceBox.setItems(userNames);
+                String[] responsibleUserSchedule = jsonAmo.getResponsibleUserSchedule();
+                String userId = responsibleUserSchedule[i];
+                if (!StringUtils.isBlank(userId)) {
+                    choiceBox.setValue(amoUsers.get(userId));
+                }
+            }
+
+            try {
+                List<JsonPipeline> amoPipelines = jsonAmo.getPipelines();
+
+                int pipelineId = jsonAmo.getPipelineId();
+                int stageId = jsonAmo.getStageId();
+
+                List<String> pipelineNames = amoPipelines.stream().map(JsonPipeline::getName).collect(Collectors.toList());
+                ObservableList<String> fxPipelineNames = FXCollections.observableList(pipelineNames);
+                cbPipeline.setItems(fxPipelineNames);
+                String selectedPipeline = amoPipelines.stream()
+                        .filter(jsonPipeline -> jsonPipeline.getId() == pipelineId)
+                        .map(JsonPipeline::getName)
+                        .findFirst().orElse("");
+                cbPipeline.getSelectionModel().select(selectedPipeline);
+
+
+                HashMap<Integer, String> statusesIdAndName = amoPipelines.stream()
+                        .filter(jsonPipeline -> jsonPipeline.getName().equals(selectedPipeline))
+                        .findFirst()
+                        .get()
+                        .getStatusesIdAndName();
+
+                List<String> stageNames = statusesIdAndName.values().stream().collect(Collectors.toList());
+                cbStage.setItems(FXCollections.observableList(stageNames));
+                cbStage.getSelectionModel().select(statusesIdAndName.get(stageId));
+
+                cbPipeline.setOnAction(event -> fillStageChoise(amoPipelines));
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            HashMap<String, String> usersIdAndName = jsonAmo.getUsersIdAndName();
+            HashMap<String, String> operatorLocation = jsonAmo.getOperatorLocation();
+            HashMap<String, String> usersIdAndName1 = jsonAmo.getUsersIdAndName();
+
+            updateOperatorLocations(jsonAmo);
+        } catch (Exception e) {
+            if (e.getMessage().contains("No amo acc")) {
+                textAmoDomain.setText("");
+                textAmoAccount.setText("");
+                textAmoApiKey.setText("");
+                clingToggleButton.setText("");
+
+//                vBoxWithResponsibles.getChildren().forEach(node -> {
+//                    vBoxWithResponsibles.getChildren().remove(node);
+//                });
+                cbPipeline.setItems(FXCollections.emptyObservableList());
+                cbStage.setItems(FXCollections.emptyObservableList());
+//                ObservableList<Node> children = amoWorkersVBox.getChildren();
+//                for (Node child : children) {
+//                    amoWorkersVBox.getChildren().remove(child);
+//                }
+            } else {
+                e.printStackTrace();
+
+            }
+        }
+    }
+
+    private void updateOperatorLocations(JsonAmoForController amoJsonObj) throws Exception {
+        if (amoWorkersVBox.getChildren().size() > 0) {
+            amoWorkersVBox.getChildren().clear();
+        }
+        amoWorkersVBox.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+
+        HashMap<String, String> operatorLocation = amoJsonObj.getOperatorLocation();
+        HashMap<String, String> amoUserIdAndNames = amoJsonObj.getUsersIdAndName();
+        for (Map.Entry<String, String> entry : amoUserIdAndNames.entrySet()) {
+            addWorkerLocationToScreenToScreen(entry.getValue(), operatorLocation.get(entry.getKey()));
+        }
+    }
+
+    private void addWorkerLocationToScreenToScreen(String name, String phone) throws Exception {
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        fxmlLoader.setLocation(getClass().getResource("item_bind.fxml"));
+        Parent root = fxmlLoader.load();
+        AnchorPane mainNode = (AnchorPane) root.lookup("#mainNode");
+        VBox rootNode = (VBox) root.lookup("#ruleHbox");
+        rootNode.setStyle("-fx-border-color: #0072ff");
+        rootNode.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
+
+        Label worker = (Label) rootNode.lookup("#workerName");
+        worker.setText(name);
+
+        TextField phoneField = (TextField) rootNode.lookup("#phone");
+        phoneField.setText(phone);
+
+        amoWorkersVBox.getChildren().add(mainNode);
+    }
+
+    private void fillStageChoise(List<JsonPipeline> amoPipelines) {
+        String selectedPipeline = cbPipeline.getSelectionModel().getSelectedItem();
+        if (StringUtils.isBlank(selectedPipeline)) {
+            cbStage.setItems(FXCollections.emptyObservableList());
+        } else {
+            HashMap<Integer, String> statusesIdAndName = amoPipelines.stream()
+                    .filter(jsonPipeline -> jsonPipeline.getName().equals(selectedPipeline))
+                    .findFirst()
+                    .get()
+                    .getStatusesIdAndName();
+
+            List<String> collect = statusesIdAndName.values().stream().collect(Collectors.toList());
+            cbStage.setItems(FXCollections.observableList(collect));
+        }
     }
 
     public void gotoAmoApiPage(ActionEvent actionEvent) {
@@ -725,6 +801,78 @@ public class GuiController implements Initializable {
         jsonAmo.setAmoLogin(textAmoAccount.getText());
         jsonAmo.setApiKey(textAmoApiKey.getText());
         jsonAmo.setCling(clingToggleButton.isSelected());
+
+        String[] responsibles = new String[7];
+
+        JsonAmoForController currentAmoAcc = Dao.getAmoAccount(activeUser);
+        HashMap<String, String> amoUsersIdAndNames = currentAmoAcc.getUsersIdAndName();
+
+
+        for (int i = 0; i < 7; i++) {
+            ComboBox<String> choiceBox = (ComboBox<String>) vBoxWithResponsibles.lookup("#responsibleCB" + i);
+            String choised = choiceBox.getSelectionModel().getSelectedItem();
+            if (!StringUtils.isBlank(choised)) {
+                String userId = "";
+
+                for (Map.Entry<String, String> entry : amoUsersIdAndNames.entrySet()) {
+                    if (entry.getValue().equals(choised)) {
+                        userId = entry.getKey();
+                    }
+                }
+                responsibles[i] = userId;
+            }
+        }
+        jsonAmo.setResponsibleUserSchedule(responsibles);
+
+        // воронка и этап
+        List<JsonPipeline> amoPipelines = currentAmoAcc.getPipelines();
+
+        String selectedPipeline = cbPipeline.getSelectionModel().getSelectedItem();
+        String selectedStage = cbStage.getSelectionModel().getSelectedItem();
+
+        int pipelineId = 0;
+        int stageId = 0;
+        JsonPipeline jsonPipeline1 = amoPipelines.stream()
+                .filter(jsonPipeline -> jsonPipeline.getName().equals(selectedPipeline))
+                .findFirst()
+                .orElse(null);
+        if (jsonPipeline1 != null) {
+            pipelineId = jsonPipeline1.getId();
+            HashMap<Integer, String> statusesIdAndName = jsonPipeline1.getStatusesIdAndName();
+            for (Map.Entry<Integer, String> entry : statusesIdAndName.entrySet()) {
+                if (entry.getValue().equals(selectedStage)) {
+                    stageId = entry.getKey();
+                }
+            }
+        }
+        jsonAmo.setPipelineId(pipelineId);
+        jsonAmo.setStageId(stageId);
+
+        ObservableList<Node> children = amoWorkersVBox.getChildren();
+
+        HashMap<String, String> hashMapToSave = new HashMap<>();
+
+        for (Node child : children) {
+            Label workerField = (Label) child.lookup("#workerName");
+            TextField phoneField = (TextField) child.lookup("#phone");
+
+            String workerName = workerField.getText();
+            String phone = phoneField.getText();
+            if (StringUtils.isEmpty(phone)) {
+                continue;
+            }
+
+            String userId = "";
+            for (Map.Entry<String, String> idAndName : amoUsersIdAndNames.entrySet()) {
+                if (idAndName.getValue().equals(workerName)) {
+                    userId = idAndName.getKey();
+                }
+            }
+            hashMapToSave.put(userId, phone);
+        }
+
+        jsonAmo.setOperatorLocation(hashMapToSave);
+
         String result = Dao.setAmoAccount(activeUser, jsonAmo);
         Alert alert = new Alert(INFORMATION);
         alert.setTitle("Information");
@@ -751,19 +899,6 @@ public class GuiController implements Initializable {
         alert.setHeaderText(null);
         alert.setContentText(result);
         alert.showAndWait();
-    }
-
-
-    public void onAmoPhoneAndWorkersButton() throws Exception {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("phonesAndWorkers.fxml"));
-        Stage stage = new Stage();
-        loader.setController(new PhonesAndWorkersController(this, stage, activeUser));
-        Parent root = loader.load();
-        Scene scene = new Scene(root);
-        stage.setTitle("Редактор привязок");
-        stage.initOwner(userList.getScene().getWindow()); // Указание кого оно перекрывает
-        stage.setScene(scene);
-        stage.show();
     }
 
 
@@ -874,6 +1009,26 @@ public class GuiController implements Initializable {
         alert.setTitle("Результат");
         alert.setHeaderText(null);
         alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+
+    public static void showErrorAlert(Throwable e) {
+        while (e.getCause() != null) {
+            e = e.getCause();
+        }
+
+        StackTraceElement[] stackTrace = e.getStackTrace();
+        String s = "";
+        for (StackTraceElement stackTraceElement : stackTrace) {
+            s += stackTraceElement + "\n";
+        }
+
+        Alert alert = new Alert(ERROR);
+        alert.setResizable(true);
+        alert.setTitle("Результат");
+        alert.setHeaderText(null);
+        alert.setContentText(s);
         alert.showAndWait();
     }
 }
